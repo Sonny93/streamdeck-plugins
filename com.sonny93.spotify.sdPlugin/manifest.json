@@ -71,6 +71,22 @@
 			"Tooltip": "Skip to the next track.",
 			"Controllers": ["Keypad"],
 			"States": [{ "Image": "imgs/actions/next-track/key" }]
+		},
+		{
+			"Name": "Playlists",
+			"UUID": "com.sonny93.spotify.playlists",
+			"Icon": "imgs/actions/playlists/icon",
+			"Tooltip": "Browse your playlists, play one, or pick the playlist that liked tracks go to.",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/playlists.json",
+				"TriggerDescription": {
+					"Rotate": "Browse playlists",
+					"Push": "Play playlist",
+					"Touch": "Set as like target"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/playlists/key" }]
 		}
 	]
 }

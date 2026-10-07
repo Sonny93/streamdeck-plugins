@@ -1,0 +1,34 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/layout.json",
+	"id": "com.sonny93.spotify.playlists",
+	"items": [
+		{
+			"key": "cover",
+			"type": "pixmap",
+			"rect": [8, 14, 72, 72],
+			"value": "imgs/actions/playlists/liked-songs.svg"
+		},
+		{
+			"key": "title",
+			"type": "text",
+			"rect": [92, 12, 100, 48],
+			"alignment": "left",
+			"text-overflow": "ellipsis",
+			"font": { "size": 16, "weight": 700 }
+		},
+		{
+			"key": "position",
+			"type": "text",
+			"rect": [92, 66, 74, 22],
+			"alignment": "left",
+			"color": "#B3B3B3",
+			"font": { "size": 14 }
+		},
+		{
+			"key": "target",
+			"type": "pixmap",
+			"rect": [170, 66, 22, 22],
+			"enabled": false
+		}
+	]
+}
