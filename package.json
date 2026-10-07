@@ -1,0 +1,38 @@
+{
+	"name": "spotify-deck",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "rollup -c",
+		"watch": "rollup -c -w --watch.onEnd=\"pnpm run restart\"",
+		"lint": "oxlint .",
+		"lint:fix": "oxlint . --fix --fix-suggestions --fix-dangerously",
+		"format": "pnpm lint:fix && oxfmt .",
+		"format:check": "oxfmt . --check",
+		"typecheck": "tsc --noEmit",
+		"check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test",
+		"test": "vitest run",
+		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
+	},
+	"dependencies": {
+		"@elgato/streamdeck": "^3.0.1",
+		"koffi": "^3.3.2",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@elgato/cli": "^1.10.1",
+		"@minimalstuff/tooling": "^0.6.0",
+		"@rollup/plugin-commonjs": "^29.0.3",
+		"@rollup/plugin-node-resolve": "^16.0.3",
+		"@rollup/plugin-terser": "^1.0.0",
+		"@rollup/plugin-typescript": "^12.3.0",
+		"@types/node": "~24.19.1",
+		"oxfmt": "^0.72.0",
+		"oxlint": "^1.87.0",
+		"oxlint-tsgolint": "^7.0.2003",
+		"rollup": "^4.64.0",
+		"tslib": "^2.8.1",
+		"typescript": "^6.0.3",
+		"vitest": "^5.0.3"
+	}
+}
