@@ -1,0 +1,48 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Spotify Deck",
+	"Version": "0.1.0.0",
+	"Author": "Sonny93",
+	"Description": "Control the Spotify desktop app directly from Stream Deck.",
+	"UUID": "com.sonny93.spotify",
+	"Category": "Spotify Deck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"Icon": "imgs/plugin/marketplace",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": { "MinimumVersion": "7.1" },
+	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
+	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Actions": [
+		{
+			"Name": "Open search",
+			"UUID": "com.sonny93.spotify.open-search",
+			"Icon": "imgs/actions/open-search/icon",
+			"Tooltip": "Bring Spotify to front with the search field focused.",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/open-search/key" }]
+		},
+		{
+			"Name": "Toggle lyrics",
+			"UUID": "com.sonny93.spotify.toggle-lyrics",
+			"PropertyInspectorPath": "ui/toggle_lyrics_settings.html",
+			"Icon": "imgs/actions/toggle-lyrics/icon",
+			"Tooltip": "Show or hide the lyrics view.",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/toggle-lyrics/key" },
+				{ "Image": "imgs/actions/toggle-lyrics/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Toggle full screen",
+			"UUID": "com.sonny93.spotify.toggle-fullscreen",
+			"PropertyInspectorPath": "ui/toggle_fullscreen_settings.html",
+			"Icon": "imgs/actions/toggle-fullscreen/icon",
+			"Tooltip": "Enter or exit Spotify full screen mode.",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/toggle-fullscreen/key" }]
+		}
+	]
+}
