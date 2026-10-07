@@ -16,7 +16,7 @@ type CarouselFrameOptions = Readonly<{
 	slots: readonly CarouselSlot[];
 	title: string;
 	positionLabel: string;
-	isLikeTarget: boolean;
+	containsPlayingTrack: boolean;
 }>;
 
 function buildSlots(slots: readonly CarouselSlot[]): string {
@@ -27,7 +27,7 @@ function buildSlots(slots: readonly CarouselSlot[]): string {
 		.join('');
 }
 
-function buildLikeBadge(slots: readonly CarouselSlot[]): string {
+function buildPresenceBadge(slots: readonly CarouselSlot[]): string {
 	const centered = slots.reduce<CarouselSlot | undefined>(
 		(nearest, slot) =>
 			nearest === undefined || Math.abs(slot.offset) < Math.abs(nearest.offset)
@@ -70,10 +70,12 @@ function buildPositionLabel(positionLabel: string): string {
 /**
  * Draws one frame of the carousel of the "Playlists" dial as a 200x100 SVG document on a black background.
  * The covers are drawn from the farthest to the nearest to the center, then the title (truncated), the position label and,
- * when the shown playlist is the like target, a heart badge on the corner of the cover nearest to the center.
+ * when the playlist shown contains the playing track, a heart badge on the corner of the cover nearest to the center.
  */
 export function buildCarouselFrameSvg(options: CarouselFrameOptions): string {
 	const { stripWidth, stripHeight, background } = CarouselMetrics;
-	const badge = options.isLikeTarget ? buildLikeBadge(options.slots) : '';
+	const badge = options.containsPlayingTrack
+		? buildPresenceBadge(options.slots)
+		: '';
 	return `<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}"><rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>${buildSlots(options.slots)}${badge}${buildTitle(options.title)}${buildPositionLabel(options.positionLabel)}</svg>`;
 }

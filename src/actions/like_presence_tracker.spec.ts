@@ -105,6 +105,24 @@ describe('LikePresenceTracker', () => {
 		expect(tracker.isInTarget).toBe(false);
 	});
 
+	it('should report the presence for the target of the last refresh only', async () => {
+		const playlist = { uri: 'spotify:playlist:p', kind: 'playlist' } as const;
+		const { tracker } = buildTracker(() => Promise.resolve(true));
+		await tracker.refresh({ trackUri: TRACK_A, target: playlist });
+
+		expect(tracker.isInTargetFor(playlist)).toBe(true);
+		expect(tracker.isInTargetFor(target)).toBe(false);
+		expect(
+			tracker.isInTargetFor({ uri: 'spotify:playlist:q', kind: 'playlist' })
+		).toBe(false);
+	});
+
+	it('should not report the presence for a target before any refresh', () => {
+		const { tracker } = buildTracker(() => Promise.resolve(true));
+
+		expect(tracker.isInTargetFor(target)).toBe(false);
+	});
+
 	it('should report in the target after the track was added', async () => {
 		const { tracker } = buildTracker(() => Promise.resolve(false));
 		await tracker.refresh({ trackUri: TRACK_A, target });

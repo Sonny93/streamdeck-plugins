@@ -20,12 +20,22 @@ export class LikePresenceTracker {
 	private sequence = 0;
 	private lastKey: string | undefined;
 	private inTarget = false;
+	private lastTarget: LikeTargetRef | undefined;
 
 	constructor(private readonly options: PresenceTrackerOptions) {}
 
 	/** Whether the playing track is known to be in the like target. */
 	get isInTarget(): boolean {
 		return this.inTarget;
+	}
+
+	/** Whether the playing track is known to be in this very target, i.e. the one of the last refresh. */
+	isInTargetFor(target: LikeTargetRef): boolean {
+		return (
+			this.inTarget &&
+			this.lastTarget?.kind === target.kind &&
+			this.lastTarget.uri === target.uri
+		);
 	}
 
 	/** Re-checks the presence when the track or the target differs from the last refresh. */
@@ -44,6 +54,7 @@ export class LikePresenceTracker {
 			return;
 		}
 		this.lastKey = key;
+		this.lastTarget = options.target;
 		this.sequence += 1;
 		const sequence = this.sequence;
 		if (options.trackUri === undefined) {

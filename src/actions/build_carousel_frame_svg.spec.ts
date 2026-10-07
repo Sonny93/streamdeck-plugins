@@ -14,7 +14,7 @@ function build(
 		slots: [{ offset: 0, coverDataUrl: COVER }],
 		title: 'Road trip',
 		positionLabel: '12 / 37',
-		isLikeTarget: false,
+		containsPlayingTrack: false,
 		...overrides,
 	});
 }
@@ -119,14 +119,14 @@ describe('buildCarouselFrameSvg', () => {
 		expect(build({ positionLabel: '' })).not.toContain('text-anchor="end"');
 	});
 
-	it('should draw the heart badge only when the playlist is the like target', () => {
-		expect(build({ isLikeTarget: true })).toContain(HEART_COLOR);
-		expect(build({ isLikeTarget: false })).not.toContain(HEART_COLOR);
+	it('should draw the heart badge only when the playlist contains the playing track', () => {
+		expect(build({ containsPlayingTrack: true })).toContain(HEART_COLOR);
+		expect(build({ containsPlayingTrack: false })).not.toContain(HEART_COLOR);
 	});
 
 	it('should anchor the heart badge to the cover nearest to the center', () => {
 		const svg = build({
-			isLikeTarget: true,
+			containsPlayingTrack: true,
 			slots: [
 				{ offset: -1, coverDataUrl: COVER },
 				{ offset: 0.2, coverDataUrl: COVER },

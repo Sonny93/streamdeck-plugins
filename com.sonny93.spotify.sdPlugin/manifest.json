@@ -94,14 +94,14 @@
 			"Name": "Playlists",
 			"UUID": "com.sonny93.spotify.playlists",
 			"Icon": "imgs/actions/playlists/icon",
-			"Tooltip": "Browse your playlists, play one, or pick the playlist that liked tracks go to.",
+			"Tooltip": "Browse your playlists, play one, or add the playing track to one.",
 			"Controllers": ["Encoder"],
 			"Encoder": {
 				"layout": "layouts/playlists.json",
 				"TriggerDescription": {
 					"Rotate": "Browse playlists",
 					"Push": "Play playlist",
-					"Touch": "Set as like target"
+					"Touch": "Add the playing track"
 				}
 			},
 			"States": [{ "Image": "imgs/actions/playlists/key" }]

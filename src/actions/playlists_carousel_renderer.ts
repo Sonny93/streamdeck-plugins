@@ -39,26 +39,33 @@ export class PlaylistsCarouselRenderer {
 
 	constructor(private readonly options: PlaylistsCarouselRendererOptions) {}
 
-	/** Draws the frame for a position; does nothing while there is neither a playlist list nor a failure to report. */
+	/** Draws the frame of a settled dial, with the heart when the playing track is in the centered playlist; does nothing while there is neither a playlist list nor a failure to report. */
 	async render(request: FrameRequest): Promise<void> {
+		await this.draw(request, true);
+	}
+
+	private async draw(
+		request: FrameRequest,
+		showPresence: boolean
+	): Promise<void> {
 		if (!this.options.catalog.hasContent()) {
 			return;
 		}
-		const svg = this.buildFrame(request.position);
+		const svg = this.buildFrame(request, showPresence);
 		await request.dial.setFeedback({
 			[CANVAS_FEEDBACK_KEY]: toSvgDataUrl(svg),
 		});
 	}
 
-	/** Draws a frame of a scroll, logging at debug level how long the first one of a dial took to send. */
+	/** Draws a frame of a scroll, without the heart, logging at debug level how long the first one of a dial took to send. */
 	async renderAnimationFrame(request: FrameRequest): Promise<void> {
 		if (this.timedDials.has(request.dial.id)) {
-			await this.render(request);
+			await this.draw(request, false);
 			return;
 		}
 		this.timedDials.add(request.dial.id);
 		const startedAt = performance.now();
-		await this.render(request);
+		await this.draw(request, false);
 		const elapsed = Math.round(performance.now() - startedAt);
 		streamDeck.logger.debug(`First carousel frame sent in ${elapsed} ms`);
 	}
@@ -94,7 +101,8 @@ export class PlaylistsCarouselRenderer {
 		});
 	}
 
-	private buildFrame(position: number): string {
+	private buildFrame(request: FrameRequest, showPresence: boolean): string {
+		const { position } = request;
 		const { playlists } = this.options.catalog;
 		const center = Math.round(position);
 		const centered = this.playlistAt(center);
@@ -104,7 +112,7 @@ export class PlaylistsCarouselRenderer {
 				slots: [{ offset: 0, coverDataUrl: undefined }],
 				title: SPOTIFY_CLOSED_TITLE,
 				positionLabel: '',
-				isLikeTarget: false,
+				containsPlayingTrack: false,
 			});
 		}
 		const slots = listNeighbourhood(center).map((slotIndex): CarouselSlot => ({
@@ -120,7 +128,9 @@ export class PlaylistsCarouselRenderer {
 				index: wrapIndex({ index: center, length: playlists.length }),
 				total: playlists.length,
 			}),
-			isLikeTarget: centered.uri === this.options.likeTargetStore.current?.uri,
+			containsPlayingTrack:
+				showPresence &&
+				this.options.presence.contains(request.dial.id, centered),
 		});
 	}
 

@@ -23,7 +23,7 @@ function buildRenderer(
 	options: Readonly<{
 		playlists: readonly SpotifyPlaylist[];
 		hasContent?: boolean;
-		likeTargetUri?: string;
+		containsUris?: readonly string[];
 		fetchResult?: boolean;
 	}>
 ) {
@@ -41,11 +41,9 @@ function buildRenderer(
 			fetch: fetchCovers,
 			retryFailed: vi.fn(),
 		},
-		likeTargetStore: {
-			current:
-				options.likeTargetUri === undefined
-					? undefined
-					: { uri: options.likeTargetUri, name: 'target', kind: 'playlist' },
+		presence: {
+			contains: (_dialId, playlist) =>
+				options.containsUris?.includes(playlist.uri) ?? false,
 		},
 		onCoversLoaded,
 	});
@@ -131,10 +129,10 @@ describe('PlaylistsCarouselRenderer', () => {
 		await vi.waitFor(() => expect(onCoversLoaded).toHaveBeenCalledTimes(1));
 	});
 
-	it('should show the heart for the like target only', async () => {
+	it('should show the heart only for the centered playlist that contains the playing track', async () => {
 		const { renderer, dial } = buildRenderer({
 			playlists: [buildPlaylist('A'), buildPlaylist('B')],
-			likeTargetUri: 'spotify:playlist:B',
+			containsUris: ['spotify:playlist:B'],
 		});
 
 		await renderer.render({ dial, position: 0 });
@@ -142,6 +140,17 @@ describe('PlaylistsCarouselRenderer', () => {
 
 		await renderer.render({ dial, position: 1 });
 		expect(readSvg(dial.setFeedback)).toContain('#1DB954');
+	});
+
+	it('should not show the heart on the frames of a scroll', async () => {
+		const { renderer, dial } = buildRenderer({
+			playlists: [buildPlaylist('A')],
+			containsUris: ['spotify:playlist:A'],
+		});
+
+		await renderer.renderAnimationFrame({ dial, position: 0 });
+
+		expect(readSvg(dial.setFeedback)).not.toContain('#1DB954');
 	});
 
 	it('should say Spotify is closed when there is no playlist', async () => {

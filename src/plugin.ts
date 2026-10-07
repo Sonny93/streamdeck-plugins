@@ -21,7 +21,9 @@ streamDeck.actions.registerAction(new ToggleFullscreenAction());
 streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());
-streamDeck.actions.registerAction(new PlaylistsDialAction(likeTargetStore));
+streamDeck.actions.registerAction(
+	new PlaylistsDialAction(playerStateHub, likeTargetStore)
+);
 streamDeck.actions.registerAction(
 	new LikeAction(playerStateHub, likeTargetStore)
 );
