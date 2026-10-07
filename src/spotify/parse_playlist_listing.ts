@@ -15,14 +15,15 @@ const playlistListingSchema = z.object({
 			name: z.string(),
 			imageUrl: z.string().nullable(),
 			canAdd: z.boolean(),
+			isOwnedBySelf: z.boolean(),
 		})
 	),
 });
 
 /**
  * Interprets the value produced by the playlist listing script.
- * Returns the Liked Songs entry first, followed by the playlists of the library in their order,
- * with their raw image references turned into downloadable URLs.
+ * Returns the Liked Songs entry first, then the playlists owned by the user, then the other ones (generated mixes, followed playlists);
+ * the library order is kept inside each group, and the raw image references are turned into downloadable URLs.
  */
 export function parsePlaylistListing(rawListing: unknown): SpotifyPlaylist[] {
 	const parsed = playlistListingSchema.safeParse(rawListing);
@@ -39,7 +40,9 @@ export function parsePlaylistListing(rawListing: unknown): SpotifyPlaylist[] {
 		kind: SpotifyPlaylistKind.likedSongs,
 		canAdd: true,
 	};
-	const playlists = parsed.data.playlists.map((playlist): SpotifyPlaylist => ({
+	const toPlaylist = (
+		playlist: (typeof parsed.data.playlists)[number]
+	): SpotifyPlaylist => ({
 		uri: playlist.uri,
 		name: playlist.name,
 		imageUrl:
@@ -48,6 +51,12 @@ export function parsePlaylistListing(rawListing: unknown): SpotifyPlaylist[] {
 				: resolveSpotifyImageUrl(playlist.imageUrl),
 		kind: SpotifyPlaylistKind.playlist,
 		canAdd: playlist.canAdd,
-	}));
-	return [likedSongs, ...playlists];
+	});
+	const owned = parsed.data.playlists.filter(
+		(playlist) => playlist.isOwnedBySelf
+	);
+	const others = parsed.data.playlists.filter(
+		(playlist) => !playlist.isOwnedBySelf
+	);
+	return [likedSongs, ...owned.map(toPlaylist), ...others.map(toPlaylist)];
 }

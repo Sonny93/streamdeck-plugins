@@ -6,12 +6,12 @@ import { parsePlaylistListing } from './parse_playlist_listing';
 
 const FOLDER_TYPE = 'folder';
 const PLAYLIST_TYPE = 'playlist';
-const PREFERRED_IMAGE_LABEL = 'standard';
+const PREFERRED_IMAGE_LABELS = ['small', 'standard'];
 
 const LIST_PLAYLISTS_BODY = `
 	const folderType = ${JSON.stringify(FOLDER_TYPE)};
 	const playlistType = ${JSON.stringify(PLAYLIST_TYPE)};
-	const preferredImageLabel = ${JSON.stringify(PREFERRED_IMAGE_LABEL)};
+	const preferredImageLabels = ${JSON.stringify(PREFERRED_IMAGE_LABELS)};
 	const rootlist = resolve(${JSON.stringify(SpotifyServices.rootlist)});
 	const likedSongsUri = String(resolve(${JSON.stringify(SpotifyServices.likedSongsUri)}));
 	const contents = await rootlist.getContents();
@@ -24,12 +24,13 @@ const LIST_PLAYLISTS_BODY = `
 			}
 			if (item.type !== playlistType || !item.name) { continue; }
 			const images = item.images ?? [];
-			const image = images.find((candidate) => candidate.label === preferredImageLabel) ?? images[0];
+			const image = preferredImageLabels.map((label) => images.find((candidate) => candidate.label === label)).find((candidate) => candidate !== undefined) ?? images[0];
 			playlists.push({
 				uri: item.uri,
 				name: item.name,
 				imageUrl: image?.url ?? null,
 				canAdd: item.canAdd === true,
+				isOwnedBySelf: item.isOwnedBySelf === true,
 			});
 		}
 	};
@@ -38,7 +39,7 @@ const LIST_PLAYLISTS_BODY = `
 `;
 
 /**
- * Lists the playlists of the user's library, Liked Songs first.
+ * Lists the playlists of the user's library: Liked Songs first, then the user's own playlists, then the others.
  * Entries without a name (placeholders Spotify has not hydrated at all) are left out; named ones are kept even when Spotify has not fully loaded them.
  */
 export async function listSpotifyPlaylists(

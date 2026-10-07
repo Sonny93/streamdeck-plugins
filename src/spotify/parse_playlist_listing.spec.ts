@@ -15,6 +15,7 @@ function buildRawPlaylist(overrides: Record<string, unknown> = {}) {
 		name: 'Road trip',
 		imageUrl: 'spotify:image:abc',
 		canAdd: true,
+		isOwnedBySelf: true,
 		...overrides,
 	};
 }
@@ -49,6 +50,43 @@ describe('parsePlaylistListing', () => {
 			'A',
 			'B',
 		]);
+	});
+
+	it('should list the owned playlists before the other ones, keeping the library order in each group', () => {
+		const result = parsePlaylistListing(
+			buildListing([
+				buildRawPlaylist({ name: 'Mix 1', isOwnedBySelf: false }),
+				buildRawPlaylist({ name: 'Mine 1' }),
+				buildRawPlaylist({ name: 'Radio', isOwnedBySelf: false }),
+				buildRawPlaylist({ name: 'Mine 2' }),
+				buildRawPlaylist({ name: 'Followed', isOwnedBySelf: false }),
+			])
+		);
+
+		expect(result.map((playlist) => playlist.name)).toEqual([
+			'Liked Songs',
+			'Mine 1',
+			'Mine 2',
+			'Mix 1',
+			'Radio',
+			'Followed',
+		]);
+	});
+
+	it('should keep the liked songs entry first when no playlist is owned', () => {
+		const result = parsePlaylistListing(
+			buildListing([buildRawPlaylist({ isOwnedBySelf: false })])
+		);
+
+		expect(result[0]?.kind).toBe('liked-songs');
+	});
+
+	it('should throw an evaluation error when the owned flag is missing', () => {
+		const playlist = { ...buildRawPlaylist(), isOwnedBySelf: undefined };
+
+		expect(() => parsePlaylistListing(buildListing([playlist]))).toThrow(
+			SpotifyEvaluationError
+		);
 	});
 
 	it('should mark a library playlist with the playlist kind', () => {

@@ -1,0 +1,40 @@
+/** Geometry and style of the carousel drawn on the touch strip of the "Playlists" dial, in strip pixels. */
+export const CarouselMetrics = {
+	stripWidth: 200,
+	stripHeight: 100,
+	slotSpacing: 58,
+	coverCenterY: 40,
+	centerCoverSize: 64,
+	sideCoverSize: 40,
+	sideOpacity: 0.45,
+	coverCornerRadius: 6,
+	neighbourCount: 2,
+	background: '#000000',
+	fontFamily: 'Arial, Helvetica, sans-serif',
+	title: {
+		y: 90,
+		fontSize: 13,
+		fontWeight: 700,
+		color: '#FFFFFF',
+		maxLength: 24,
+	},
+	position: {
+		x: 196,
+		y: 12,
+		fontSize: 10,
+		color: '#B3B3B3',
+	},
+	badge: {
+		inset: 6,
+		radius: 9,
+		heartSize: 12,
+		heartColor: '#1DB954',
+		backdropColor: '#000000',
+		backdropOpacity: 0.65,
+	},
+	fallback: {
+		startColor: '#450AF5',
+		endColor: '#C4EFD9',
+		heartColor: '#FFFFFF',
+	},
+} as const;

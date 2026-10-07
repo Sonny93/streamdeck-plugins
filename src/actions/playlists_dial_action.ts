@@ -9,40 +9,47 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 
+import { wrapIndex } from './wrap_index';
 import { CoverCache } from './cover_cache';
-import { moveSelection } from './move_selection';
+import { CoverLoader } from './cover_loader';
 import { PlaylistCatalog } from './playlist_catalog';
+import { scheduleTimeout } from './schedule_timeout';
 import { readSelectedUri } from './read_selected_uri';
+import { CarouselAnimator } from './carousel_animator';
 import { runSpotifyAction } from './run_spotify_action';
 import type { LikeTargetStore } from './like_target_store';
 import { resolveSelectedIndex } from './resolve_selected_index';
-import { buildPlaylistFeedback } from './build_playlist_feedback';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import type { PlaylistsDialSettings } from './playlists_dial_settings';
 import { playSpotifyPlaylist } from '../spotify/play_spotify_playlist';
+import { PlaylistsCarouselRenderer } from './playlists_carousel_renderer';
 
 type PlaylistsDial = DialAction<PlaylistsDialSettings>;
 
-type LocatedPlaylist = Readonly<{
-	index: number;
-	playlist: SpotifyPlaylist | undefined;
-}>;
-
 /**
- * Stream Deck+ dial that browses the playlists of the Spotify library.
- * Rotate to browse, press to play the shown playlist, tap the touch strip to make it the "like" target.
- * The playlist list is cached and shared by every dial; each dial persists its own selection.
+ * Stream Deck+ dial that browses the playlists of the Spotify library as a carousel of covers.
+ * Rotate to scroll, press to play the centered playlist, tap the touch strip to make it the "like" target.
+ * The playlist list is cached and shared by every dial; each dial scrolls with its own animator and persists its own selection.
  * Listing never launches Spotify, while pressing the dial does.
  */
 @action({ UUID: 'com.sonny93.spotify.playlists' })
 export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> {
 	private readonly selectedUris = new Map<string, string | undefined>();
+	private readonly animators = new Map<string, CarouselAnimator>();
 	private readonly catalog = new PlaylistCatalog();
-	private readonly covers = new CoverCache();
+	private readonly renderer: PlaylistsCarouselRenderer;
 	private unsubscribe: (() => void) | undefined;
 
 	constructor(private readonly likeTargetStore: LikeTargetStore) {
 		super();
+		this.renderer = new PlaylistsCarouselRenderer({
+			catalog: this.catalog,
+			covers: new CoverLoader(new CoverCache()),
+			likeTargetStore,
+			onCoversLoaded: () => {
+				void this.renderIdleDials();
+			},
+		});
 	}
 
 	override async onWillAppear(
@@ -51,18 +58,24 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		if (!ev.action.isDial()) {
 			return;
 		}
+		this.animators.get(ev.action.id)?.dispose();
+		this.animators.set(ev.action.id, this.createAnimator(ev.action));
 		this.selectedUris.set(ev.action.id, readSelectedUri(ev.payload.settings));
+		this.jumpToSelection(ev.action.id);
 		this.unsubscribe ??= this.likeTargetStore.subscribe(() => {
-			void this.renderVisibleDials();
+			void this.renderIdleDials();
 		});
-		await this.render(ev.action);
+		await this.renderIdleDials();
 		void this.refreshAndRender();
 	}
 
 	override onWillDisappear(
 		ev: WillDisappearEvent<PlaylistsDialSettings>
 	): void {
+		this.animators.get(ev.action.id)?.dispose();
+		this.animators.delete(ev.action.id);
 		this.selectedUris.delete(ev.action.id);
+		this.renderer.forget(ev.action.id);
 		if (this.actions.some(() => true)) {
 			return;
 		}
@@ -77,31 +90,13 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 			await this.refreshAndRender();
 			return;
 		}
-		const next =
-			this.catalog.playlists[
-				moveSelection({
-					index: this.locate(ev.action.id).index,
-					ticks: ev.payload.ticks,
-					length: this.catalog.playlists.length,
-				})
-			];
-		if (next === undefined) {
-			return;
-		}
-		this.selectedUris.set(ev.action.id, next.uri);
-		await Promise.all([
-			this.render(ev.action),
-			ev.action.setSettings({ selectedUri: next.uri }),
-		]);
-		if (this.catalog.isStale()) {
-			void this.refreshAndRender();
-		}
+		this.animators.get(ev.action.id)?.retarget(ev.payload.ticks);
 	}
 
 	override async onDialDown(
 		ev: DialDownEvent<PlaylistsDialSettings>
 	): Promise<void> {
-		const { playlist } = this.locate(ev.action.id);
+		const playlist = this.settledPlaylist(ev.action.id);
 		if (playlist === undefined) {
 			await ev.action.showAlert();
 			return;
@@ -115,7 +110,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		if (ev.payload.hold) {
 			return;
 		}
-		const { playlist } = this.locate(ev.action.id);
+		const playlist = this.settledPlaylist(ev.action.id);
 		if (playlist === undefined || !playlist.canAdd) {
 			await ev.action.showAlert();
 			return;
@@ -132,66 +127,90 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		}
 	}
 
-	private locate(actionId: string): LocatedPlaylist {
-		const index = resolveSelectedIndex({
-			playlists: this.catalog.playlists,
-			selectedUri: this.selectedUris.get(actionId),
+	private createAnimator(dial: PlaylistsDial): CarouselAnimator {
+		return new CarouselAnimator({
+			schedule: scheduleTimeout,
+			onFrame: (position) =>
+				this.renderer.renderAnimationFrame({ dial, position }),
+			onSettled: (target) => {
+				void this.settle(dial, target);
+			},
+			onError: (error) => {
+				streamDeck.logger.error(
+					'Cannot draw a playlists carousel frame',
+					error
+				);
+			},
 		});
-		return { index, playlist: this.catalog.playlists[index] };
 	}
 
-	private visibleDials(): PlaylistsDial[] {
-		return this.actions.toArray().filter((candidate) => candidate.isDial());
-	}
-
-	private async render(dial: PlaylistsDial): Promise<void> {
-		if (!this.catalog.hasContent()) {
+	private async settle(dial: PlaylistsDial, target: number): Promise<void> {
+		const { playlists } = this.catalog;
+		const index = wrapIndex({ index: target, length: playlists.length });
+		const playlist = playlists[index];
+		if (playlist === undefined) {
 			return;
 		}
-		const { index, playlist } = this.locate(dial.id);
-		const coverUrl = playlist?.imageUrl;
-		const coverDataUrl =
-			coverUrl === undefined ? undefined : this.covers.get(coverUrl);
-		await dial.setFeedback(
-			buildPlaylistFeedback({
-				playlist,
-				index,
-				total: this.catalog.playlists.length,
-				isLikeTarget:
-					playlist !== undefined &&
-					playlist.uri === this.likeTargetStore.current?.uri,
-				coverDataUrl,
-			})
-		);
-		if (coverUrl !== undefined && coverDataUrl === undefined) {
-			void this.showCoverWhenLoaded(dial, coverUrl);
+		this.selectedUris.set(dial.id, playlist.uri);
+		this.renderer.preload(index);
+		try {
+			await dial.setSettings({ selectedUri: playlist.uri });
+		} catch (error) {
+			streamDeck.logger.error('Cannot save the selected playlist', error);
+		}
+		if (this.catalog.isStale()) {
+			void this.refreshAndRender();
 		}
 	}
 
-	private async renderVisibleDials(): Promise<void> {
+	private settledPlaylist(dialId: string): SpotifyPlaylist | undefined {
+		const animator = this.animators.get(dialId);
+		return animator === undefined
+			? undefined
+			: this.catalog.playlists[
+					animator.settledIndex(this.catalog.playlists.length)
+				];
+	}
+
+	private jumpToSelection(dialId: string): void {
+		this.animators.get(dialId)?.jumpTo(
+			resolveSelectedIndex({
+				playlists: this.catalog.playlists,
+				selectedUri: this.selectedUris.get(dialId),
+			})
+		);
+	}
+
+	private idleDials(): PlaylistsDial[] {
+		return this.actions
+			.toArray()
+			.filter(
+				(candidate): candidate is PlaylistsDial =>
+					candidate.isDial() &&
+					this.animators.get(candidate.id)?.isAnimating === false
+			);
+	}
+
+	private async renderIdleDials(): Promise<void> {
 		try {
-			await Promise.all(this.visibleDials().map((dial) => this.render(dial)));
+			await Promise.all(
+				this.idleDials().map((dial) =>
+					this.renderer.render({
+						dial,
+						position: this.animators.get(dial.id)?.currentPosition ?? 0,
+					})
+				)
+			);
 		} catch (error) {
 			streamDeck.logger.error('Cannot update the playlists dials', error);
 		}
 	}
 
-	private async showCoverWhenLoaded(
-		dial: PlaylistsDial,
-		coverUrl: string
-	): Promise<void> {
-		try {
-			await this.covers.load(coverUrl);
-			if (this.locate(dial.id).playlist?.imageUrl === coverUrl) {
-				await this.render(dial);
-			}
-		} catch (error) {
-			streamDeck.logger.debug('Cannot show a playlist cover', error);
-		}
-	}
-
 	private async refreshAndRender(): Promise<void> {
 		await this.catalog.refresh();
-		await this.renderVisibleDials();
+		for (const dial of this.idleDials()) {
+			this.jumpToSelection(dial.id);
+		}
+		await this.renderIdleDials();
 	}
 }

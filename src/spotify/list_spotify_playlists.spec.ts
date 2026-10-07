@@ -12,6 +12,7 @@ function buildPlaylistItem(overrides: Record<string, unknown> = {}) {
 		name: 'Road trip',
 		isLoaded: true,
 		canAdd: true,
+		isOwnedBySelf: true,
 		images: [{ url: 'spotify:image:abc', label: 'standard' }],
 		...overrides,
 	};
@@ -39,6 +40,21 @@ describe('listSpotifyPlaylists', () => {
 		]);
 	});
 
+	it('should list the owned playlists before the others', async () => {
+		const session = buildSession([
+			buildPlaylistItem({ uri: 'spotify:playlist:mix', isOwnedBySelf: false }),
+			buildPlaylistItem({ uri: 'spotify:playlist:mine' }),
+		]);
+
+		const playlists = await listSpotifyPlaylists(session);
+
+		expect(playlists.map((playlist) => playlist.uri)).toEqual([
+			LIKED_SONGS_URI,
+			'spotify:playlist:mine',
+			'spotify:playlist:mix',
+		]);
+	});
+
 	it('should keep a named playlist that Spotify has not fully loaded', async () => {
 		const session = buildSession([buildPlaylistItem({ isLoaded: false })]);
 
@@ -63,7 +79,7 @@ describe('listSpotifyPlaylists', () => {
 		]);
 	});
 
-	it('should prefer the image labelled standard', async () => {
+	it('should prefer the image labelled small, then standard', async () => {
 		const session = buildSession([
 			buildPlaylistItem({
 				images: [
@@ -75,13 +91,28 @@ describe('listSpotifyPlaylists', () => {
 
 		const playlists = await listSpotifyPlaylists(session);
 
+		expect(playlists[1]?.imageUrl).toBe('https://i.scdn.co/image/small');
+	});
+
+	it('should use the image labelled standard when none is labelled small', async () => {
+		const session = buildSession([
+			buildPlaylistItem({
+				images: [
+					{ url: 'spotify:image:large', label: 'large' },
+					{ url: 'spotify:image:std', label: 'standard' },
+				],
+			}),
+		]);
+
+		const playlists = await listSpotifyPlaylists(session);
+
 		expect(playlists[1]?.imageUrl).toBe('https://i.scdn.co/image/std');
 	});
 
-	it('should fall back to the first image when none is labelled standard', async () => {
+	it('should fall back to the first image when none is labelled small or standard', async () => {
 		const session = buildSession([
 			buildPlaylistItem({
-				images: [{ url: 'spotify:image:first', label: 'small' }],
+				images: [{ url: 'spotify:image:first', label: 'large' }],
 			}),
 		]);
 
