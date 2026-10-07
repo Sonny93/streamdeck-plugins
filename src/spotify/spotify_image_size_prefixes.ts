@@ -4,4 +4,5 @@ export const SpotifyImageSizePrefixes: Readonly<Record<string, string>> = {
 	ab67616d0000b273: 'ab67616d00004851',
 	ab67706c0000da84: 'ab67706c0000d72c',
 	ab67706c0000bebb: 'ab67706c0000d72c',
+	ab67706f00000002: 'ab67706f00000001',
 };

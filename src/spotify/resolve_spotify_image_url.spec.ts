@@ -51,6 +51,12 @@ describe('resolveSpotifyImageUrl', () => {
 		).toBe('https://i.scdn.co/image/ab67616d00004851abc');
 	});
 
+	it('should use the small generated playlist cover variant for its standard prefix', () => {
+		expect(
+			resolveSpotifyImageUrl('https://i.scdn.co/image/ab67706f00000002abc')
+		).toBe('https://i.scdn.co/image/ab67706f00000001abc');
+	});
+
 	it('should keep an i.scdn.co image with an unknown prefix', () => {
 		expect(
 			resolveSpotifyImageUrl('https://i.scdn.co/image/ab67706f00000001abc')
