@@ -1,5 +1,5 @@
 set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
-# Kill the plugin process so Stream Deck respawns it with the fresh build
+# Restart the Stream Deck app so it reloads the manifest and the fresh build
 restart:
-	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1
+	powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_stream_deck.ps1
