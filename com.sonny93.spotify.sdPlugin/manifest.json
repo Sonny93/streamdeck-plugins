@@ -43,6 +43,34 @@
 			"Tooltip": "Enter or exit Spotify full screen mode.",
 			"Controllers": ["Keypad"],
 			"States": [{ "Image": "imgs/actions/toggle-fullscreen/key" }]
+		},
+		{
+			"Name": "Play / Pause",
+			"UUID": "com.sonny93.spotify.play-pause",
+			"Icon": "imgs/actions/play-pause/icon",
+			"Tooltip": "Play or pause the current track.",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/play-pause/key-play" },
+				{ "Image": "imgs/actions/play-pause/key-pause" }
+			]
+		},
+		{
+			"Name": "Previous track",
+			"UUID": "com.sonny93.spotify.previous-track",
+			"Icon": "imgs/actions/previous-track/icon",
+			"Tooltip": "Skip to the previous track.",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/previous-track/key" }]
+		},
+		{
+			"Name": "Next track",
+			"UUID": "com.sonny93.spotify.next-track",
+			"Icon": "imgs/actions/next-track/icon",
+			"Tooltip": "Skip to the next track.",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/next-track/key" }]
 		}
 	]
 }
