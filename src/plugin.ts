@@ -1,5 +1,6 @@
 import { streamDeck } from '@elgato/streamdeck';
 
+import { LikeAction } from './actions/like_action';
 import { PlayerStateHub } from './actions/player_state_hub';
 import { NextTrackAction } from './actions/next_track_action';
 import { LikeTargetStore } from './actions/like_target_store';
@@ -21,6 +22,9 @@ streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());
 streamDeck.actions.registerAction(new PlaylistsDialAction(likeTargetStore));
+streamDeck.actions.registerAction(
+	new LikeAction(playerStateHub, likeTargetStore)
+);
 
 void streamDeck.connect();
 void likeTargetStore

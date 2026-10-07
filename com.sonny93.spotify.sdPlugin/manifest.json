@@ -73,6 +73,24 @@
 			"States": [{ "Image": "imgs/actions/next-track/key" }]
 		},
 		{
+			"Name": "Like",
+			"UUID": "com.sonny93.spotify.like",
+			"Icon": "imgs/actions/like/icon",
+			"Tooltip": "Add the current track to the playlist picked on the Playlists dial (Liked Songs by default).",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/like/key",
+					"TitleAlignment": "bottom"
+				},
+				{
+					"Image": "imgs/actions/like/key-saved",
+					"TitleAlignment": "bottom"
+				}
+			]
+		},
+		{
 			"Name": "Playlists",
 			"UUID": "com.sonny93.spotify.playlists",
 			"Icon": "imgs/actions/playlists/icon",
