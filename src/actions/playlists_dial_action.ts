@@ -18,8 +18,10 @@ import { scheduleTimeout } from './schedule_timeout';
 import { readSelectedUri } from './read_selected_uri';
 import { CarouselAnimator } from './carousel_animator';
 import { runSpotifyAction } from './run_spotify_action';
+import { toNowPlayingDial } from './to_now_playing_dial';
 import type { PlayerStateHub } from './player_state_hub';
 import type { LikeTargetStore } from './like_target_store';
+import type { NowPlayingScreen } from './now_playing_screen';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
 import { resolveSelectedIndex } from './resolve_selected_index';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
@@ -37,6 +39,8 @@ type PlaylistsDial = DialAction<PlaylistsDialSettings>;
  * A heart shows when the playing track is already in the centered playlist; the last playlist a track was added to becomes the "like" target.
  * The playlist list is cached and shared by every dial; each dial scrolls with its own animator and persists its own selection.
  * Listing and presence checks never launch Spotify, while pressing the dial or tapping the strip does.
+ * While the Stream Deck is inactive and a track is loaded, the strip shows the playing track instead;
+ * the first rotation, press or tap after that only brings the carousel back.
  */
 @action({ UUID: 'com.sonny93.spotify.playlists' })
 export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> {
@@ -49,14 +53,18 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 
 	constructor(
 		private readonly playerStateHub: PlayerStateHub,
-		private readonly likeTargetStore: LikeTargetStore
+		private readonly likeTargetStore: LikeTargetStore,
+		private readonly nowPlaying: NowPlayingScreen
 	) {
 		super();
+		nowPlaying.onHidden(() => {
+			void this.renderSettledDials();
+		});
 		this.presence = new DialPresence({
 			playerStateHub,
 			query: (options) => runSpotifyQuery(isTrackInLikeTarget(options)),
 			onChange: () => {
-				void this.renderIdleDials();
+				void this.renderSettledDials();
 			},
 		});
 		this.renderer = new PlaylistsCarouselRenderer({
@@ -64,7 +72,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 			covers: new CoverLoader(new CoverCache()),
 			presence: this.presence,
 			onCoversLoaded: () => {
-				void this.renderIdleDials();
+				void this.renderSettledDials();
 			},
 		});
 	}
@@ -83,7 +91,8 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		this.unsubscribe ??= this.playerStateHub.subscribe(() => {
 			void this.presence.refreshAll();
 		});
-		await this.renderIdleDials();
+		this.nowPlaying.attach(toNowPlayingDial(ev.action));
+		await this.renderSettledDials();
 		void this.refreshAndRender();
 	}
 
@@ -95,6 +104,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		this.selectedUris.delete(ev.action.id);
 		this.presence.remove(ev.action.id);
 		this.renderer.forget(ev.action.id);
+		this.nowPlaying.detach(ev.action.id);
 		if (this.actions.some(() => true)) {
 			return;
 		}
@@ -105,6 +115,9 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onDialRotate(
 		ev: DialRotateEvent<PlaylistsDialSettings>
 	): Promise<void> {
+		if (this.nowPlaying.wake()) {
+			return;
+		}
 		if (this.catalog.playlists.length === 0) {
 			await this.refreshAndRender();
 			return;
@@ -115,6 +128,9 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onDialDown(
 		ev: DialDownEvent<PlaylistsDialSettings>
 	): Promise<void> {
+		if (this.nowPlaying.wake()) {
+			return;
+		}
 		const playlist = this.settledPlaylist(ev.action.id);
 		if (playlist === undefined) {
 			await ev.action.showAlert();
@@ -126,6 +142,9 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onTouchTap(
 		ev: TouchTapEvent<PlaylistsDialSettings>
 	): Promise<void> {
+		if (this.nowPlaying.wake()) {
+			return;
+		}
 		const isAdded = await addPlayingTrackToPlaylist({
 			action: ev.action,
 			hold: ev.payload.hold,
@@ -164,7 +183,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		this.selectedUris.set(dial.id, playlist.uri);
 		this.renderer.preload(index);
 		void this.presence.refresh(dial.id, playlist);
-		void this.renderIdleDials();
+		void this.renderSettledDials();
 		try {
 			await dial.setSettings({ selectedUri: playlist.uri });
 		} catch (error) {
@@ -193,20 +212,25 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		);
 	}
 
-	private idleDials(): PlaylistsDial[] {
+	private dials(): PlaylistsDial[] {
 		return this.actions
 			.toArray()
-			.filter(
-				(candidate): candidate is PlaylistsDial =>
-					candidate.isDial() &&
-					this.animators.get(candidate.id)?.isAnimating === false
-			);
+			.filter((candidate): candidate is PlaylistsDial => candidate.isDial());
 	}
 
-	private async renderIdleDials(): Promise<void> {
+	private settledDials(): PlaylistsDial[] {
+		return this.dials().filter(
+			(dial) => this.animators.get(dial.id)?.isAnimating === false
+		);
+	}
+
+	private async renderSettledDials(): Promise<void> {
 		try {
+			if (this.nowPlaying.isShowing) {
+				return;
+			}
 			await Promise.all(
-				this.idleDials().map((dial) =>
+				this.settledDials().map((dial) =>
 					this.renderer.render({
 						dial,
 						position: this.animators.get(dial.id)?.currentPosition ?? 0,
@@ -220,10 +244,10 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 
 	private async refreshAndRender(): Promise<void> {
 		await this.catalog.refresh();
-		for (const dial of this.idleDials()) {
+		for (const dial of this.settledDials()) {
 			this.jumpToSelection(dial.id);
 			void this.presence.refresh(dial.id, this.settledPlaylist(dial.id));
 		}
-		await this.renderIdleDials();
+		await this.renderSettledDials();
 	}
 }
