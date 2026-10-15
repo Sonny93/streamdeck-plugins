@@ -5,9 +5,7 @@ function isSameState(
 	first: SpotifyPlayerState | undefined,
 	second: SpotifyPlayerState | undefined
 ): boolean {
-	return (
-		first?.isPaused === second?.isPaused && first?.trackUri === second?.trackUri
-	);
+	return JSON.stringify(first) === JSON.stringify(second);
 }
 
 /** Wraps callbacks so `onChange` only fires when the state changes and never after `signal` is aborted. */

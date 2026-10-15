@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { SpotifyPlayerBinding } from './spotify_player_binding';
 import type { SpotifyPlayerState } from './spotify_player_state';
+import type { SpotifyPlayingTrack } from './spotify_playing_track';
+import { resolveSpotifyImageUrl } from './resolve_spotify_image_url';
 import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
 
 const bindingCalledSchema = z.object({
@@ -9,9 +11,20 @@ const bindingCalledSchema = z.object({
 	payload: z.string(),
 });
 
+const trackPayloadSchema = z.object({
+	title: z.string(),
+	artistNames: z.array(z.string()),
+	imageUrl: z.string().nullable(),
+	durationMilliseconds: z.number(),
+	positionMilliseconds: z.number(),
+	positionTimestamp: z.number(),
+	playbackSpeed: z.number(),
+});
+
 const playerPayloadSchema = z.object({
 	isPaused: z.boolean(),
 	trackUri: z.string().nullable(),
+	track: trackPayloadSchema.nullable(),
 });
 
 function decodeJson(payload: string): unknown {
@@ -25,9 +38,25 @@ function decodeJson(payload: string): unknown {
 	}
 }
 
+function toPlayingTrack(
+	track: z.infer<typeof trackPayloadSchema> | null
+): SpotifyPlayingTrack | undefined {
+	if (track === null) {
+		return undefined;
+	}
+	return {
+		...track,
+		imageUrl:
+			track.imageUrl === null
+				? undefined
+				: resolveSpotifyImageUrl(track.imageUrl),
+	};
+}
+
 /**
  * Interprets the params of a `Runtime.bindingCalled` event.
  * Returns the player state, or `undefined` when the call belongs to another binding.
+ * The cover reference of the track is turned into a downloadable URL; an unknown scheme leaves the track without cover.
  */
 export function parsePlayerBindingPayload(
 	params: unknown
@@ -52,5 +81,6 @@ export function parsePlayerBindingPayload(
 	return {
 		isPaused: payload.data.isPaused,
 		trackUri: payload.data.trackUri ?? undefined,
+		track: toPlayingTrack(payload.data.track),
 	};
 }

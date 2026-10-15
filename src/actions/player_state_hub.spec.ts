@@ -13,6 +13,7 @@ vi.mock('@elgato/streamdeck', () => ({
 const PLAYING: SpotifyPlayerState = {
 	isPaused: false,
 	trackUri: 'spotify:track:a',
+	track: undefined,
 };
 
 function mockWatcher() {

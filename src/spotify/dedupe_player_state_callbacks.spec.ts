@@ -6,6 +6,15 @@ import { dedupePlayerStateCallbacks } from './dedupe_player_state_callbacks';
 const PLAYING: SpotifyPlayerState = {
 	isPaused: false,
 	trackUri: 'spotify:track:a',
+	track: {
+		title: 'A',
+		artistNames: ['X'],
+		imageUrl: undefined,
+		durationMilliseconds: 200_000,
+		positionMilliseconds: 1_000,
+		positionTimestamp: 5_000,
+		playbackSpeed: 1,
+	},
 };
 
 function buildCallbacks() {
@@ -86,6 +95,22 @@ describe('dedupePlayerStateCallbacks', () => {
 
 		deduped.onChange(PLAYING);
 		deduped.onChange({ ...PLAYING, trackUri: 'spotify:track:b' });
+
+		expect(callbacks.onChange).toHaveBeenCalledTimes(2);
+	});
+
+	it('should forward a state where the playback position jumped', () => {
+		const callbacks = buildCallbacks();
+		const deduped = dedupePlayerStateCallbacks(
+			callbacks,
+			new AbortController().signal
+		);
+
+		deduped.onChange(PLAYING);
+		deduped.onChange({
+			...PLAYING,
+			track: PLAYING.track && { ...PLAYING.track, positionMilliseconds: 9 },
+		});
 
 		expect(callbacks.onChange).toHaveBeenCalledTimes(2);
 	});

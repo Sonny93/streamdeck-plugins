@@ -23,11 +23,15 @@ function buildPlaylist(name: string): SpotifyPlaylist {
 const PLAYLIST_A = buildPlaylist('a');
 const PLAYLIST_B = buildPlaylist('b');
 
-type PlayerState = { isPaused: boolean; trackUri: string | undefined };
+type PlayerState = {
+	isPaused: boolean;
+	trackUri: string | undefined;
+	track: undefined;
+};
 
 function buildPresence(isInTarget: (trackUri: string) => boolean) {
 	const hub: { current: PlayerState | undefined } = {
-		current: { isPaused: false, trackUri: TRACK_A },
+		current: { isPaused: false, trackUri: TRACK_A, track: undefined },
 	};
 	const onChange = vi.fn();
 	const queryMock = vi.fn((options: Readonly<{ trackUri: string }>) =>
@@ -72,7 +76,7 @@ describe('DialPresence', () => {
 
 	it('should not report the presence while nothing plays', async () => {
 		const { presence, hub, queryMock } = buildPresence(() => true);
-		hub.current = { isPaused: true, trackUri: undefined };
+		hub.current = { isPaused: true, trackUri: undefined, track: undefined };
 
 		await presence.refresh('dial', PLAYLIST_A);
 
@@ -85,7 +89,7 @@ describe('DialPresence', () => {
 			(trackUri) => trackUri === TRACK_B
 		);
 		await presence.refresh('dial', PLAYLIST_A);
-		hub.current = { isPaused: false, trackUri: TRACK_B };
+		hub.current = { isPaused: false, trackUri: TRACK_B, track: undefined };
 
 		await presence.refreshAll();
 
