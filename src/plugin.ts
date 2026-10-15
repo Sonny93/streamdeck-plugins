@@ -12,6 +12,7 @@ import { NowPlayingScreen } from './actions/now_playing_screen';
 import { VolumeDialAction } from './actions/volume_dial_action';
 import { windowsAudioMixer } from './audio/windows_audio_mixer';
 import { InactivityMonitor } from './actions/inactivity_monitor';
+import { ShowSpotifyAction } from './actions/show_spotify_action';
 import { fetchCoverDataUrl } from './spotify/fetch_cover_data_url';
 import { ToggleLyricsAction } from './actions/toggle_lyrics_action';
 import { PreviousTrackAction } from './actions/previous_track_action';
@@ -36,6 +37,7 @@ const nowPlaying = new NowPlayingScreen({
 });
 
 streamDeck.actions.registerAction(new OpenSearchAction());
+streamDeck.actions.registerAction(new ShowSpotifyAction());
 streamDeck.actions.registerAction(new ToggleLyricsAction());
 streamDeck.actions.registerAction(new ToggleFullscreenAction());
 streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));

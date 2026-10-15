@@ -32,6 +32,14 @@
 			"States": [{ "Image": "imgs/actions/open-search/key" }]
 		},
 		{
+			"Name": "Show Spotify",
+			"UUID": "com.sonny93.spotify.show-spotify",
+			"Icon": "imgs/actions/show-spotify/icon",
+			"Tooltip": "Bring the Spotify window to the foreground.",
+			"Controllers": ["Keypad"],
+			"States": [{ "Image": "imgs/actions/show-spotify/key" }]
+		},
+		{
 			"Name": "Toggle lyrics",
 			"UUID": "com.sonny93.spotify.toggle-lyrics",
 			"PropertyInspectorPath": "ui/toggle_lyrics_settings.html",
