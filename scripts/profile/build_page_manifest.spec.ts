@@ -77,6 +77,26 @@ describe('buildPageManifest', () => {
 		});
 	});
 
+	it('should store the settings a placed action starts with', () => {
+		const page = buildPageManifest({
+			keys: [],
+			encoders: [
+				{
+					column: 1,
+					row: 0,
+					actionUuid: 'com.example.deck.playlists',
+					actionId: 'dial-id',
+					settings: { target: 'focused' },
+				},
+			],
+			manifest,
+		});
+
+		expect(page.Controllers[1]?.Actions?.['1,0']?.Settings).toEqual({
+			target: 'focused',
+		});
+	});
+
 	it('should give null actions to a page with nothing placed', () => {
 		const page = buildPageManifest({ keys: [], encoders: [], manifest });
 

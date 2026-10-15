@@ -24,7 +24,7 @@ export function buildPageAction(
 			Version: manifest.version,
 		},
 		Resources: null,
-		Settings: {},
+		Settings: placement.settings ?? {},
 		State: 0,
 		States: Array.from({ length: action.stateCount }, () => ({})),
 		UUID: action.uuid,

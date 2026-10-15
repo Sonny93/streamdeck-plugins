@@ -1,6 +1,7 @@
+import type { ProfileFolder } from './profile_folder.ts';
 import type { ControlPlacement } from './control_placement.ts';
 
-/** Describes a profile: its identifiers, which are fixed so that builds are reproducible, and where each action sits. */
+/** Describes a profile: its identifiers, which are fixed so that builds are reproducible, where each action sits, and its folders. */
 export type ProfileLayout = Readonly<{
 	name: string;
 	profileUuid: string;
@@ -8,4 +9,5 @@ export type ProfileLayout = Readonly<{
 	contentPageUuid: string;
 	keys: readonly ControlPlacement[];
 	encoders: readonly ControlPlacement[];
+	folders: readonly ProfileFolder[];
 }>;

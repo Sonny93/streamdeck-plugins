@@ -5,7 +5,7 @@ export type PageAction = Readonly<{
 	Name: string;
 	Plugin: Readonly<{ Name: string; UUID: string; Version: string }>;
 	Resources: null;
-	Settings: Readonly<Record<string, never>>;
+	Settings: Readonly<Record<string, string>>;
 	State: number;
 	States: readonly Readonly<Record<string, never>>[];
 	UUID: string;
