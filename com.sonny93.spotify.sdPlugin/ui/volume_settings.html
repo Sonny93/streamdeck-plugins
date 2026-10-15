@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Controls">
+			<sdpi-select setting="target" default="spotify">
+				<option value="spotify">Spotify</option>
+				<option value="focused">App in the foreground</option>
+				<option value="app">Picked app</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Picked app">
+			<sdpi-select
+				setting="appImageName"
+				datasource="listAudioApps"
+				hot-reload
+				loading="Looking for apps playing sound..."
+				placeholder="Pick an app playing sound"
+			></sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>Only used with "Picked app"</summary>
+				<p>
+					The list shows the apps playing sound right now. Start the sound in
+					the app, then reopen this list to pick it.
+				</p>
+			</details>
+		</sdpi-item>
+	</body>
+</html>

@@ -114,6 +114,23 @@
 				}
 			},
 			"States": [{ "Image": "imgs/actions/playlists/key" }]
+		},
+		{
+			"Name": "Volume",
+			"UUID": "com.sonny93.spotify.volume",
+			"PropertyInspectorPath": "ui/volume_settings.html",
+			"Icon": "imgs/actions/volume/icon",
+			"Tooltip": "Control the volume of Spotify, of the app in the foreground, or of an app you pick.",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/volume.json",
+				"TriggerDescription": {
+					"Rotate": "Change the volume",
+					"Push": "Mute / unmute",
+					"Touch": "Mute / unmute"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/volume/key" }]
 		}
 	]
 }
