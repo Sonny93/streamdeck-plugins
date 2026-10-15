@@ -20,6 +20,10 @@ export class PlayPauseAction extends SingletonAction {
 		this.unsubscribe ??= this.playerStateHub.subscribe((state) => {
 			void this.refreshVisibleKeys(state);
 		});
+		if (ev.action.isKey()) {
+			// Drops an image an earlier version drew over the state icons.
+			await ev.action.setImage();
+		}
 		await setPlayPauseKeyState(ev.action, this.playerStateHub.current);
 	}
 
