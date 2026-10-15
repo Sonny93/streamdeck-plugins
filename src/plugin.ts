@@ -1,6 +1,7 @@
 import { streamDeck } from '@elgato/streamdeck';
 
 import { LikeAction } from './actions/like_action';
+import { UiStateHub } from './actions/ui_state_hub';
 import { PlayerStateHub } from './actions/player_state_hub';
 import { scheduleTimeout } from './actions/schedule_timeout';
 import { NextTrackAction } from './actions/next_track_action';
@@ -22,6 +23,7 @@ import { prepareSpotifyOnStartup } from './startup/prepare_spotify_on_startup';
 
 const playerStateHub = new PlayerStateHub();
 const likeTargetStore = new LikeTargetStore();
+const uiStateHub = new UiStateHub();
 const inactivity = new InactivityMonitor({
 	delayMilliseconds: NowPlayingTiming.inactivityDelayMilliseconds,
 	schedule: scheduleTimeout,
@@ -36,10 +38,10 @@ const nowPlaying = new NowPlayingScreen({
 		streamDeck.logger.debug('Cannot draw the now playing screen', error),
 });
 
-streamDeck.actions.registerAction(new OpenSearchAction());
-streamDeck.actions.registerAction(new ShowSpotifyAction());
-streamDeck.actions.registerAction(new ToggleLyricsAction());
-streamDeck.actions.registerAction(new ToggleFullscreenAction());
+streamDeck.actions.registerAction(new OpenSearchAction(uiStateHub));
+streamDeck.actions.registerAction(new ShowSpotifyAction(uiStateHub));
+streamDeck.actions.registerAction(new ToggleLyricsAction(uiStateHub));
+streamDeck.actions.registerAction(new ToggleFullscreenAction(uiStateHub));
 streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());

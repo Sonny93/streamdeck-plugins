@@ -1,19 +1,19 @@
 import { CdpClient } from '../cdp/cdp_client';
-import { SpotifyLyricsBinding } from './spotify_lyrics_binding';
+import { SpotifyUiBinding } from './spotify_ui_binding';
+import { injectUiWatchScript } from './inject_ui_watch_script';
+import { parseUiBindingPayload } from './parse_ui_binding_payload';
 import { fetchSpotifyPageTarget } from './fetch_spotify_page_target';
-import type { LyricsWatchCallbacks } from './lyrics_watch_callbacks';
-import { injectLyricsWatchScript } from './inject_lyrics_watch_script';
-import { parseLyricsBindingPayload } from './parse_lyrics_binding_payload';
+import type { UiStateWatchCallbacks } from './ui_state_watch_callbacks';
 import { parseDefaultExecutionContextId } from './parse_default_execution_context_id';
 
 function handleBindingCalled(
 	params: unknown,
-	callbacks: LyricsWatchCallbacks
+	callbacks: UiStateWatchCallbacks
 ): void {
 	try {
-		const isAvailable = parseLyricsBindingPayload(params);
-		if (isAvailable !== undefined) {
-			callbacks.onChange(isAvailable);
+		const state = parseUiBindingPayload(params);
+		if (state !== undefined) {
+			callbacks.onChange(state);
 		}
 	} catch (error) {
 		callbacks.onError(error);
@@ -23,22 +23,22 @@ function handleBindingCalled(
 function handleContextCreated(
 	client: CdpClient,
 	params: unknown,
-	callbacks: LyricsWatchCallbacks
+	callbacks: UiStateWatchCallbacks
 ): void {
 	const contextId = parseDefaultExecutionContextId(params);
 	if (contextId === undefined) {
 		return;
 	}
-	injectLyricsWatchScript(client, contextId).catch(callbacks.onError);
+	injectUiWatchScript(client, contextId).catch(callbacks.onError);
 }
 
 /**
- * Attaches to the already running Spotify UI page and starts reporting lyrics availability.
+ * Attaches to the already running Spotify UI page and starts reporting the state of its window.
  * Never launches Spotify: it rejects when the DevTools port or the page is missing.
  * A page reload creates a new execution context, in which the script is injected again.
  */
-export async function connectLyricsWatchSession(
-	callbacks: LyricsWatchCallbacks,
+export async function connectUiWatchSession(
+	callbacks: UiStateWatchCallbacks,
 	onClosed: () => void
 ): Promise<CdpClient> {
 	const pageTarget = await fetchSpotifyPageTarget();
@@ -51,11 +51,9 @@ export async function connectLyricsWatchSession(
 		client.on('Runtime.executionContextCreated', (params) =>
 			handleContextCreated(client, params, callbacks)
 		);
-		await client.send('Runtime.addBinding', {
-			name: SpotifyLyricsBinding.name,
-		});
+		await client.send('Runtime.addBinding', { name: SpotifyUiBinding.name });
 		await client.send('Runtime.enable');
-		await injectLyricsWatchScript(client);
+		await injectUiWatchScript(client);
 		return client;
 	} catch (error) {
 		client.close();

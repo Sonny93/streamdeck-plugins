@@ -1,41 +1,44 @@
-import { streamDeck } from '@elgato/streamdeck';
 import { action, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
+import { UiStateKeys } from './ui_state_keys';
+import type { UiStateHub } from './ui_state_hub';
 import { runSpotifyAction } from './run_spotify_action';
-import { setLyricsKeyState } from './set_lyrics_key_state';
-import type { LyricsWatcher } from '../spotify/lyrics_watcher';
+import { resolveLyricsKeyState } from './resolve_lyrics_key_state';
 import { toggleSpotifyLyrics } from '../spotify/toggle_spotify_lyrics';
 import { resolveBringToFront } from './key_settings/resolve_bring_to_front';
 import { BringToFrontDefaults } from './key_settings/bring_to_front_defaults';
-import { watchLyricsAvailability } from '../spotify/watch_lyrics_availability';
 import type { BringToFrontSettings } from './key_settings/bring_to_front_settings';
 
+/** Key that shows or hides the lyrics; it is lit while they are open, and greyed (and inert) when the track has none. */
 @action({ UUID: 'com.sonny93.spotify.toggle-lyrics' })
 export class ToggleLyricsAction extends SingletonAction<BringToFrontSettings> {
-	private watcher: LyricsWatcher | undefined;
-	private isLyricsAvailable = false;
+	private readonly keys: UiStateKeys;
+
+	constructor(private readonly hub: UiStateHub) {
+		super();
+		this.keys = new UiStateKeys({
+			hub,
+			listActions: () => this.actions.toArray(),
+			resolveState: resolveLyricsKeyState,
+			label: 'lyrics',
+		});
+	}
 
 	override async onWillAppear(
 		ev: WillAppearEvent<BringToFrontSettings>
 	): Promise<void> {
-		this.watcher ??= this.startWatcher();
-		await setLyricsKeyState(ev.action, this.isLyricsAvailable);
+		await this.keys.appear(ev.action);
 	}
 
 	override onWillDisappear(): void {
-		if (this.actions.some(() => true)) {
-			return;
-		}
-		this.watcher?.stop();
-		this.watcher = undefined;
-		this.isLyricsAvailable = false;
+		this.keys.disappear(this.actions.some(() => true));
 	}
 
 	override async onKeyDown(
 		ev: KeyDownEvent<BringToFrontSettings>
 	): Promise<void> {
-		if (!this.isLyricsAvailable) {
+		if (this.hub.current?.isLyricsAvailable !== true) {
 			return;
 		}
 		const shouldBringToFront = resolveBringToFront({
@@ -46,30 +49,5 @@ export class ToggleLyricsAction extends SingletonAction<BringToFrontSettings> {
 			ev.action,
 			toggleSpotifyLyrics({ shouldBringToFront })
 		);
-	}
-
-	private startWatcher(): LyricsWatcher {
-		return watchLyricsAvailability({
-			onChange: (isAvailable) => {
-				this.isLyricsAvailable = isAvailable;
-				void this.refreshVisibleKeys();
-			},
-			onError: (error) =>
-				streamDeck.logger.debug('Lyrics watcher cannot reach Spotify', error),
-		});
-	}
-
-	private async refreshVisibleKeys(): Promise<void> {
-		try {
-			await Promise.all(
-				this.actions
-					.toArray()
-					.map((visibleAction) =>
-						setLyricsKeyState(visibleAction, this.isLyricsAvailable)
-					)
-			);
-		} catch (error) {
-			streamDeck.logger.error('Cannot update the lyrics key state', error);
-		}
 	}
 }

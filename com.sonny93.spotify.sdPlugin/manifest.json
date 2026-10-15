@@ -29,7 +29,11 @@
 			"Icon": "imgs/actions/open-search/icon",
 			"Tooltip": "Bring Spotify to front with the search field focused.",
 			"Controllers": ["Keypad"],
-			"States": [{ "Image": "imgs/actions/open-search/key" }]
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/open-search/key-off" },
+				{ "Image": "imgs/actions/open-search/key" }
+			]
 		},
 		{
 			"Name": "Show Spotify",
@@ -37,7 +41,11 @@
 			"Icon": "imgs/actions/show-spotify/icon",
 			"Tooltip": "Bring the Spotify window to the foreground.",
 			"Controllers": ["Keypad"],
-			"States": [{ "Image": "imgs/actions/show-spotify/key" }]
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/show-spotify/key-off" },
+				{ "Image": "imgs/actions/show-spotify/key" }
+			]
 		},
 		{
 			"Name": "Toggle lyrics",
@@ -48,6 +56,7 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
+				{ "Image": "imgs/actions/toggle-lyrics/key-off" },
 				{ "Image": "imgs/actions/toggle-lyrics/key" },
 				{ "Image": "imgs/actions/toggle-lyrics/key-unavailable" }
 			]
@@ -59,7 +68,11 @@
 			"Icon": "imgs/actions/toggle-fullscreen/icon",
 			"Tooltip": "Enter or exit Spotify full screen mode.",
 			"Controllers": ["Keypad"],
-			"States": [{ "Image": "imgs/actions/toggle-fullscreen/key" }]
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/toggle-fullscreen/key-off" },
+				{ "Image": "imgs/actions/toggle-fullscreen/key" }
+			]
 		},
 		{
 			"Name": "Play / Pause",
