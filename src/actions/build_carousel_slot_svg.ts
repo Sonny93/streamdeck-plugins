@@ -39,7 +39,7 @@ function buildImageCover(
 	const y = formatSvgNumber(geometry.top);
 	const size = formatSvgNumber(geometry.size);
 	return [
-		`<clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${CarouselMetrics.coverCornerRadius}"/></clipPath>`,
+		`<defs><clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${CarouselMetrics.coverCornerRadius}"/></clipPath></defs>`,
 		`<image x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${clipId})" xlink:href="${href}"/>`,
 	].join('');
 }
