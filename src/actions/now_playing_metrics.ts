@@ -1,6 +1,9 @@
 /**
  * Geometry and style of the "now playing" screen, in pixels of the whole touch strip (four 200 px dial segments side by side).
  * Each dial draws the 200 px slice of its column.
+ * With lyrics, the strip is split: the track (`splitTitle`, `splitArtists`, clipped before `infoClipRight`) on the left half,
+ * the lyrics centered on the right half, wrapped to `textWidth` (estimated Arial widths); the progress bar and the times stay across the whole strip.
+ * A change of lyric line slides the old lines up and the new ones in from below by `transitionShift`, fading them.
  */
 export const NowPlayingMetrics = {
 	stripWidth: 800,
@@ -39,6 +42,42 @@ export const NowPlayingMetrics = {
 		color: '#D9D9D9',
 		maxLength: 64,
 		separator: ', ',
+	},
+	infoClipRight: 396,
+	splitTitle: {
+		y: 36,
+		fontSize: 22,
+		fontWeight: 700,
+		color: '#FFFFFF',
+		maxLength: 22,
+	},
+	splitArtists: {
+		y: 61,
+		fontSize: 18,
+		color: '#D9D9D9',
+		maxLength: 30,
+	},
+	lyrics: {
+		left: 404,
+		right: 796,
+		centerX: 600,
+		areaTop: 0,
+		areaBottom: 78,
+		baselineRatio: 0.8,
+		textWidth: 380,
+		transitionShift: 20,
+		current: {
+			fontSize: 20,
+			fontWeight: 700,
+			color: '#FFFFFF',
+			lineHeight: 24,
+			maxRows: 2,
+		},
+		next: {
+			fontSize: 15,
+			color: '#B3B3B3',
+			lineHeight: 20,
+		},
 	},
 	time: {
 		elapsedRight: 152,

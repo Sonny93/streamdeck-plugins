@@ -5,18 +5,34 @@ import type { NowPlayingDial } from './now_playing_dial';
 import { NowPlayingMetrics } from './now_playing_metrics';
 import type { NowPlayingFrame } from './now_playing_frame';
 import { buildNowPlayingSvg } from './build_now_playing_svg';
+import { buildNowPlayingLyrics } from './build_now_playing_lyrics';
+import { findCurrentLyricIndex } from './find_current_lyric_index';
 import { resolvePlaybackPosition } from './resolve_playback_position';
+import { LyricsTransitionTracker } from './lyrics_transition_tracker';
+import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import type { NowPlayingScreenOptions } from './now_playing_screen_options';
 
 const CANVAS_FEEDBACK_KEY = 'canvas';
 
 type LoadedCover = Readonly<{ url: string; dataUrl: string | undefined }>;
 
+function isUnderLyrics(column: number): boolean {
+	const { segmentWidth, lyrics } = NowPlayingMetrics;
+	const sliceLeft = column * segmentWidth;
+	return sliceLeft < lyrics.right && sliceLeft + segmentWidth > lyrics.left;
+}
+
+type LoadedLyrics = Readonly<{
+	trackUri: string;
+	lines: readonly SpotifyLyricsLine[];
+}>;
+
 /**
  * Shows the playing track (cover, title, artists, progress) across the whole touch strip while the Stream Deck is inactive.
  * Every dial of the plugin attaches itself and draws the slice of its column; a column without a dial of the plugin stays as it is.
  * It shows only while a track is loaded, redraws on every player change and, while playing, every second for the progress bar.
- * Only the cover of the current track is kept; it is downloaded as soon as the track is known, and not retried when it fails.
+ * Only the cover and the synced lyrics of the current track are kept; they are fetched as soon as the track is known, and not retried when it fails.
+ * With lyrics, it also redraws when the next line starts, so the line shown follows the song, and animates the change on the dials under the lyrics.
  */
 export class NowPlayingScreen {
 	private readonly dials = new Map<string, NowPlayingDial>();
@@ -24,6 +40,12 @@ export class NowPlayingScreen {
 	private readonly ticker: ProgressTicker;
 	private showing = false;
 	private cover: LoadedCover | undefined;
+	private lyrics: LoadedLyrics | undefined;
+	private cancelLineChange: (() => void) | undefined;
+	private cancelLyricsFrame: (() => void) | undefined;
+	private readonly lyricsTransitions = new LyricsTransitionTracker(
+		NowPlayingTiming.lyricsTransitionMilliseconds
+	);
 	private unsubscribes: (() => void)[] | undefined;
 
 	constructor(private readonly options: NowPlayingScreenOptions) {
@@ -75,12 +97,16 @@ export class NowPlayingScreen {
 
 	/** Draws the playing track on every attached dial; does nothing while the screen is not showing. */
 	async render(): Promise<void> {
+		await this.renderDials([...this.dials.values()]);
+	}
+
+	private async renderDials(dials: readonly NowPlayingDial[]): Promise<void> {
 		const frame = this.buildFrame();
 		if (!this.showing || frame === undefined) {
 			return;
 		}
 		await Promise.all(
-			[...this.dials.values()].map((dial) =>
+			dials.map((dial) =>
 				dial.setFeedback({
 					[CANVAS_FEEDBACK_KEY]: toSvgDataUrl(
 						buildNowPlayingSvg({
@@ -110,6 +136,8 @@ export class NowPlayingScreen {
 		}
 		this.unsubscribes = undefined;
 		this.ticker.stop();
+		this.stopLineChange();
+		this.stopLyricsFrames();
 		this.showing = false;
 	}
 
@@ -120,15 +148,26 @@ export class NowPlayingScreen {
 			return undefined;
 		}
 		const isPaused = state?.isPaused ?? true;
+		const now = this.options.now();
+		const positionMilliseconds = resolvePlaybackPosition({
+			track,
+			isPaused,
+			now,
+		});
+		const lines = this.readLyrics(state?.trackUri);
+		const lyrics = buildNowPlayingLyrics({ lines, positionMilliseconds });
 		return {
 			title: track.title,
 			artistNames: track.artistNames,
 			coverDataUrl: this.readCover(track.imageUrl),
-			positionMilliseconds: resolvePlaybackPosition({
-				track,
-				isPaused,
-				now: this.options.now(),
+			lyrics,
+			lyricsTransition: this.lyricsTransitions.follow({
+				trackUri: state?.trackUri,
+				index: findCurrentLyricIndex({ lines, positionMilliseconds }),
+				lyrics,
+				now,
 			}),
+			positionMilliseconds,
 			durationMilliseconds: track.durationMilliseconds,
 			isPaused,
 		};
@@ -137,15 +176,19 @@ export class NowPlayingScreen {
 	private update(): void {
 		const state = this.options.playerStateHub.current;
 		this.readCover(state?.track?.imageUrl);
+		this.readLyrics(state?.trackUri);
 		const wasShowing = this.showing;
 		this.showing =
 			this.options.inactivity.isInactive && state?.track !== undefined;
 		if (this.showing) {
 			this.ticker.restart(state?.isPaused === false);
+			this.scheduleLineChange();
 			this.renderInBackground();
 			return;
 		}
 		this.ticker.stop();
+		this.stopLineChange();
+		this.stopLyricsFrames();
 		if (wasShowing) {
 			for (const listener of this.hiddenListeners) {
 				listener();
@@ -180,5 +223,105 @@ export class NowPlayingScreen {
 		} catch (error) {
 			this.options.onError(error);
 		}
+	}
+
+	private readLyrics(
+		trackUri: string | undefined
+	): readonly SpotifyLyricsLine[] {
+		if (trackUri === undefined) {
+			return [];
+		}
+		if (this.lyrics?.trackUri === trackUri) {
+			return this.lyrics.lines;
+		}
+		this.lyrics = { trackUri, lines: [] };
+		void this.loadLyrics(trackUri);
+		return [];
+	}
+
+	private async loadLyrics(trackUri: string): Promise<void> {
+		try {
+			const lines = await this.options.fetchLyrics(trackUri);
+			if (this.lyrics?.trackUri !== trackUri) {
+				return;
+			}
+			this.lyrics = { trackUri, lines };
+			this.scheduleLineChange();
+			await this.render();
+		} catch (error) {
+			this.options.onError(error);
+		}
+	}
+
+	/** While showing a playing track with lyrics, schedules a redraw for when the next line starts (then the one after it). */
+	private scheduleLineChange(): void {
+		this.stopLineChange();
+		const state = this.options.playerStateHub.current;
+		const track = state?.track;
+		if (
+			!this.showing ||
+			state === undefined ||
+			track === undefined ||
+			state.isPaused ||
+			track.playbackSpeed <= 0
+		) {
+			return;
+		}
+		const lines = this.readLyrics(state.trackUri);
+		const positionMilliseconds = resolvePlaybackPosition({
+			track,
+			isPaused: false,
+			now: this.options.now(),
+		});
+		const nextLine =
+			lines[findCurrentLyricIndex({ lines, positionMilliseconds }) + 1];
+		if (nextLine === undefined) {
+			return;
+		}
+		const delay =
+			(nextLine.startMilliseconds - positionMilliseconds) / track.playbackSpeed;
+		this.cancelLineChange = this.options.schedule(
+			() => {
+				this.cancelLineChange = undefined;
+				this.scheduleLineChange();
+				this.renderInBackground();
+				if (this.lyricsTransitions.isAnimating) {
+					this.scheduleLyricsFrame();
+				}
+			},
+			Math.max(0, delay)
+		);
+	}
+
+	private stopLineChange(): void {
+		this.cancelLineChange?.();
+		this.cancelLineChange = undefined;
+	}
+
+	/** Schedules the next frame of a change of lyric line, drawn only on the dials under the lyrics; frames never queue up. */
+	private scheduleLyricsFrame(): void {
+		this.stopLyricsFrames();
+		this.cancelLyricsFrame = this.options.schedule(() => {
+			this.cancelLyricsFrame = undefined;
+			void this.renderLyricsFrame();
+		}, NowPlayingTiming.lyricsFrameIntervalMilliseconds);
+	}
+
+	private async renderLyricsFrame(): Promise<void> {
+		try {
+			await this.renderDials(
+				[...this.dials.values()].filter((dial) => isUnderLyrics(dial.column))
+			);
+		} catch (error) {
+			this.options.onError(error);
+		}
+		if (this.showing && this.lyricsTransitions.isAnimating) {
+			this.scheduleLyricsFrame();
+		}
+	}
+
+	private stopLyricsFrames(): void {
+		this.cancelLyricsFrame?.();
+		this.cancelLyricsFrame = undefined;
 	}
 }

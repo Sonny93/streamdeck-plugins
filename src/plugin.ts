@@ -12,6 +12,7 @@ import { OpenSearchAction } from './actions/open_search_action';
 import { NowPlayingScreen } from './actions/now_playing_screen';
 import { VolumeDialAction } from './actions/volume_dial_action';
 import { windowsAudioMixer } from './audio/windows_audio_mixer';
+import { fetchTrackLyrics } from './spotify/fetch_track_lyrics';
 import { InactivityMonitor } from './actions/inactivity_monitor';
 import { ShowSpotifyAction } from './actions/show_spotify_action';
 import { fetchCoverDataUrl } from './spotify/fetch_cover_data_url';
@@ -32,6 +33,7 @@ const nowPlaying = new NowPlayingScreen({
 	inactivity,
 	playerStateHub,
 	fetchCover: fetchCoverDataUrl,
+	fetchLyrics: fetchTrackLyrics,
 	schedule: scheduleTimeout,
 	now: Date.now,
 	onError: (error) =>

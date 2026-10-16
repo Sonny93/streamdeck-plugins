@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { NowPlayingScreen } from './now_playing_screen';
 import { NowPlayingTiming } from './now_playing_timing';
 import type { CarouselScheduler } from './carousel_scheduler';
+import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
 
 const COVER_URL = 'https://i.scdn.co/image/a';
@@ -42,10 +43,14 @@ function buildDial(id: string, column: number) {
 }
 
 function buildScreen(
-	options: Readonly<{ fetchCover?: (url: string) => Promise<string> }> = {}
+	options: Readonly<{
+		fetchCover?: (url: string) => Promise<string>;
+		fetchLyrics?: (trackUri: string) => Promise<readonly SpotifyLyricsLine[]>;
+	}> = {}
 ) {
 	let state: SpotifyPlayerState | undefined = PLAYING;
 	let inactive = false;
+	let now = 83_000;
 	const playerListeners = new Set<() => void>();
 	const inactivityListeners = new Set<() => void>();
 	const ticks: { callback: () => void; delay: number; cancelled: boolean }[] =
@@ -61,6 +66,7 @@ function buildScreen(
 	const fetchCover = vi.fn(
 		options.fetchCover ?? (() => Promise.resolve(COVER_DATA_URL))
 	);
+	const fetchLyrics = vi.fn(options.fetchLyrics ?? (() => Promise.resolve([])));
 	const setInactive = (value: boolean): void => {
 		inactive = value;
 		for (const listener of inactivityListeners) {
@@ -97,8 +103,9 @@ function buildScreen(
 			},
 		},
 		fetchCover,
+		fetchLyrics,
 		schedule,
-		now: () => 83_000,
+		now: () => now,
 		onError,
 	});
 	const dial = buildDial('dial-0', 0);
@@ -108,7 +115,11 @@ function buildScreen(
 		ticks,
 		onError,
 		fetchCover,
+		fetchLyrics,
 		setInactive,
+		setNow: (value: number): void => {
+			now = value;
+		},
 		setState: (next: SpotifyPlayerState | undefined): void => {
 			state = next;
 			for (const listener of playerListeners) {
@@ -326,5 +337,136 @@ describe('NowPlayingScreen', () => {
 
 		expect(screen.isShowing).toBe(false);
 		expect(dial.setFeedback).not.toHaveBeenCalled();
+	});
+
+	describe('with lyrics', () => {
+		const LINES: readonly SpotifyLyricsLine[] = [
+			{ startMilliseconds: 80_000, words: 'Hola' },
+			{ startMilliseconds: 85_000, words: 'Adiós' },
+		];
+
+		function buildLyricsScreen() {
+			return buildScreen({ fetchLyrics: () => Promise.resolve(LINES) });
+		}
+
+		it('should fetch the lyrics as soon as the track is known', () => {
+			const { screen, dial, fetchLyrics } = buildLyricsScreen();
+
+			screen.attach(dial);
+
+			expect(fetchLyrics).toHaveBeenCalledWith('spotify:track:a');
+		});
+
+		it('should not fetch the lyrics of the same track twice', async () => {
+			const { screen, dial, setInactive, setState, fetchLyrics, flush } =
+				buildLyricsScreen();
+			screen.attach(dial);
+			await flush();
+
+			setInactive(true);
+			setState(PAUSED);
+			await flush();
+
+			expect(fetchLyrics).toHaveBeenCalledTimes(1);
+		});
+
+		it('should draw the line being sung and the next one', async () => {
+			const { screen, dial, setInactive, lastSvg, flush } = buildLyricsScreen();
+			screen.attach(dial);
+			await flush();
+
+			setInactive(true);
+			await flush();
+
+			expect(lastSvg()).toContain('>Hola</text>');
+			expect(lastSvg()).toContain('>Adiós</text>');
+		});
+
+		it('should redraw when the next line starts', async () => {
+			const { screen, dial, setInactive, ticks, flush } = buildLyricsScreen();
+			screen.attach(dial);
+			await flush();
+			setInactive(true);
+			await flush();
+			const lineChange = ticks.find(
+				(tick) => tick.delay === 2_000 && !tick.cancelled
+			);
+			const callsBefore = dial.setFeedback.mock.calls.length;
+
+			lineChange?.callback();
+			await flush();
+
+			expect(lineChange).toBeDefined();
+			expect(dial.setFeedback.mock.calls.length).toBe(callsBefore + 1);
+		});
+
+		it('should not wait for a line change while paused', async () => {
+			const { screen, dial, setInactive, setState, ticks, flush } =
+				buildLyricsScreen();
+			screen.attach(dial);
+			setState(PAUSED);
+			await flush();
+
+			setInactive(true);
+
+			expect(ticks).toHaveLength(0);
+		});
+
+		it('should stop waiting for a line change when woken', async () => {
+			const { screen, dial, setInactive, ticks, flush } = buildLyricsScreen();
+			screen.attach(dial);
+			await flush();
+			setInactive(true);
+
+			screen.wake();
+
+			expect(ticks.every((tick) => tick.cancelled)).toBe(true);
+		});
+
+		it('should report lyrics that cannot be fetched and draw without them', async () => {
+			const error = new Error('offline');
+			const { screen, dial, setInactive, onError, lastSvg, flush } =
+				buildScreen({ fetchLyrics: () => Promise.reject(error) });
+			screen.attach(dial);
+			await flush();
+
+			setInactive(true);
+			await flush();
+
+			expect(onError).toHaveBeenCalledWith(error);
+			expect(lastSvg()).toContain('>Kosandra</text>');
+			expect(lastSvg()).not.toContain('now-playing-lyrics');
+		});
+
+		it('should animate the change of line on the dials under the lyrics only', async () => {
+			const { screen, dial, setInactive, setNow, ticks, flush } =
+				buildLyricsScreen();
+			const lyricsDial = buildDial('dial-3', 3);
+			screen.attach(dial);
+			screen.attach(lyricsDial);
+			await flush();
+			setInactive(true);
+			await flush();
+			setNow(85_000);
+			ticks.find((tick) => tick.delay === 2_000 && !tick.cancelled)?.callback();
+			await flush();
+			const firstFrame = ticks.find(
+				(tick) =>
+					tick.delay === NowPlayingTiming.lyricsFrameIntervalMilliseconds &&
+					!tick.cancelled
+			);
+			const dialCalls = dial.setFeedback.mock.calls.length;
+			const lyricsDialCalls = lyricsDial.setFeedback.mock.calls.length;
+
+			firstFrame?.callback();
+			await flush();
+
+			expect(firstFrame).toBeDefined();
+			expect(dial.setFeedback.mock.calls.length).toBe(dialCalls);
+			expect(lyricsDial.setFeedback.mock.calls.length).toBe(
+				lyricsDialCalls + 1
+			);
+			expect(decodeLast(lyricsDial.setFeedback)).toContain('opacity=');
+		});
 	});
 });

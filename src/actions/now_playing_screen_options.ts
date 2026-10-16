@@ -1,8 +1,12 @@
 import type { PlayerStateHub } from './player_state_hub';
 import type { CarouselScheduler } from './carousel_scheduler';
 import type { InactivityMonitor } from './inactivity_monitor';
+import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 
-/** What the "now playing" screen reads: the inactivity of the Stream Deck, the player state, how to download a cover, the clock and scheduler of the progress bar, and who to tell about failures. */
+/**
+ * What the "now playing" screen reads: the inactivity of the Stream Deck, the player state, how to download a cover,
+ * how to fetch the synced lyrics of the loaded item (by URI), the clock and scheduler of the progress bar and the lyrics, and who to tell about failures.
+ */
 export type NowPlayingScreenOptions = Readonly<{
 	inactivity: Pick<
 		InactivityMonitor,
@@ -10,6 +14,7 @@ export type NowPlayingScreenOptions = Readonly<{
 	>;
 	playerStateHub: Pick<PlayerStateHub, 'current' | 'subscribe'>;
 	fetchCover: (url: string) => Promise<string>;
+	fetchLyrics: (trackUri: string) => Promise<readonly SpotifyLyricsLine[]>;
 	schedule: CarouselScheduler;
 	now: () => number;
 	onError: (error: unknown) => void;

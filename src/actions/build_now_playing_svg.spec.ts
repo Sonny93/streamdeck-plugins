@@ -8,6 +8,8 @@ const FRAME: NowPlayingFrame = {
 	title: 'Kosandra',
 	artistNames: ['Miyagi & Andy Panda'],
 	coverDataUrl: COVER,
+	lyrics: undefined,
+	lyricsTransition: undefined,
 	positionMilliseconds: 83_000,
 	durationMilliseconds: 219_000,
 	isPaused: false,
@@ -96,5 +98,76 @@ describe('buildNowPlayingSvg', () => {
 
 	it('should not draw the pause badge while playing', () => {
 		expect(build(FRAME)).not.toContain('<circle');
+	});
+
+	it('should keep the title and artists on the whole strip without lyrics', () => {
+		const svg = build(FRAME);
+
+		expect(svg).not.toContain('clip-path="url(#now-playing-info)"');
+		expect(svg).toContain('font-size="26"');
+	});
+
+	it('should show the line being sung and the next one centered on the right half', () => {
+		const svg = build(
+			{ ...FRAME, lyrics: { current: 'Hola', next: 'Adiós' } },
+			600
+		);
+
+		expect(svg).toMatch(
+			/<text x="600" [^>]*text-anchor="middle"[^>]*>Hola<\/text>/
+		);
+		expect(svg).toMatch(
+			/<text x="600" [^>]*text-anchor="middle"[^>]*>Adiós<\/text>/
+		);
+		expect(svg).toContain('clip-path="url(#now-playing-lyrics)"');
+	});
+
+	it('should keep every clip path inside defs, since the Stream Deck draws a bare one as a black shape', () => {
+		const svg = build({ ...FRAME, lyrics: { current: 'Hola', next: 'Adiós' } });
+
+		expect(svg.split('<clipPath').length - 1).toBe(3);
+		expect(svg.split('<defs><clipPath').length - 1).toBe(3);
+	});
+
+	it('should put a long line being sung on two rows', () => {
+		const svg = build({
+			...FRAME,
+			lyrics: {
+				current: 'Once de la noche en San Salvador, El Salvador',
+				next: undefined,
+			},
+		});
+
+		expect(svg).toContain('>Once de la noche en San Salvador, El</text>');
+		expect(svg).toContain('>Salvador</text>');
+	});
+
+	it('should keep the title and artists on the left half with lyrics', () => {
+		const svg = build({
+			...FRAME,
+			title: 'A'.repeat(30),
+			lyrics: { current: 'Hola', next: undefined },
+		});
+
+		expect(svg).toContain(`>${'A'.repeat(21)}…</text>`);
+		expect(svg).toContain('clip-path="url(#now-playing-info)"');
+	});
+
+	it('should slide the previous lines up and the new ones in from below during a change of line', () => {
+		const svg = build(
+			{
+				...FRAME,
+				lyrics: { current: 'Adiós', next: undefined },
+				lyricsTransition: {
+					previous: { current: 'Hola', next: 'Adiós' },
+					progress: 0.25,
+				},
+			},
+			600
+		);
+
+		expect(svg).toMatch(
+			/<g transform="translate\(0,-5\)" opacity="0.75">.*>Hola<\/text>.*<\/g><g transform="translate\(0,15\)" opacity="0.25">.*>Adiós<\/text><\/g>/
+		);
 	});
 });
