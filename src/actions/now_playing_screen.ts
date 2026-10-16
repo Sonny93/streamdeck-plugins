@@ -31,15 +31,18 @@ type LoadedLyrics = Readonly<{
  * Shows the playing track (cover, title, artists, progress) across the whole touch strip while the Stream Deck is inactive.
  * Every dial of the plugin attaches itself and draws the slice of its column; a column without a dial of the plugin stays as it is.
  * It shows only while a track is loaded, redraws on every player change and, while playing, every second for the progress bar.
+ * The cover is also offered to the dials as the backdrop of their own content (`backdropCover`), kept until the next one is downloaded.
  * Only the cover and the synced lyrics of the current track are kept; they are fetched as soon as the track is known, and not retried when it fails.
  * With lyrics, it also redraws when the next line starts, so the line shown follows the song, and animates the change on the dials under the lyrics.
  */
 export class NowPlayingScreen {
 	private readonly dials = new Map<string, NowPlayingDial>();
 	private readonly hiddenListeners = new Set<() => void>();
+	private readonly backdropListeners = new Set<() => void>();
 	private readonly ticker: ProgressTicker;
 	private showing = false;
 	private cover: LoadedCover | undefined;
+	private backdrop: string | undefined;
 	private lyrics: LoadedLyrics | undefined;
 	private cancelLineChange: (() => void) | undefined;
 	private cancelLyricsFrame: (() => void) | undefined;
@@ -85,6 +88,19 @@ export class NowPlayingScreen {
 		this.hiddenListeners.add(listener);
 		return () => {
 			this.hiddenListeners.delete(listener);
+		};
+	}
+
+	/** The cover of the playing track, once downloaded, for the dials to draw behind their own content; `undefined` when the track has none. */
+	get backdropCover(): string | undefined {
+		return this.backdrop;
+	}
+
+	/** Registers what to do when `backdropCover` changes, i.e. redraw the dial's own content, and returns the function that unsubscribes it. */
+	onBackdropChanged(listener: () => void): () => void {
+		this.backdropListeners.add(listener);
+		return () => {
+			this.backdropListeners.delete(listener);
 		};
 	}
 
@@ -176,6 +192,9 @@ export class NowPlayingScreen {
 	private update(): void {
 		const state = this.options.playerStateHub.current;
 		this.readCover(state?.track?.imageUrl);
+		if (state?.track?.imageUrl === undefined) {
+			this.setBackdrop(undefined);
+		}
 		this.readLyrics(state?.trackUri);
 		const wasShowing = this.showing;
 		this.showing =
@@ -219,9 +238,23 @@ export class NowPlayingScreen {
 				return;
 			}
 			this.cover = { url, dataUrl };
+			this.setBackdrop(dataUrl);
 			await this.render();
 		} catch (error) {
+			if (this.cover?.url === url) {
+				this.setBackdrop(undefined);
+			}
 			this.options.onError(error);
+		}
+	}
+
+	private setBackdrop(dataUrl: string | undefined): void {
+		if (this.backdrop === dataUrl) {
+			return;
+		}
+		this.backdrop = dataUrl;
+		for (const listener of this.backdropListeners) {
+			listener();
 		}
 	}
 

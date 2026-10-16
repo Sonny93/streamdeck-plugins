@@ -60,6 +60,9 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		nowPlaying.onHidden(() => {
 			void this.renderSettledDials();
 		});
+		nowPlaying.onBackdropChanged(() => {
+			void this.renderSettledDials();
+		});
 		this.presence = new DialPresence({
 			playerStateHub,
 			query: (options) => runSpotifyQuery(isTrackInLikeTarget(options)),
@@ -71,6 +74,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 			catalog: this.catalog,
 			covers: new CoverLoader(new CoverCache()),
 			presence: this.presence,
+			readBackdropCover: () => nowPlaying.backdropCover,
 			onCoversLoaded: () => {
 				void this.renderSettledDials();
 			},

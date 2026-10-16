@@ -1,8 +1,10 @@
 import { escapeXml } from './escape_xml';
 import { truncateText } from './truncate_text';
+import type { DialBackdrop } from './dial_backdrop';
 import type { CarouselSlot } from './carousel_slot';
 import { CarouselMetrics } from './carousel_metrics';
 import { formatSvgNumber } from './format_svg_number';
+import { buildDialBackdrop } from './build_dial_backdrop';
 import { buildCarouselHeart } from './build_carousel_heart';
 import { resolveSlotGeometry } from './resolve_slot_geometry';
 import { buildCarouselSlotSvg } from './build_carousel_slot_svg';
@@ -17,6 +19,7 @@ type CarouselFrameOptions = Readonly<{
 	title: string;
 	positionLabel: string;
 	containsPlayingTrack: boolean;
+	backdrop?: DialBackdrop;
 }>;
 
 function buildSlots(slots: readonly CarouselSlot[]): string {
@@ -68,7 +71,7 @@ function buildPositionLabel(positionLabel: string): string {
 }
 
 /**
- * Draws one frame of the carousel of the "Playlists" dial as a 200x100 SVG document on a black background.
+ * Draws one frame of the carousel of the "Playlists" dial as a 200x100 SVG document on a black background, or on the dial's slice of the playing track's cover.
  * The covers are drawn from the farthest to the nearest to the center, then the title (truncated), the position label and,
  * when the playlist shown contains the playing track, a heart badge on the corner of the cover nearest to the center.
  */
@@ -77,5 +80,5 @@ export function buildCarouselFrameSvg(options: CarouselFrameOptions): string {
 	const badge = options.containsPlayingTrack
 		? buildPresenceBadge(options.slots)
 		: '';
-	return `<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}"><rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>${buildSlots(options.slots)}${badge}${buildTitle(options.title)}${buildPositionLabel(options.positionLabel)}</svg>`;
+	return `<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}"><rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>${buildDialBackdrop(options.backdrop)}${buildSlots(options.slots)}${badge}${buildTitle(options.title)}${buildPositionLabel(options.positionLabel)}</svg>`;
 }

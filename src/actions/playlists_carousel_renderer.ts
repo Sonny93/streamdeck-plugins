@@ -3,6 +3,7 @@ import type { DialAction } from '@elgato/streamdeck';
 
 import { wrapIndex } from './wrap_index';
 import { toSvgDataUrl } from './to_svg_data_url';
+import { toDialBackdrop } from './to_dial_backdrop';
 import type { CarouselSlot } from './carousel_slot';
 import { CarouselMetrics } from './carousel_metrics';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
@@ -16,7 +17,7 @@ const CANVAS_FEEDBACK_KEY = 'canvas';
 
 type RenderableDial = Pick<
 	DialAction<PlaylistsDialSettings>,
-	'id' | 'setFeedback'
+	'id' | 'coordinates' | 'setFeedback'
 >;
 
 type FrameRequest = Readonly<{ dial: RenderableDial; position: number }>;
@@ -103,6 +104,10 @@ export class PlaylistsCarouselRenderer {
 
 	private buildFrame(request: FrameRequest, showPresence: boolean): string {
 		const { position } = request;
+		const backdrop = toDialBackdrop(
+			this.options.readBackdropCover(),
+			request.dial.coordinates.column
+		);
 		const { playlists } = this.options.catalog;
 		const center = Math.round(position);
 		const centered = this.playlistAt(center);
@@ -113,6 +118,7 @@ export class PlaylistsCarouselRenderer {
 				title: SPOTIFY_CLOSED_TITLE,
 				positionLabel: '',
 				containsPlayingTrack: false,
+				backdrop,
 			});
 		}
 		const slots = listNeighbourhood(center).map((slotIndex): CarouselSlot => ({
@@ -131,6 +137,7 @@ export class PlaylistsCarouselRenderer {
 			containsPlayingTrack:
 				showPresence &&
 				this.options.presence.contains(request.dial.id, centered),
+			backdrop,
 		});
 	}
 

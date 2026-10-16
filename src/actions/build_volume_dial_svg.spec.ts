@@ -55,4 +55,17 @@ describe('buildVolumeDialSvg', () => {
 
 		expect(svg).toContain('>&amp;Co Rocket L…</text>');
 	});
+
+	it('should draw the backdrop behind the volume', () => {
+		const svg = buildVolumeDialSvg(READING, {
+			coverDataUrl: 'data:image/jpeg;base64,AQID',
+			column: 1,
+		});
+
+		expect(svg).toMatch(/<rect [^>]*\/><image x="-200" .*>Spotify<\/text>/);
+	});
+
+	it('should draw no image without backdrop', () => {
+		expect(buildVolumeDialSvg(READING)).not.toContain('<image');
+	});
 });

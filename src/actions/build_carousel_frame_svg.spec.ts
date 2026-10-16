@@ -150,4 +150,15 @@ describe('buildCarouselFrameSvg', () => {
 			svg.lastIndexOf('width="40"')
 		);
 	});
+
+	it('should draw the backdrop behind the covers', () => {
+		const svg = build({
+			backdrop: { coverDataUrl: 'data:backdrop', column: 3 },
+		});
+
+		expect(svg.indexOf('xlink:href="data:backdrop"')).toBeLessThan(
+			svg.indexOf(`xlink:href="${COVER}"`)
+		);
+		expect(svg).toContain('<image x="-600" ');
+	});
 });

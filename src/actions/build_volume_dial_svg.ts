@@ -1,10 +1,13 @@
 import { escapeXml } from './escape_xml';
 import { truncateText } from './truncate_text';
+import type { DialBackdrop } from './dial_backdrop';
 import { formatSvgNumber } from './format_svg_number';
 import type { VolumeReading } from './volume_reading';
+import { buildDialBackdrop } from './build_dial_backdrop';
 import { VolumeDialMetrics } from './volume_dial_metrics';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
 const HALF_DIVISOR = 2;
 const PERCENT = 100;
 const MUTED_LABEL = 'Muted';
@@ -64,14 +67,19 @@ function readNote(reading: VolumeReading): string | undefined {
 /**
  * Draws a "Volume" dial as a 200x100 SVG document: what it controls, the app name (truncated), the volume in percent and a level bar.
  * A muted app shows "Muted" and a grey bar; an app that plays no sound shows a dash and an empty bar.
+ * With a backdrop, the dial's slice of the playing track's cover is drawn behind it.
  */
-export function buildVolumeDialSvg(reading: VolumeReading): string {
+export function buildVolumeDialSvg(
+	reading: VolumeReading,
+	backdrop?: DialBackdrop
+): string {
 	const { stripWidth, stripHeight, background, left, right } =
 		VolumeDialMetrics;
 	const note = readNote(reading);
 	return [
-		`<svg xmlns="${SVG_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}">`,
+		`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}">`,
 		`<rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>`,
+		buildDialBackdrop(backdrop),
 		buildText(reading.caption, {
 			x: left,
 			anchor: 'start',

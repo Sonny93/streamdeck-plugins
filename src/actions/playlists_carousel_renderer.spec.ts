@@ -25,6 +25,7 @@ function buildRenderer(
 		hasContent?: boolean;
 		containsUris?: readonly string[];
 		fetchResult?: boolean;
+		backdropCover?: string;
 	}>
 ) {
 	const onCoversLoaded = vi.fn();
@@ -45,6 +46,7 @@ function buildRenderer(
 			contains: (_dialId, playlist) =>
 				options.containsUris?.includes(playlist.uri) ?? false,
 		},
+		readBackdropCover: () => options.backdropCover,
 		onCoversLoaded,
 	});
 	const setFeedback = vi.fn(() => Promise.resolve());
@@ -52,7 +54,7 @@ function buildRenderer(
 		renderer,
 		onCoversLoaded,
 		fetchCovers,
-		dial: { id: 'dial', setFeedback },
+		dial: { id: 'dial', coordinates: { column: 1, row: 0 }, setFeedback },
 	};
 }
 
@@ -75,6 +77,19 @@ describe('PlaylistsCarouselRenderer', () => {
 		const svg = readSvg(dial.setFeedback);
 		expect(svg).toContain('>B</text>');
 		expect(svg).toContain('>2 / 3</text>');
+	});
+
+	it('should draw the slice of the playing track cover of the dial column behind the carousel', async () => {
+		const { renderer, dial } = buildRenderer({
+			playlists: [buildPlaylist('A')],
+			backdropCover: 'data:backdrop',
+		});
+
+		await renderer.render({ dial, position: 0 });
+
+		expect(readSvg(dial.setFeedback)).toContain(
+			'<image x="-200" y="-350" width="800" height="800" preserveAspectRatio="xMidYMid slice" opacity="0.25" xlink:href="data:backdrop"/>'
+		);
 	});
 
 	it('should send the frame as an svg data url on the canvas key', async () => {

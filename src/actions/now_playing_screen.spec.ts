@@ -339,6 +339,57 @@ describe('NowPlayingScreen', () => {
 		expect(dial.setFeedback).not.toHaveBeenCalled();
 	});
 
+	describe('backdrop for the dials', () => {
+		it('should offer the cover once downloaded and tell the dials', async () => {
+			const { screen, dial, flush } = buildScreen();
+			const onBackdropChanged = vi.fn();
+			screen.onBackdropChanged(onBackdropChanged);
+
+			screen.attach(dial);
+			await flush();
+
+			expect(screen.backdropCover).toBe(COVER_DATA_URL);
+			expect(onBackdropChanged).toHaveBeenCalledTimes(1);
+		});
+
+		it('should keep the previous cover until the next one is downloaded', async () => {
+			let resolveNext: (dataUrl: string) => void = () => undefined;
+			const { screen, dial, setState, fetchCover, flush } = buildScreen();
+			screen.attach(dial);
+			await flush();
+			fetchCover.mockImplementation(
+				() =>
+					new Promise((resolve) => {
+						resolveNext = resolve;
+					})
+			);
+
+			setState({
+				...PLAYING,
+				track: PLAYING.track && {
+					...PLAYING.track,
+					imageUrl: 'https://i.scdn.co/image/b',
+				},
+			});
+			const whileLoading = screen.backdropCover;
+			resolveNext('data:image/jpeg;base64,BBBB');
+			await flush();
+
+			expect(whileLoading).toBe(COVER_DATA_URL);
+			expect(screen.backdropCover).toBe('data:image/jpeg;base64,BBBB');
+		});
+
+		it('should drop the cover when no track is loaded', async () => {
+			const { screen, dial, setState, flush } = buildScreen();
+			screen.attach(dial);
+			await flush();
+
+			setState(NOTHING_LOADED);
+
+			expect(screen.backdropCover).toBeUndefined();
+		});
+	});
+
 	describe('with lyrics', () => {
 		const LINES: readonly SpotifyLyricsLine[] = [
 			{ startMilliseconds: 80_000, words: 'Hola' },

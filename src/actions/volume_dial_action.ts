@@ -14,6 +14,7 @@ import { toSvgDataUrl } from './to_svg_data_url';
 import { VolumeControl } from './volume_control';
 import { ProgressTicker } from './progress_ticker';
 import type { VolumeTarget } from './volume_target';
+import { toDialBackdrop } from './to_dial_backdrop';
 import { scheduleTimeout } from './schedule_timeout';
 import { VolumeController } from './volume_controller';
 import type { AudioMixer } from '../audio/audio_mixer';
@@ -35,7 +36,8 @@ const CANVAS_FEEDBACK_KEY = 'canvas';
 /**
  * Stream Deck+ dial that controls the volume of one app in the Windows mixer: Spotify, the app in the foreground, or an app picked in its settings.
  * Rotate to change the volume (unmuting the app), press the dial or tap the strip to mute or unmute it.
- * The strip shows the app, its volume and its mute state, re-read every second so outside changes and focus changes show up.
+ * The strip shows the app, its volume and its mute state, re-read every second so outside changes and focus changes show up,
+ * over the dial's slice of the playing track's cover.
  * While the "now playing" screen shows, the first rotation, press or tap only brings the volume back.
  */
 @action({ UUID: 'com.sonny93.spotify.volume' })
@@ -61,6 +63,9 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		});
 		nowPlaying.onHidden(() => {
 			this.lastImages.clear();
+			void this.renderAll();
+		});
+		nowPlaying.onBackdropChanged(() => {
 			void this.renderAll();
 		});
 	}
@@ -181,7 +186,10 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		}
 		try {
 			const image = toSvgDataUrl(
-				buildVolumeDialSvg(await this.controller.read(target))
+				buildVolumeDialSvg(
+					await this.controller.read(target),
+					toDialBackdrop(this.nowPlaying.backdropCover, dial.coordinates.column)
+				)
 			);
 			if (this.nowPlaying.isShowing || this.lastImages.get(dial.id) === image) {
 				return;

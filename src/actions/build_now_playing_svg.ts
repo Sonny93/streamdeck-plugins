@@ -7,6 +7,7 @@ import { formatSvgNumber } from './format_svg_number';
 import { NowPlayingMetrics } from './now_playing_metrics';
 import { estimateTextWidth } from './estimate_text_width';
 import type { NowPlayingFrame } from './now_playing_frame';
+import { buildBackdropImage } from './build_backdrop_image';
 import type { NowPlayingLyrics } from './now_playing_lyrics';
 import type { NowPlayingLyricsTransition } from './now_playing_lyrics_transition';
 
@@ -42,9 +43,11 @@ function buildBackdrop(coverDataUrl: string | undefined): string {
 	if (coverDataUrl === undefined) {
 		return '';
 	}
-	const { stripWidth, stripHeight, backdropOpacity } = NowPlayingMetrics;
-	const top = (stripHeight - stripWidth) / HALF_DIVISOR;
-	return `<image x="0" y="${top}" width="${stripWidth}" height="${stripWidth}" preserveAspectRatio="xMidYMid slice" opacity="${backdropOpacity}" xlink:href="${escapeXml(coverDataUrl)}"/>`;
+	return buildBackdropImage({
+		coverDataUrl,
+		left: 0,
+		opacity: NowPlayingMetrics.backdropOpacity,
+	});
 }
 
 function isCoverInSlice(sliceLeft: number): boolean {
