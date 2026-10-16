@@ -7,10 +7,11 @@ type SendParams = Readonly<Record<string, unknown>> | undefined;
 
 /**
  * Test helper: builds a session whose page evaluates expressions in a fake Spotify page
- * exposing the given services through a platform registry.
+ * exposing the given services through a platform registry, plus `platformExtras` on the platform itself (like its transport).
  */
 export function buildFakePlatformSession(
-	services: Readonly<Record<string, unknown>>
+	services: Readonly<Record<string, unknown>>,
+	platformExtras: Readonly<Record<string, unknown>> = {}
 ) {
 	const registryMap = new Map<symbol, unknown>();
 	for (const [name, service] of Object.entries(services)) {
@@ -20,7 +21,7 @@ export function buildFakePlatformSession(
 		_map: registryMap,
 		resolve: (key: symbol): unknown => registryMap.get(key),
 	};
-	const platform = { getRegistry: () => registry };
+	const platform = { ...platformExtras, getRegistry: () => registry };
 	const root = { __reactContainerFake: { memoizedProps: { platform } } };
 	const context = vm.createContext({
 		window: {},

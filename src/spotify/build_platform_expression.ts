@@ -5,8 +5,9 @@ const MAX_FIBER_NODES = 200_000;
 
 /**
  * Builds the async JavaScript expression that reaches Spotify's internal platform and runs `body` with it.
- * `body` is the body of an `async (resolve) => { ... }` function, where `resolve(serviceName)` returns the
- * registered service. The expression returns a `{ status, ... }` envelope: the platform is cached on `window`,
+ * `body` is the body of an `async (resolve, platform) => { ... }` function, where `resolve(serviceName)` returns the
+ * registered service and `platform` is the platform itself, for what is not a service (like its transport).
+ * The expression returns a `{ status, ... }` envelope: the platform is cached on `window`,
  * a missing platform or service is reported through the status, and any other exception propagates.
  */
 export function buildPlatformExpression(body: string): string {
@@ -46,11 +47,11 @@ export function buildPlatformExpression(body: string): string {
 			if (symbol === undefined) { throw { marker: serviceNotFoundMarker, service: serviceName }; }
 			return registry.resolve(symbol);
 		};
-		const run = async (resolve) => {
+		const run = async (resolve, platform) => {
 			${body}
 		};
 		try {
-			return { status: ${JSON.stringify(SpotifyPlatformStatus.ok)}, value: await run(resolve) };
+			return { status: ${JSON.stringify(SpotifyPlatformStatus.ok)}, value: await run(resolve, platform) };
 		} catch (error) {
 			if (error && error.marker === serviceNotFoundMarker) {
 				return { status: ${JSON.stringify(SpotifyPlatformStatus.serviceNotFound)}, service: error.service };
