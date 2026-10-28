@@ -1,5 +1,6 @@
 packages:
   - plugins/*
+  - icon-pack
 
 allowBuilds:
   koffi: false

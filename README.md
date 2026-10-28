@@ -7,6 +7,8 @@ Stream Deck plugins for a Windows PC, built for the Stream Deck +: Spotify contr
 | [Spotify Deck](plugins/spotify/README.md) | The Spotify desktop app: playback, likes, playlists, lyrics, volume |
 | [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, Windows audio devices           |
 
+[Sonny93 Keys](icon-pack/README.md) is an icon pack for the native folder and Back keys, in the same look as the plugin keys.
+
 ## Requirements
 
 - Windows 10 or later, with Stream Deck 7.1 or later.

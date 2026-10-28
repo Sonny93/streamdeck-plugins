@@ -5,7 +5,7 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 ## Verify
 
 - `mise x -- pnpm check` from the root runs lint, format check, typecheck and the tests of every plugin. Node and pnpm come from mise and are not on the bare PATH.
-- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck> exec vitest run <path>`.
+- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck|icon-pack> exec vitest run <path>`.
 - `mise x -- pnpm format` can need a second run before `format:check` passes, because the lint fixes and oxfmt's import sorting each change the other's output.
 - The user tests on their own Stream Deck + and Volt 1: after a build, ask them to check the device rather than claiming it works.
 
@@ -18,6 +18,7 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 
 - Tooling (oxlint, oxfmt, mise, `pnpm check`) lives at the root only; each plugin keeps its own `package.json`, rollup config, tsconfig and build, watch and restart scripts.
 - `packages/` is created only once two plugins need the same code, not before.
+- `icon-pack/` copies the key layout of Audio Deck instead of importing it: Node runs its TypeScript natively and cannot resolve the extensionless imports of the plugins, so a layout change goes to both.
 - A plugin joins as `plugins/<name>` with its history: a move commit in its own repo, then a merge with `--allow-unrelated-histories`.
 - Windows APIs go through koffi FFI instead of native addons, so no C++ toolchain is needed: the rollup config copies the prebuilt `@koromix/koffi-win32-x64` into `bin/node_modules`, and `allowBuilds` keeps koffi's install script off.
 - `.gitattributes` forces LF because Git for Windows checks out CRLF here (`core.autocrlf=true`), which makes oxfmt flag every file.
