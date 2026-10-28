@@ -1,6 +1,6 @@
+import { runPlatformScript } from './run_platform_script';
 import { SpotifyServices } from './spotify_services';
 import type { SpotifySession } from './spotify_session';
-import { runPlatformScript } from './run_platform_script';
 
 const TOGGLE_PLAYBACK_BODY = `
 	const player = resolve(${JSON.stringify(SpotifyServices.player)});

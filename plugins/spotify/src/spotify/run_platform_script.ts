@@ -1,11 +1,11 @@
-import type { SpotifySession } from './spotify_session';
+import { buildPlatformExpression } from './build_platform_expression';
 import { evaluateInSpotify } from './evaluate_in_spotify';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
 import { parsePlatformOutcome } from './parse_platform_outcome';
 import { retryDuringColdStart } from './retry_during_cold_start';
-import { buildPlatformExpression } from './build_platform_expression';
 import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
 import { SpotifyPlatformNotFoundError } from './spotify_platform_not_found_error';
+import type { SpotifySession } from './spotify_session';
 
 async function evaluatePlatformScript(
 	session: SpotifySession,

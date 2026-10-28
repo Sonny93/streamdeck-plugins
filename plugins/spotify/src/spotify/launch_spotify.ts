@@ -1,5 +1,5 @@
-import path from 'node:path';
 import { spawn } from 'node:child_process';
+import path from 'node:path';
 
 import { SpotifyEndpoint } from './spotify_endpoint';
 import { SpotifyLaunchFailedError } from './spotify_launch_failed_error';

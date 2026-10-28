@@ -1,18 +1,18 @@
 import { action } from '@elgato/streamdeck';
 import type { KeyDownEvent } from '@elgato/streamdeck';
 
-import { KeyState } from '../keys/key_state';
-import { KeyPalette } from '../keys/key_palette';
-import { microphoneGlyph } from '../keys/microphone_glyph';
-import type { KeyAppearance } from '../keys/key_appearance';
-import type { AudioTarget } from '../../audio/audio_target';
-import type { KeyStateValue } from '../keys/key_state_value';
-import { resolveMuteKeyState } from './resolve_mute_key_state';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
-import { AudioDeviceKeyAction } from './audio_device_key_action';
-import type { AudioDeviceChoices } from './audio_device_choices';
-import type { AudioDeviceSettings } from './audio_device_settings';
+import type { AudioTarget } from '../../audio/audio_target';
+import type { KeyAppearance } from '../keys/key_appearance';
+import { KeyPalette } from '../keys/key_palette';
+import { KeyState } from '../keys/key_state';
+import type { KeyStateValue } from '../keys/key_state_value';
+import { microphoneGlyph } from '../keys/microphone_glyph';
 import { mutedMicrophoneGlyph } from '../keys/muted_microphone_glyph';
+import type { AudioDeviceChoices } from './audio_device_choices';
+import { AudioDeviceKeyAction } from './audio_device_key_action';
+import type { AudioDeviceSettings } from './audio_device_settings';
+import { resolveMuteKeyState } from './resolve_mute_key_state';
 
 const APPEARANCES: Readonly<Record<KeyStateValue, KeyAppearance>> = {
 	[KeyState.off]: { glyph: microphoneGlyph, color: KeyPalette.active },

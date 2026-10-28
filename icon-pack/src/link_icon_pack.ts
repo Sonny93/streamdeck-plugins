@@ -1,5 +1,5 @@
-import { basename, join } from 'node:path';
 import { lstat, mkdir, symlink, unlink } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 
 import { IconPackLinkError } from './icon_pack_link_error.ts';
 

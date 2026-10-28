@@ -1,11 +1,11 @@
-import { SpotifyServices } from './spotify_services';
-import type { LikeTargetRef } from './like_target_ref';
-import type { SpotifyCommand } from './spotify_command';
-import { runPlatformScript } from './run_platform_script';
-import { SpotifyPlaylistKind } from './spotify_playlist_kind';
-import { parseAddTrackOutcome } from './parse_add_track_outcome';
-import { SpotifyAddTrackOutcome } from './spotify_add_track_outcome';
 import { buildTrackPresenceSnippet } from './build_track_presence_snippet';
+import type { LikeTargetRef } from './like_target_ref';
+import { parseAddTrackOutcome } from './parse_add_track_outcome';
+import { runPlatformScript } from './run_platform_script';
+import { SpotifyAddTrackOutcome } from './spotify_add_track_outcome';
+import type { SpotifyCommand } from './spotify_command';
+import { SpotifyPlaylistKind } from './spotify_playlist_kind';
+import { SpotifyServices } from './spotify_services';
 
 function buildBody(target: LikeTargetRef): string {
 	return `

@@ -1,7 +1,7 @@
-import { LikePresenceTracker } from './like_presence_tracker';
 import type { LikeTargetRef } from '../spotify/like_target_ref';
-import type { DialPresenceOptions } from './dial_presence_options';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import type { DialPresenceOptions } from './dial_presence_options';
+import { LikePresenceTracker } from './like_presence_tracker';
 
 function toTargetRef(playlist: SpotifyPlaylist): LikeTargetRef {
 	return { uri: playlist.uri, kind: playlist.kind };

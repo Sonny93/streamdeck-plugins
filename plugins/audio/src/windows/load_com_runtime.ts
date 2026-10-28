@@ -1,13 +1,13 @@
 import type koffiModule from 'koffi';
 
-import type { Guid } from './guid';
-import { ComError } from './com_error';
-import { parseGuid } from './parse_guid';
-import { loadKoffi } from './load_koffi';
-import type { ComRuntime } from './com_runtime';
 import { onceAsync } from '../shared/once_async';
-import { declareGuidType } from './declare_guid_type';
 import { acquireOutPointer } from './acquire_out_pointer';
+import { ComError } from './com_error';
+import type { ComRuntime } from './com_runtime';
+import { declareGuidType } from './declare_guid_type';
+import type { Guid } from './guid';
+import { loadKoffi } from './load_koffi';
+import { parseGuid } from './parse_guid';
 
 type Koffi = typeof koffiModule;
 type Library = ReturnType<Koffi['load']>;

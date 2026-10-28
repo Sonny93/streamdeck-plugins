@@ -1,8 +1,8 @@
-import type { CoreAudio } from './core_audio';
-import type { AudioFlow } from './audio_flow';
 import { ComError } from '../windows/com_error';
 import type { AudioDevice } from './audio_device';
+import type { AudioFlow } from './audio_flow';
 import type { AudioVolume } from './audio_volume';
+import type { CoreAudio } from './core_audio';
 
 const NOT_FOUND_RESULT = -2_147_023_728;
 const UNMUTED_FULL_VOLUME: AudioVolume = { level: 1, isMuted: false };

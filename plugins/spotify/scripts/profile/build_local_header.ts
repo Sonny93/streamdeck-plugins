@@ -1,5 +1,5 @@
-import { ZipFormat } from './zip_format.ts';
 import { encodeZipRecord } from './encode_zip_record.ts';
+import { ZipFormat } from './zip_format.ts';
 
 /** Builds the local file header that precedes the stored data of an entry. */
 export function buildLocalHeader(

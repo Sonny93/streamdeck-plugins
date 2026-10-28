@@ -1,5 +1,5 @@
-import { VoltReadError } from './volt_read_error';
 import type { VoltConnection } from './volt_connection';
+import { VoltReadError } from './volt_read_error';
 
 type PendingRead = Readonly<{
 	resolve: (report: Uint8Array) => void;

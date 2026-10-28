@@ -1,10 +1,10 @@
-import { SpotifyTestIds } from './spotify_test_ids';
-import type { SpotifyCommand } from './spotify_command';
-import { clickSpotifyElement } from './click_spotify_element';
+import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
 import type { BringToFrontOptions } from './bring_to_front_options';
 import { clickFullscreenAndWait } from './click_fullscreen_and_wait';
+import { clickSpotifyElement } from './click_spotify_element';
+import type { SpotifyCommand } from './spotify_command';
+import { SpotifyTestIds } from './spotify_test_ids';
 import { stopSpotifyWindowFlashing } from './stop_spotify_window_flashing';
-import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
 
 /**
  * Builds the command that toggles full screen mode.

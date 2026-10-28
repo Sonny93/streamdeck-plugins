@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { DrawnKeyImages } from './drawn_key_images';
 import { KeyPalette } from './key_palette';
 import { speakerGlyph } from './speaker_glyph';
-import { DrawnKeyImages } from './drawn_key_images';
 
 const ACTIVE = { glyph: speakerGlyph, color: KeyPalette.active } as const;
 const IDLE = { glyph: speakerGlyph, color: KeyPalette.idle } as const;

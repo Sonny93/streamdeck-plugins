@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { waitForSpotifyExit } from './wait_for_spotify_exit';
-import { ensureSpotifyRunning } from './ensure_spotify_running';
-import { killProcessImage } from '../windows/kill_process_image';
-import { SpotifyNotReachableError } from './spotify_not_reachable_error';
-import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
 import { isProcessImageRunning } from '../windows/is_process_image_running';
+import { killProcessImage } from '../windows/kill_process_image';
 import { ensureSpotifyDebugPortOnStartup } from './ensure_spotify_debug_port_on_startup';
+import { ensureSpotifyRunning } from './ensure_spotify_running';
+import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
+import { SpotifyNotReachableError } from './spotify_not_reachable_error';
+import { waitForSpotifyExit } from './wait_for_spotify_exit';
 
 vi.mock('./wait_for_spotify_exit');
 vi.mock('./ensure_spotify_running');

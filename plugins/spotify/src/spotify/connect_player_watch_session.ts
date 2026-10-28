@@ -1,14 +1,14 @@
 import { CdpClient } from '../cdp/cdp_client';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
-import { SpotifyPlayerBinding } from './spotify_player_binding';
-import { retryDuringColdStart } from './retry_during_cold_start';
 import { fetchSpotifyPageTarget } from './fetch_spotify_page_target';
 import { injectPlayerWatchScript } from './inject_player_watch_script';
-import { parsePlayerBindingPayload } from './parse_player_binding_payload';
-import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
-import type { PlayerStateWatchCallbacks } from './player_state_watch_callbacks';
-import { SpotifyPlatformNotFoundError } from './spotify_platform_not_found_error';
 import { parseDefaultExecutionContextId } from './parse_default_execution_context_id';
+import { parsePlayerBindingPayload } from './parse_player_binding_payload';
+import type { PlayerStateWatchCallbacks } from './player_state_watch_callbacks';
+import { retryDuringColdStart } from './retry_during_cold_start';
+import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import { SpotifyPlatformNotFoundError } from './spotify_platform_not_found_error';
+import { SpotifyPlayerBinding } from './spotify_player_binding';
 
 type InjectionOptions = Readonly<{
 	client: CdpClient;

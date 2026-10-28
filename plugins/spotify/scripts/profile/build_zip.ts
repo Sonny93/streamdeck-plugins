@@ -1,10 +1,10 @@
 import { crc32 } from 'node:zlib';
 
-import { ZipFormat } from './zip_format.ts';
-import type { ZipEntry } from './zip_entry.ts';
+import { buildCentralHeader } from './build_central_header.ts';
 import { buildEndRecord } from './build_end_record.ts';
 import { buildLocalHeader } from './build_local_header.ts';
-import { buildCentralHeader } from './build_central_header.ts';
+import type { ZipEntry } from './zip_entry.ts';
+import { ZipFormat } from './zip_format.ts';
 
 /** Builds a zip archive that stores the entries uncompressed, in the given order and with a fixed timestamp, so the same entries always give the same bytes. */
 export function buildZip(

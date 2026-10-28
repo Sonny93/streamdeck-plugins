@@ -1,10 +1,10 @@
 import { CdpClient } from '../cdp/cdp_client';
-import { SpotifyUiBinding } from './spotify_ui_binding';
-import { injectUiWatchScript } from './inject_ui_watch_script';
-import { parseUiBindingPayload } from './parse_ui_binding_payload';
 import { fetchSpotifyPageTarget } from './fetch_spotify_page_target';
-import type { UiStateWatchCallbacks } from './ui_state_watch_callbacks';
+import { injectUiWatchScript } from './inject_ui_watch_script';
 import { parseDefaultExecutionContextId } from './parse_default_execution_context_id';
+import { parseUiBindingPayload } from './parse_ui_binding_payload';
+import { SpotifyUiBinding } from './spotify_ui_binding';
+import type { UiStateWatchCallbacks } from './ui_state_watch_callbacks';
 
 function handleBindingCalled(
 	params: unknown,

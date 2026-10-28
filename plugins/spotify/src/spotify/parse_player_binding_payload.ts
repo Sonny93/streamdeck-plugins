@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
+import { resolveSpotifyImageUrl } from './resolve_spotify_image_url';
+import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
 import { SpotifyPlayerBinding } from './spotify_player_binding';
 import type { SpotifyPlayerState } from './spotify_player_state';
 import type { SpotifyPlayingTrack } from './spotify_playing_track';
-import { resolveSpotifyImageUrl } from './resolve_spotify_image_url';
-import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
 
 const bindingCalledSchema = z.object({
 	name: z.string(),

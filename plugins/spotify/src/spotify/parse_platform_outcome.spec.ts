@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { parsePlatformOutcome } from './parse_platform_outcome';
 import { SpotifyEvaluationError } from './spotify_evaluation_error';
-import { SpotifyServiceNotFoundError } from './spotify_service_not_found_error';
 import { SpotifyPlatformNotFoundError } from './spotify_platform_not_found_error';
+import { SpotifyServiceNotFoundError } from './spotify_service_not_found_error';
 
 function buildEvaluateResult(value: unknown): unknown {
 	return { result: { type: 'object', value } };

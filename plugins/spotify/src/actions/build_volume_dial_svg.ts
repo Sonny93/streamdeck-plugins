@@ -1,10 +1,10 @@
-import { escapeXml } from './escape_xml';
-import { truncateText } from './truncate_text';
-import type { DialBackdrop } from './dial_backdrop';
-import { formatSvgNumber } from './format_svg_number';
-import type { VolumeReading } from './volume_reading';
 import { buildDialBackdrop } from './build_dial_backdrop';
+import type { DialBackdrop } from './dial_backdrop';
+import { escapeXml } from './escape_xml';
+import { formatSvgNumber } from './format_svg_number';
+import { truncateText } from './truncate_text';
 import { VolumeDialMetrics } from './volume_dial_metrics';
+import type { VolumeReading } from './volume_reading';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';

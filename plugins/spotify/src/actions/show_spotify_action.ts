@@ -1,11 +1,11 @@
 import { action, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
-import { UiStateKeys } from './ui_state_keys';
-import type { UiStateHub } from './ui_state_hub';
-import { runSpotifyAction } from './run_spotify_action';
-import { resolveToggleKeyState } from './resolve_toggle_key_state';
 import { bringSpotifyToFront } from '../spotify/bring_spotify_to_front';
+import { resolveToggleKeyState } from './resolve_toggle_key_state';
+import { runSpotifyAction } from './run_spotify_action';
+import type { UiStateHub } from './ui_state_hub';
+import { UiStateKeys } from './ui_state_keys';
 
 /**
  * Key that brings the Spotify window to the foreground (launching Spotify when it is closed); pressing it again keeps it there.

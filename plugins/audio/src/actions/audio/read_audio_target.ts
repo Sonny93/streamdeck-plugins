@@ -1,6 +1,6 @@
-import { AudioTargetValues } from './audio_target_values';
 import type { AudioTarget } from '../../audio/audio_target';
 import { audioDeviceSettingsSchema } from './audio_device_settings_schema';
+import { AudioTargetValues } from './audio_target_values';
 
 /** Reads the device an action works on from its raw settings; missing or invalid settings fall back to the action default. */
 export function readAudioTarget(

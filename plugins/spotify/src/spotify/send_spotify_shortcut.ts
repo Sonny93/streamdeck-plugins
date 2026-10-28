@@ -1,6 +1,6 @@
+import { buildShortcutKeyEvent } from './build_shortcut_key_event';
 import type { SpotifySession } from './spotify_session';
 import type { SpotifyShortcut } from './spotify_shortcut';
-import { buildShortcutKeyEvent } from './build_shortcut_key_event';
 
 /**
  * Presses and releases a shortcut inside the Spotify page.

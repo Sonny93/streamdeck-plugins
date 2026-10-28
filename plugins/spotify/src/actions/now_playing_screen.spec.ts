@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { NowPlayingScreen } from './now_playing_screen';
-import { NowPlayingTiming } from './now_playing_timing';
-import type { CarouselScheduler } from './carousel_scheduler';
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
+import type { CarouselScheduler } from './carousel_scheduler';
+import { NowPlayingScreen } from './now_playing_screen';
+import { NowPlayingTiming } from './now_playing_timing';
 
 const COVER_URL = 'https://i.scdn.co/image/a';
 const COVER_DATA_URL = 'data:image/jpeg;base64,AQID';

@@ -1,5 +1,5 @@
-import type { User32 } from './user32';
 import { selectTaskbarWindows } from './select_taskbar_windows';
+import type { User32 } from './user32';
 import { WindowActivationError } from './window_activation_error';
 
 /**

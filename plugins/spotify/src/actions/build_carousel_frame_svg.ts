@@ -1,13 +1,13 @@
-import { escapeXml } from './escape_xml';
-import { truncateText } from './truncate_text';
-import type { DialBackdrop } from './dial_backdrop';
-import type { CarouselSlot } from './carousel_slot';
-import { CarouselMetrics } from './carousel_metrics';
-import { formatSvgNumber } from './format_svg_number';
-import { buildDialBackdrop } from './build_dial_backdrop';
 import { buildCarouselHeart } from './build_carousel_heart';
-import { resolveSlotGeometry } from './resolve_slot_geometry';
 import { buildCarouselSlotSvg } from './build_carousel_slot_svg';
+import { buildDialBackdrop } from './build_dial_backdrop';
+import { CarouselMetrics } from './carousel_metrics';
+import type { CarouselSlot } from './carousel_slot';
+import type { DialBackdrop } from './dial_backdrop';
+import { escapeXml } from './escape_xml';
+import { formatSvgNumber } from './format_svg_number';
+import { resolveSlotGeometry } from './resolve_slot_geometry';
+import { truncateText } from './truncate_text';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';

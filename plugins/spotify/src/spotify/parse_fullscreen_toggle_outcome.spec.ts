@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
-import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
 import { parseFullscreenToggleOutcome } from './parse_fullscreen_toggle_outcome';
+import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
 
 function buildEvaluateResult(value: unknown): unknown {
 	return { result: { type: 'string', value } };

@@ -1,8 +1,8 @@
-import { promisify } from 'node:util';
 import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 
-import { ProcessListError } from './process_list_error';
 import { isImageInTasklistOutput } from './is_image_in_tasklist_output';
+import { ProcessListError } from './process_list_error';
 
 const execFileAsync = promisify(execFile);
 

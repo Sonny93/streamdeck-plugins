@@ -1,5 +1,5 @@
-import { SpotifyTestIds } from './spotify_test_ids';
 import { SpotifyCloseModalOutcome } from './spotify_close_modal_outcome';
+import { SpotifyTestIds } from './spotify_test_ids';
 
 const ESCAPE_KEY_CODE = 27;
 

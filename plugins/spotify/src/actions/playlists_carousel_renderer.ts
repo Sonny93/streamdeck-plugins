@@ -1,16 +1,16 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { DialAction } from '@elgato/streamdeck';
 
-import { wrapIndex } from './wrap_index';
-import { toSvgDataUrl } from './to_svg_data_url';
-import { toDialBackdrop } from './to_dial_backdrop';
-import type { CarouselSlot } from './carousel_slot';
-import { CarouselMetrics } from './carousel_metrics';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
+import { CarouselMetrics } from './carousel_metrics';
+import type { CarouselSlot } from './carousel_slot';
 import { formatPlaylistPosition } from './format_playlist_position';
-import type { PlaylistsDialSettings } from './playlists_dial_settings';
 import type { PlaylistsCarouselRendererOptions } from './playlists_carousel_renderer_options';
+import type { PlaylistsDialSettings } from './playlists_dial_settings';
+import { toDialBackdrop } from './to_dial_backdrop';
+import { toSvgDataUrl } from './to_svg_data_url';
+import { wrapIndex } from './wrap_index';
 
 const SPOTIFY_CLOSED_TITLE = 'Spotify closed';
 const CANVAS_FEEDBACK_KEY = 'canvas';

@@ -1,7 +1,7 @@
-import type { PlayerStateHub } from './player_state_hub';
+import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import type { CarouselScheduler } from './carousel_scheduler';
 import type { InactivityMonitor } from './inactivity_monitor';
-import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
+import type { PlayerStateHub } from './player_state_hub';
 
 /**
  * What the "now playing" screen reads: the inactivity of the Stream Deck, the player state, how to download a cover,

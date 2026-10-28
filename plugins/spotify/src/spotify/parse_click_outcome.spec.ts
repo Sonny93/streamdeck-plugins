@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseClickOutcome } from './parse_click_outcome';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
 
 const TEST_ID = 'lyrics-button';
 

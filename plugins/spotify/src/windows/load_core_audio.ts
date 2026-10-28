@@ -1,11 +1,11 @@
 import type koffiModule from 'koffi';
 
-import { parseGuid } from './parse_guid';
-import type { CoreAudio } from './core_audio';
-import { CoreAudioError } from './core_audio_error';
-import { CoreAudioConstants } from './core_audio_constants';
 import type { AudioSessionChange } from './audio_session_change';
 import type { AudioSessionSnapshot } from './audio_session_snapshot';
+import type { CoreAudio } from './core_audio';
+import { CoreAudioConstants } from './core_audio_constants';
+import { CoreAudioError } from './core_audio_error';
+import { parseGuid } from './parse_guid';
 
 type Koffi = typeof koffiModule;
 type TypeObject = ReturnType<Koffi['proto']>;

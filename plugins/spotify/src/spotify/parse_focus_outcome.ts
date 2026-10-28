@@ -1,7 +1,7 @@
 import { parseEvaluateResult } from './parse_evaluate_result';
-import { SpotifyFocusOutcome } from './spotify_focus_outcome';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
+import { SpotifyFocusOutcome } from './spotify_focus_outcome';
 
 /**
  * Interprets the raw `Runtime.evaluate` result of the focus expression.

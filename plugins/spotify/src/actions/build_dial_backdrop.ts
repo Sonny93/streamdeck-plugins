@@ -1,6 +1,6 @@
+import { buildBackdropImage } from './build_backdrop_image';
 import type { DialBackdrop } from './dial_backdrop';
 import { NowPlayingMetrics } from './now_playing_metrics';
-import { buildBackdropImage } from './build_backdrop_image';
 
 /**
  * Draws, in a dial's own 200x100 document, the slice of its column of the playing track's cover stretched over the whole strip and dimmed,

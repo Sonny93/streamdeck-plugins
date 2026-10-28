@@ -10,21 +10,21 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 
+import type { AudioMixer } from '../audio/audio_mixer';
+import { AudioAppsDataSource } from './audio_apps_data_source';
+import { buildVolumeDialSvg } from './build_volume_dial_svg';
+import { listAudioAppChoices } from './list_audio_app_choices';
+import type { NowPlayingScreen } from './now_playing_screen';
+import { ProgressTicker } from './progress_ticker';
+import { readVolumeTarget } from './read_volume_target';
+import { scheduleTimeout } from './schedule_timeout';
+import { toDialBackdrop } from './to_dial_backdrop';
+import { toNowPlayingDial } from './to_now_playing_dial';
 import { toSvgDataUrl } from './to_svg_data_url';
 import { VolumeControl } from './volume_control';
-import { ProgressTicker } from './progress_ticker';
-import type { VolumeTarget } from './volume_target';
-import { toDialBackdrop } from './to_dial_backdrop';
-import { scheduleTimeout } from './schedule_timeout';
 import { VolumeController } from './volume_controller';
-import type { AudioMixer } from '../audio/audio_mixer';
-import { readVolumeTarget } from './read_volume_target';
-import { toNowPlayingDial } from './to_now_playing_dial';
-import { buildVolumeDialSvg } from './build_volume_dial_svg';
-import type { NowPlayingScreen } from './now_playing_screen';
-import { listAudioAppChoices } from './list_audio_app_choices';
-import { AudioAppsDataSource } from './audio_apps_data_source';
 import type { VolumeDialSettings } from './volume_dial_settings';
+import type { VolumeTarget } from './volume_target';
 
 type VolumeDial = DialAction<VolumeDialSettings>;
 type VolumeSendToPluginEvent = Parameters<

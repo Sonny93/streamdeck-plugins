@@ -1,6 +1,6 @@
-import type { NowPlayingLyrics } from './now_playing_lyrics';
-import { findCurrentLyricIndex } from './find_current_lyric_index';
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
+import { findCurrentLyricIndex } from './find_current_lyric_index';
+import type { NowPlayingLyrics } from './now_playing_lyrics';
 
 const INSTRUMENTAL_MARK = '♪';
 

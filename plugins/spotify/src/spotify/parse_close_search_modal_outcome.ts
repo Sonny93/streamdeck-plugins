@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { SpotifyTestIds } from './spotify_test_ids';
 import { parseEvaluateResult } from './parse_evaluate_result';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyCloseModalOutcome } from './spotify_close_modal_outcome';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
+import { SpotifyTestIds } from './spotify_test_ids';
 
 const outcomeSchema = z.enum(SpotifyCloseModalOutcome);
 

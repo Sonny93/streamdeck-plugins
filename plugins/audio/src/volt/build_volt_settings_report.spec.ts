@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildVoltState } from './build_volt_state';
 import { buildVoltSettingsReport } from './build_volt_settings_report';
+import { buildVoltState } from './build_volt_state';
 
 describe('buildVoltSettingsReport', () => {
 	it('builds a 17 byte settings report', () => {

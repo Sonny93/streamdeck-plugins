@@ -1,8 +1,8 @@
-import { backGlyph } from './back_glyph.ts';
-import type { PackIcon } from './pack_icon.ts';
-import { IconPalette } from './icon_palette.ts';
-import { folderGlyph } from './folder_glyph.ts';
 import { audioFolderGlyph } from './audio_folder_glyph.ts';
+import { backGlyph } from './back_glyph.ts';
+import { folderGlyph } from './folder_glyph.ts';
+import { IconPalette } from './icon_palette.ts';
+import type { PackIcon } from './pack_icon.ts';
 import { spotifyFolderGlyph } from './spotify_folder_glyph.ts';
 
 /** The keys a plugin cannot style: the native folders and their Back key. */

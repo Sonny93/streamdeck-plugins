@@ -1,5 +1,5 @@
-import { ZipFormat } from './zip_format.ts';
 import { encodeZipRecord } from './encode_zip_record.ts';
+import { ZipFormat } from './zip_format.ts';
 
 /** Builds the end of central directory record, which closes the archive. */
 export function buildEndRecord(

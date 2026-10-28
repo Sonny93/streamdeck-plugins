@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { listSpotifyPlaylists } from './list_spotify_playlists';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { listSpotifyPlaylists } from './list_spotify_playlists';
 
 const LIKED_SONGS_URI = 'spotify:playlist:liked';
 const PLAYLIST_FILTER_ID = '2';

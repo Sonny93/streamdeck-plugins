@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { CoverCache } from './cover_cache';
 import { fetchCoverDataUrl } from '../spotify/fetch_cover_data_url';
+import { CoverCache } from './cover_cache';
 
 vi.mock('../spotify/fetch_cover_data_url');
 

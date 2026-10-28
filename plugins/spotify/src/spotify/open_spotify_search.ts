@@ -1,11 +1,11 @@
-import { SpotifyShortcuts } from './spotify_shortcuts';
-import type { SpotifySession } from './spotify_session';
-import { planSearchOpening } from './plan_search_opening';
-import { sendSpotifyShortcut } from './send_spotify_shortcut';
-import { readSpotifySearchState } from './read_spotify_search_state';
+import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
 import { closeSpotifySearchModal } from './close_spotify_search_modal';
 import { focusSpotifySearchInput } from './focus_spotify_search_input';
-import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
+import { planSearchOpening } from './plan_search_opening';
+import { readSpotifySearchState } from './read_spotify_search_state';
+import { sendSpotifyShortcut } from './send_spotify_shortcut';
+import type { SpotifySession } from './spotify_session';
+import { SpotifyShortcuts } from './spotify_shortcuts';
 
 /**
  * Toggles Spotify's search modal.

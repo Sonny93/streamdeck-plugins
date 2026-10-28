@@ -1,5 +1,5 @@
-import { ComError } from './com_error';
 import { checkHresult } from './check_hresult';
+import { ComError } from './com_error';
 import type { NativePointer } from './native_pointer';
 
 const NULL_POINTER = 0n;

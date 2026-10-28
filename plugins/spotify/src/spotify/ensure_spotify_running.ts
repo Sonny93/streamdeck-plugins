@@ -1,10 +1,10 @@
-import { launchSpotify } from './launch_spotify';
-import type { SpotifyRuntime } from './spotify_runtime';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
-import { retryDuringColdStart } from './retry_during_cold_start';
-import { SpotifyNotReachableError } from './spotify_not_reachable_error';
 import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
+import { launchSpotify } from './launch_spotify';
+import { retryDuringColdStart } from './retry_during_cold_start';
 import { SpotifyDebugPortUnavailableError } from './spotify_debug_port_unavailable_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import { SpotifyNotReachableError } from './spotify_not_reachable_error';
+import type { SpotifyRuntime } from './spotify_runtime';
 
 function isNotReachable(error: unknown): boolean {
 	return error instanceof SpotifyNotReachableError;

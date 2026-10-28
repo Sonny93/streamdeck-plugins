@@ -1,17 +1,17 @@
-import type { ZipEntry } from './zip_entry.ts';
-import { ProfileFormat } from './profile_format.ts';
-import { buildJsonEntry } from './build_json_entry.ts';
-import { BuiltInActions } from './built_in_actions.ts';
-import type { ProfileLayout } from './profile_layout.ts';
-import type { ProfileFolder } from './profile_folder.ts';
-import { buildPageEntries } from './build_page_entries.ts';
-import type { PluginManifest } from './plugin_manifest.ts';
-import { buildPageManifest } from './build_page_manifest.ts';
-import { buildDirectoryEntry } from './build_directory_entry.ts';
-import { buildProfileManifest } from './build_profile_manifest.ts';
-import { buildOpenFolderAction } from './build_open_folder_action.ts';
-import { buildProfilePackageJson } from './build_profile_package_json.ts';
 import { buildBackToParentAction } from './build_back_to_parent_action.ts';
+import { buildDirectoryEntry } from './build_directory_entry.ts';
+import { buildJsonEntry } from './build_json_entry.ts';
+import { buildOpenFolderAction } from './build_open_folder_action.ts';
+import { buildPageEntries } from './build_page_entries.ts';
+import { buildPageManifest } from './build_page_manifest.ts';
+import { buildProfileManifest } from './build_profile_manifest.ts';
+import { buildProfilePackageJson } from './build_profile_package_json.ts';
+import { BuiltInActions } from './built_in_actions.ts';
+import type { PluginManifest } from './plugin_manifest.ts';
+import type { ProfileFolder } from './profile_folder.ts';
+import { ProfileFormat } from './profile_format.ts';
+import type { ProfileLayout } from './profile_layout.ts';
+import type { ZipEntry } from './zip_entry.ts';
 
 function buildFolderEntries(
 	options: Readonly<{

@@ -1,10 +1,10 @@
-import type { CoreAudio } from './core_audio';
+import { acquireOutPointer } from '../windows/acquire_out_pointer';
 import { checkHresult } from '../windows/check_hresult';
+import type { NativePointer } from '../windows/native_pointer';
 import { useComObject } from '../windows/use_com_object';
+import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';
 import type { CoreAudioContext } from './core_audio_context';
-import type { NativePointer } from '../windows/native_pointer';
-import { acquireOutPointer } from '../windows/acquire_out_pointer';
 
 const { slots } = CoreAudioConstants;
 const NO_EVENT_CONTEXT = null;

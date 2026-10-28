@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { CdpClient } from './cdp_client';
-import { CdpProtocolError } from './cdp_protocol_error';
 import { CdpConnectionError } from './cdp_connection_error';
+import { CdpProtocolError } from './cdp_protocol_error';
 
 const OPEN_READY_STATE = 1;
 const CLOSED_READY_STATE = 3;

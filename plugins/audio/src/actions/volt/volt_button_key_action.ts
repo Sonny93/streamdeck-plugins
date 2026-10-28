@@ -6,14 +6,14 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 
-import type { VoltHub } from '../../volt/volt_hub';
-import { readKeyLabel } from '../keys/read_key_label';
-import type { VoltStatus } from '../../volt/volt_status';
 import type { VoltButton } from '../../volt/volt_button';
+import type { VoltHub } from '../../volt/volt_hub';
+import type { VoltStatus } from '../../volt/volt_status';
 import { DrawnKeyImages } from '../keys/drawn_key_images';
-import { resolveVoltKeyState } from './resolve_volt_key_state';
 import type { KeyLabelSettings } from '../keys/key_label_settings';
+import { readKeyLabel } from '../keys/read_key_label';
 import { toggleKeyAppearance } from '../keys/toggle_key_appearance';
+import { resolveVoltKeyState } from './resolve_volt_key_state';
 
 type VoltKey = WillAppearEvent<KeyLabelSettings>['action'];
 

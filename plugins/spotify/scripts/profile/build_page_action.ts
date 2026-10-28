@@ -1,6 +1,6 @@
+import type { ControlPlacement } from './control_placement.ts';
 import type { PageAction } from './page_action.ts';
 import type { PluginManifest } from './plugin_manifest.ts';
-import type { ControlPlacement } from './control_placement.ts';
 import { UnknownActionError } from './unknown_action_error.ts';
 
 /** Builds the page entry of a placed action from its declaration in the plugin manifest, and fails when the manifest does not declare it. */

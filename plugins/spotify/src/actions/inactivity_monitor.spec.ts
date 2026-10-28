@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { InactivityMonitor } from './inactivity_monitor';
 import type { CarouselScheduler } from './carousel_scheduler';
+import { InactivityMonitor } from './inactivity_monitor';
 
 const DELAY = 30_000;
 

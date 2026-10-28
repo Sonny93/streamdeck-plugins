@@ -1,8 +1,8 @@
-import type { AudioMixer } from './audio_mixer';
-import { readImageName } from './read_image_name';
-import { loadUser32 } from '../windows/load_user32';
-import { isSameImageName } from './is_same_image_name';
 import { loadCoreAudio } from '../windows/load_core_audio';
+import { loadUser32 } from '../windows/load_user32';
+import type { AudioMixer } from './audio_mixer';
+import { isSameImageName } from './is_same_image_name';
+import { readImageName } from './read_image_name';
 import { summarizeAudioApps } from './summarize_audio_apps';
 
 /**

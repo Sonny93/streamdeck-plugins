@@ -1,5 +1,5 @@
-import { runSpotifyQuery } from './run_spotify_query';
 import { fetchSpotifyLyrics } from './fetch_spotify_lyrics';
+import { runSpotifyQuery } from './run_spotify_query';
 import type { SpotifyLyricsLine } from './spotify_lyrics_line';
 
 const TRACK_URI_PREFIX = 'spotify:track:';

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import type { User32 } from './user32';
 import { buildFakeUser32 } from './fake_user32';
-import type { WindowHandle } from './window_handle';
 import { selectTaskbarWindows } from './select_taskbar_windows';
+import type { User32 } from './user32';
+import type { WindowHandle } from './window_handle';
 
 const TARGET_PROCESS_ID = 4242;
 const OTHER_PROCESS_ID = 7;

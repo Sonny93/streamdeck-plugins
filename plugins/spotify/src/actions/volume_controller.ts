@@ -1,10 +1,10 @@
-import { VolumeControl } from './volume_control';
 import type { AudioApp } from '../audio/audio_app';
-import type { VolumeTarget } from './volume_target';
-import type { VolumeReading } from './volume_reading';
 import type { AudioMixer } from '../audio/audio_mixer';
-import { isSameImageName } from '../audio/is_same_image_name';
 import { formatAppDisplayName } from '../audio/format_app_display_name';
+import { isSameImageName } from '../audio/is_same_image_name';
+import { VolumeControl } from './volume_control';
+import type { VolumeReading } from './volume_reading';
+import type { VolumeTarget } from './volume_target';
 
 const CAPTIONS: Readonly<Record<VolumeTarget['kind'], string>> = {
 	spotify: 'SPOTIFY',

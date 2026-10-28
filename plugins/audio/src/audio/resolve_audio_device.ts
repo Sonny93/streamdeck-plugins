@@ -1,6 +1,6 @@
 import type { AudioDevice } from './audio_device';
-import type { AudioTarget } from './audio_target';
 import type { AudioSnapshot } from './audio_snapshot';
+import type { AudioTarget } from './audio_target';
 
 /** Finds the active device a target points to, `undefined` when it is unplugged or there is no default one. */
 export function resolveAudioDevice(

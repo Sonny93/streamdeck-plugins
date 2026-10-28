@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { ProgressTicker } from './progress_ticker';
 import type { CarouselScheduler } from './carousel_scheduler';
+import { ProgressTicker } from './progress_ticker';
 
 function buildTicker() {
 	const pending: { callback: () => void; delay: number; cancelled: boolean }[] =

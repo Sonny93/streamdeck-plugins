@@ -1,8 +1,8 @@
-import type { UiStateWatcher } from './ui_state_watcher';
 import { connectUiWatchSession } from './connect_ui_watch_session';
 import { dedupeUiStateCallbacks } from './dedupe_ui_state_callbacks';
-import type { UiStateWatchCallbacks } from './ui_state_watch_callbacks';
 import { runReconnectingWatchLoop } from './run_reconnecting_watch_loop';
+import type { UiStateWatchCallbacks } from './ui_state_watch_callbacks';
+import type { UiStateWatcher } from './ui_state_watcher';
 
 /**
  * Watches the state of the Spotify window (lyrics, full screen, search, focus), pushing changes through `onChange`.

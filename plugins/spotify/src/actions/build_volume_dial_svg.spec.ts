@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { VolumeReading } from './volume_reading';
 import { buildVolumeDialSvg } from './build_volume_dial_svg';
+import type { VolumeReading } from './volume_reading';
 
 const READING: VolumeReading = {
 	caption: 'SPOTIFY',

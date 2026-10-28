@@ -1,7 +1,7 @@
-import type { SpotifySession } from './spotify_session';
-import { runPlatformScript } from './run_platform_script';
 import { parseLyricsResponse } from './parse_lyrics_response';
+import { runPlatformScript } from './run_platform_script';
 import type { SpotifyLyricsLine } from './spotify_lyrics_line';
+import type { SpotifySession } from './spotify_session';
 
 const LYRICS_URL_PREFIX =
 	'https://spclient.wg.spotify.com/color-lyrics/v2/track/';

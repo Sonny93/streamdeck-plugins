@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { SpotifyPlayerBinding } from './spotify_player_binding';
 import { parsePlayerBindingPayload } from './parse_player_binding_payload';
 import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
+import { SpotifyPlayerBinding } from './spotify_player_binding';
 
 const TRACK_PAYLOAD = {
 	title: 'Kosandra',

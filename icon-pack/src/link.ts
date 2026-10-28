@@ -1,8 +1,8 @@
 import { join } from 'node:path';
 
-import { PackPaths } from './pack_paths.ts';
-import { linkIconPack } from './link_icon_pack.ts';
 import { IconPackLinkError } from './icon_pack_link_error.ts';
+import { linkIconPack } from './link_icon_pack.ts';
+import { PackPaths } from './pack_paths.ts';
 
 const appData = process.env['APPDATA'];
 if (appData === undefined) {

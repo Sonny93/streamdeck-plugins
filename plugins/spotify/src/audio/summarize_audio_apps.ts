@@ -1,7 +1,7 @@
-import type { AudioApp } from './audio_app';
-import { readImageName } from './read_image_name';
-import { formatAppDisplayName } from './format_app_display_name';
 import type { AudioSessionSnapshot } from '../windows/audio_session_snapshot';
+import type { AudioApp } from './audio_app';
+import { formatAppDisplayName } from './format_app_display_name';
+import { readImageName } from './read_image_name';
 
 type AppGroup = { imageName: string; volume: number; isMuted: boolean };
 

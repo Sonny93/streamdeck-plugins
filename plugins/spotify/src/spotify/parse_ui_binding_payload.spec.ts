@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { SpotifyUiBinding } from './spotify_ui_binding';
 import { parseUiBindingPayload } from './parse_ui_binding_payload';
 import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
+import { SpotifyUiBinding } from './spotify_ui_binding';
 
 const STATE = {
 	isLyricsAvailable: true,

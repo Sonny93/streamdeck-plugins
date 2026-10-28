@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { skipSpotifyToPrevious } from './skip_spotify_to_previous';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { skipSpotifyToPrevious } from './skip_spotify_to_previous';
 
 describe('skipSpotifyToPrevious', () => {
 	it('should skip to the previous track', async () => {

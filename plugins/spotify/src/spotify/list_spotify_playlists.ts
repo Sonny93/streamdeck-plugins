@@ -1,8 +1,8 @@
+import { parsePlaylistListing } from './parse_playlist_listing';
+import { runPlatformScript } from './run_platform_script';
+import type { SpotifyPlaylist } from './spotify_playlist';
 import { SpotifyServices } from './spotify_services';
 import type { SpotifySession } from './spotify_session';
-import type { SpotifyPlaylist } from './spotify_playlist';
-import { runPlatformScript } from './run_platform_script';
-import { parsePlaylistListing } from './parse_playlist_listing';
 
 const FOLDER_TYPE = 'folder';
 const PLAYLIST_TYPE = 'playlist';

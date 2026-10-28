@@ -1,5 +1,5 @@
-import { SpotifyServices } from './spotify_services';
 import { SpotifyPlayerBinding } from './spotify_player_binding';
+import { SpotifyServices } from './spotify_services';
 
 const PREFERRED_IMAGE_LABELS = ['small', 'standard'];
 

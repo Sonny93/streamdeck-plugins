@@ -1,6 +1,6 @@
-import type { CoreAudio } from './core_audio';
-import type { AudioVolume } from './audio_volume';
 import type { AudioSnapshot } from './audio_snapshot';
+import type { AudioVolume } from './audio_volume';
+import type { CoreAudio } from './core_audio';
 
 /** Reads the active devices of both directions, the default ones and every volume. */
 export function readAudioSnapshot(coreAudio: CoreAudio): AudioSnapshot {

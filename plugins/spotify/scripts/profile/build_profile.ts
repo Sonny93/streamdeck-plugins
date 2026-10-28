@@ -1,11 +1,11 @@
-import { dirname, join } from 'node:path';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 
-import { ProfilePaths } from './profile_paths.ts';
-import { SpotifyDeckLayout } from './spotify_deck_layout.ts';
 import { buildProfileArchive } from './build_profile_archive.ts';
 import { parsePluginManifest } from './parse_plugin_manifest.ts';
 import { PluginManifestError } from './plugin_manifest_error.ts';
+import { ProfilePaths } from './profile_paths.ts';
+import { SpotifyDeckLayout } from './spotify_deck_layout.ts';
 
 /** Generates the Spotify Deck profile archive inside the plugin directory of the project, and returns the path it was written to. */
 export async function buildProfile(

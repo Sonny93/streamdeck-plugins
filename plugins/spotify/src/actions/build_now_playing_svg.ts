@@ -1,14 +1,14 @@
-import { fitText } from './fit_text';
-import { wrapText } from './wrap_text';
-import { escapeXml } from './escape_xml';
-import { formatTrackTime } from './format_track_time';
-import { formatSvgNumber } from './format_svg_number';
-import { NowPlayingMetrics } from './now_playing_metrics';
-import { estimateTextWidth } from './estimate_text_width';
-import type { NowPlayingFrame } from './now_playing_frame';
 import { buildBackdropImage } from './build_backdrop_image';
+import { escapeXml } from './escape_xml';
+import { estimateTextWidth } from './estimate_text_width';
+import { fitText } from './fit_text';
+import { formatSvgNumber } from './format_svg_number';
+import { formatTrackTime } from './format_track_time';
+import type { NowPlayingFrame } from './now_playing_frame';
 import type { NowPlayingLyrics } from './now_playing_lyrics';
 import type { NowPlayingLyricsTransition } from './now_playing_lyrics_transition';
+import { NowPlayingMetrics } from './now_playing_metrics';
+import { wrapText } from './wrap_text';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';

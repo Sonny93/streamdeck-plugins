@@ -1,6 +1,6 @@
 import type { AudioApp } from '../audio/audio_app';
-import { isSameImageName } from '../audio/is_same_image_name';
 import { formatAppDisplayName } from '../audio/format_app_display_name';
+import { isSameImageName } from '../audio/is_same_image_name';
 
 type AppChoice = Readonly<{ label: string; value: string }>;
 

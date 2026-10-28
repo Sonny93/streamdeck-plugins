@@ -1,8 +1,8 @@
-import { KeyState } from '../keys/key_state';
-import type { AudioTarget } from '../../audio/audio_target';
-import type { KeyStateValue } from '../keys/key_state_value';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
+import type { AudioTarget } from '../../audio/audio_target';
 import { resolveAudioDevice } from '../../audio/resolve_audio_device';
+import { KeyState } from '../keys/key_state';
+import type { KeyStateValue } from '../keys/key_state_value';
 
 /** Lights a "Default output" key while its device is the default output, and dims it while the device is unplugged or not picked. */
 export function resolveDefaultOutputKeyState(

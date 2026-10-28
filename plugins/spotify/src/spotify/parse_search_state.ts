@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 import { parseEvaluateResult } from './parse_evaluate_result';
-import type { SpotifySearchState } from './spotify_search_state';
 import { SpotifyEvaluationError } from './spotify_evaluation_error';
+import type { SpotifySearchState } from './spotify_search_state';
 
 const searchStateSchema = z.object({ hasModalInput: z.boolean() });
 

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { AudioDeviceUnavailableError } from './audio_device_unavailable_error';
 import { AudioHub } from './audio_hub';
-import { FakeCoreAudio } from './fake_core_audio';
 import type { AudioSnapshot } from './audio_snapshot';
 import { buildAudioDevice } from './build_audio_device';
-import { AudioDeviceUnavailableError } from './audio_device_unavailable_error';
+import { FakeCoreAudio } from './fake_core_audio';
 
 const POLL_INTERVAL_MILLISECONDS = 500;
 const VOLUME_STEP = 0.02;

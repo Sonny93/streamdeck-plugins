@@ -1,11 +1,11 @@
-import type { SpotifySession } from './spotify_session';
-import { evaluateInSpotify } from './evaluate_in_spotify';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
-import { retryDuringColdStart } from './retry_during_cold_start';
-import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
-import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
-import { parseFullscreenToggleOutcome } from './parse_fullscreen_toggle_outcome';
 import { buildFullscreenToggleExpression } from './build_fullscreen_toggle_expression';
+import { evaluateInSpotify } from './evaluate_in_spotify';
+import { parseFullscreenToggleOutcome } from './parse_fullscreen_toggle_outcome';
+import { retryDuringColdStart } from './retry_during_cold_start';
+import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import type { SpotifySession } from './spotify_session';
 
 async function evaluateToggle(session: SpotifySession): Promise<void> {
 	const rawResult = await evaluateInSpotify({

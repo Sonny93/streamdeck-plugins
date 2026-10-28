@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PlaylistCatalog } from './playlist_catalog';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
-import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { SpotifyNotReachableError } from '../spotify/spotify_not_reachable_error';
+import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import { PlaylistCatalog } from './playlist_catalog';
 
 vi.mock('../spotify/run_spotify_query');
 vi.mock('@elgato/streamdeck', () => ({

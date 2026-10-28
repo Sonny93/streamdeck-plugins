@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
+import { buildTrackPresenceSnippet } from './build_track_presence_snippet';
 import type { LikeTargetRef } from './like_target_ref';
-import type { SpotifySession } from './spotify_session';
 import { runPlatformScript } from './run_platform_script';
 import { SpotifyEvaluationError } from './spotify_evaluation_error';
-import { buildTrackPresenceSnippet } from './build_track_presence_snippet';
+import type { SpotifySession } from './spotify_session';
 
 const presenceSchema = z.boolean();
 

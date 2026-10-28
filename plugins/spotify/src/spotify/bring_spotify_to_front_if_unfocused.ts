@@ -1,7 +1,7 @@
-import type { SpotifySession } from './spotify_session';
-import { bringSpotifyToFront } from './bring_spotify_to_front';
 import { isProcessInForeground } from '../windows/is_process_in_foreground';
+import { bringSpotifyToFront } from './bring_spotify_to_front';
 import { readSpotifyBrowserProcessId } from './read_spotify_browser_process_id';
+import type { SpotifySession } from './spotify_session';
 
 /**
  * Brings Spotify to the foreground only when it is not the OS foreground application.

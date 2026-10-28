@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SpotifyTarget } from './spotify_target';
 import { findSpotifyPageTarget } from './find_spotify_page_target';
+import type { SpotifyTarget } from './spotify_target';
 
 function buildTarget(overrides: Partial<SpotifyTarget> = {}): SpotifyTarget {
 	return {

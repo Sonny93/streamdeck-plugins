@@ -1,13 +1,13 @@
-import { join } from 'node:path';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
-import { PackPaths } from './pack_paths.ts';
-import { PackIcons } from './pack_icons.ts';
-import { renderPng } from './render_png.ts';
-import { IconPalette } from './icon_palette.ts';
-import { folderGlyph } from './folder_glyph.ts';
 import { buildKeySvg } from './build_key_svg.ts';
+import { folderGlyph } from './folder_glyph.ts';
+import { IconPalette } from './icon_palette.ts';
 import { listIconVariants } from './list_icon_variants.ts';
+import { PackIcons } from './pack_icons.ts';
+import { PackPaths } from './pack_paths.ts';
+import { renderPng } from './render_png.ts';
 
 const KEY_WIDTH = 144;
 const PACK_ICON_WIDTH = 56;

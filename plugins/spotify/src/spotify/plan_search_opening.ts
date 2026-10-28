@@ -1,5 +1,5 @@
-import type { SpotifySearchState } from './spotify_search_state';
 import type { SearchOpeningMethod } from './search_opening_method';
+import type { SpotifySearchState } from './spotify_search_state';
 
 /**
  * Decides what the search key does from the page state.

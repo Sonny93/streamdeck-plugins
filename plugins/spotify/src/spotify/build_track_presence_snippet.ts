@@ -1,5 +1,5 @@
-import { SpotifyServices } from './spotify_services';
 import { SpotifyPlaylistKind } from './spotify_playlist_kind';
+import { SpotifyServices } from './spotify_services';
 
 const PLAYLIST_PAGE_SIZE = 500;
 

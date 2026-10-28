@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { DialPresence } from './dial_presence';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import { DialPresence } from './dial_presence';
 
 vi.mock('@elgato/streamdeck', () => ({
 	streamDeck: { logger: { debug: vi.fn() } },

@@ -1,5 +1,5 @@
-import type { KeyLabel } from './key_label.ts';
 import { IconPalette } from './icon_palette.ts';
+import type { KeyLabel } from './key_label.ts';
 
 const KEY_SIZE = 144;
 const GLYPH_BOX = 24;

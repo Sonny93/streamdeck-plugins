@@ -1,8 +1,8 @@
-import { KeyPalette } from './key_palette';
-import type { KeyLabel } from './key_label';
-import { fitText } from '../../shared/fit_text';
 import { escapeXml } from '../../shared/escape_xml';
 import { estimateTextWidth } from '../../shared/estimate_text_width';
+import { fitText } from '../../shared/fit_text';
+import type { KeyLabel } from './key_label';
+import { KeyPalette } from './key_palette';
 
 const KEY_SIZE = 144;
 const GLYPH_BOX = 24;

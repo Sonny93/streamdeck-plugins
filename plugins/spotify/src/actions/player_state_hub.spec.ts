@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PlayerStateHub } from './player_state_hub';
-import { watchPlayerState } from '../spotify/watch_player_state';
-import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
 import type { PlayerStateWatchCallbacks } from '../spotify/player_state_watch_callbacks';
+import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
+import { watchPlayerState } from '../spotify/watch_player_state';
+import { PlayerStateHub } from './player_state_hub';
 
 vi.mock('../spotify/watch_player_state');
 vi.mock('@elgato/streamdeck', () => ({

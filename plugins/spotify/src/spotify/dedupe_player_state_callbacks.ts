@@ -1,5 +1,5 @@
-import type { SpotifyPlayerState } from './spotify_player_state';
 import type { PlayerStateWatchCallbacks } from './player_state_watch_callbacks';
+import type { SpotifyPlayerState } from './spotify_player_state';
 
 function isSameState(
 	first: SpotifyPlayerState | undefined,

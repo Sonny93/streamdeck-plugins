@@ -1,8 +1,8 @@
-import type { PlayerStateWatcher } from './player_state_watcher';
-import { runReconnectingWatchLoop } from './run_reconnecting_watch_loop';
 import { connectPlayerWatchSession } from './connect_player_watch_session';
 import { dedupePlayerStateCallbacks } from './dedupe_player_state_callbacks';
 import type { PlayerStateWatchCallbacks } from './player_state_watch_callbacks';
+import type { PlayerStateWatcher } from './player_state_watcher';
+import { runReconnectingWatchLoop } from './run_reconnecting_watch_loop';
 
 /**
  * Watches the Spotify player state, pushing changes through `onChange`.

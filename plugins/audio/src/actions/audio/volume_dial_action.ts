@@ -6,9 +6,9 @@ import type {
 	WillAppearEvent,
 } from '@elgato/streamdeck';
 
-import { AudioDeviceAction } from './audio_device_action';
-import type { AudioTarget } from '../../audio/audio_target';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
+import type { AudioTarget } from '../../audio/audio_target';
+import { AudioDeviceAction } from './audio_device_action';
 import type { AudioDeviceChoices } from './audio_device_choices';
 import type { AudioDeviceSettings } from './audio_device_settings';
 import { buildVolumeDialFeedback } from './build_volume_dial_feedback';

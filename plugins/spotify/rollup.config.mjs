@@ -1,11 +1,11 @@
-import fs from 'node:fs';
-import url from 'node:url';
-import path from 'node:path';
-import terser from '@rollup/plugin-terser';
-import { createRequire } from 'node:module';
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
 import nodeResolve from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
+import typescript from '@rollup/plugin-typescript';
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import url from 'node:url';
 
 const isWatching = Boolean(process.env.ROLLUP_WATCH);
 const SD_PLUGIN_DIRECTORY = 'com.sonny93.spotify.sdPlugin';

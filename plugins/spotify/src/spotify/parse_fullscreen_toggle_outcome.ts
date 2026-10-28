@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { SpotifyTestIds } from './spotify_test_ids';
 import { parseEvaluateResult } from './parse_evaluate_result';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyFullscreenToggleOutcome } from './spotify_fullscreen_toggle_outcome';
+import { SpotifyTestIds } from './spotify_test_ids';
 
 const outcomeSchema = z.enum(SpotifyFullscreenToggleOutcome);
 

@@ -1,11 +1,11 @@
-import { SpotifyProcess } from './spotify_process';
-import { waitForSpotifyExit } from './wait_for_spotify_exit';
-import { ensureSpotifyRunning } from './ensure_spotify_running';
+import { isProcessImageRunning } from '../windows/is_process_image_running';
 import { killProcessImage } from '../windows/kill_process_image';
-import { SpotifyNotReachableError } from './spotify_not_reachable_error';
+import { ensureSpotifyRunning } from './ensure_spotify_running';
 import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
 import type { SpotifyDebugPortOutcome } from './spotify_debug_port_outcome';
-import { isProcessImageRunning } from '../windows/is_process_image_running';
+import { SpotifyNotReachableError } from './spotify_not_reachable_error';
+import { SpotifyProcess } from './spotify_process';
+import { waitForSpotifyExit } from './wait_for_spotify_exit';
 
 async function isDebugPortOpen(): Promise<boolean> {
 	try {

@@ -1,7 +1,7 @@
-import type { SpotifyCommand } from './spotify_command';
-import { clickSpotifyElement } from './click_spotify_element';
-import type { BringToFrontOptions } from './bring_to_front_options';
 import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
+import type { BringToFrontOptions } from './bring_to_front_options';
+import { clickSpotifyElement } from './click_spotify_element';
+import type { SpotifyCommand } from './spotify_command';
 
 type ToggleCommandOptions = BringToFrontOptions & Readonly<{ testId: string }>;
 

@@ -1,5 +1,5 @@
-import type { PageAction } from './page_action.ts';
 import { BuiltInActions } from './built_in_actions.ts';
+import type { PageAction } from './page_action.ts';
 
 /** Builds the "parent folder" key that leaves a folder. */
 export function buildBackToParentAction(actionId: string): PageAction {

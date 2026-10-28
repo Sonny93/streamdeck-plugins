@@ -1,8 +1,8 @@
-import { evaluateInSpotify } from './evaluate_in_spotify';
 import type { CdpConnection } from '../cdp/cdp_connection';
-import { parsePlatformOutcome } from './parse_platform_outcome';
-import { buildPlayerWatchBody } from './build_player_watch_body';
 import { buildPlatformExpression } from './build_platform_expression';
+import { buildPlayerWatchBody } from './build_player_watch_body';
+import { evaluateInSpotify } from './evaluate_in_spotify';
+import { parsePlatformOutcome } from './parse_platform_outcome';
 
 /**
  * Injects the idempotent player watch script, into one execution context or the page's default one.

@@ -1,5 +1,5 @@
-import { loadUser32 } from './load_user32';
 import { activateTaskbarWindow } from './activate_taskbar_window';
+import { loadUser32 } from './load_user32';
 import { WindowActivationError } from './window_activation_error';
 
 /** Brings the main window of a process to the foreground (Win32). Windows only. */

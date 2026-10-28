@@ -1,5 +1,5 @@
-import type { VolumeTarget } from './volume_target';
 import { volumeDialSettingsSchema } from './volume_dial_settings_schema';
+import type { VolumeTarget } from './volume_target';
 
 /** Reads whose volume a dial controls from its raw settings; missing or invalid settings mean Spotify, and an empty app name means none picked. */
 export function readVolumeTarget(rawSettings: unknown): VolumeTarget {

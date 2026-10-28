@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { CdpMessage } from './cdp_message';
 import { CdpMalformedMessageError } from './cdp_malformed_message_error';
+import type { CdpMessage } from './cdp_message';
 
 const cdpEnvelopeSchema = z.object({
 	id: z.number().optional(),

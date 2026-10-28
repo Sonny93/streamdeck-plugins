@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { SpotifyUiState } from './spotify_ui_state';
 import { dedupeUiStateCallbacks } from './dedupe_ui_state_callbacks';
+import type { SpotifyUiState } from './spotify_ui_state';
 
 const STATE: SpotifyUiState = {
 	isLyricsAvailable: true,

@@ -1,6 +1,6 @@
-import type { PackIcon } from './pack_icon.ts';
 import { buildKeySvg } from './build_key_svg.ts';
 import type { IconVariant } from './icon_variant.ts';
+import type { PackIcon } from './pack_icon.ts';
 
 /** Splits an icon into its three images: label on top, label at the bottom, and no label for the native title. */
 export function listIconVariants(icon: PackIcon): readonly IconVariant[] {

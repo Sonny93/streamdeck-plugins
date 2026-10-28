@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import type { SpotifyLyricsLine } from './spotify_lyrics_line';
 import { SpotifyEvaluationError } from './spotify_evaluation_error';
+import type { SpotifyLyricsLine } from './spotify_lyrics_line';
 
 const HTTP_OK = 200;
 const HTTP_NOT_FOUND = 404;

@@ -1,6 +1,6 @@
+import { connectToRunningSpotify } from './connect_to_running_spotify';
 import type { SpotifySession } from './spotify_session';
 import { useSpotifySession } from './use_spotify_session';
-import { connectToRunningSpotify } from './connect_to_running_spotify';
 
 /**
  * Connects to an already running Spotify, runs the read-only query, and always closes the CDP connections afterwards.

@@ -1,14 +1,14 @@
 import { action, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
-import { UiStateKeys } from './ui_state_keys';
-import type { UiStateHub } from './ui_state_hub';
-import { runSpotifyAction } from './run_spotify_action';
-import { resolveLyricsKeyState } from './resolve_lyrics_key_state';
 import { toggleSpotifyLyrics } from '../spotify/toggle_spotify_lyrics';
-import { resolveBringToFront } from './key_settings/resolve_bring_to_front';
 import { BringToFrontDefaults } from './key_settings/bring_to_front_defaults';
 import type { BringToFrontSettings } from './key_settings/bring_to_front_settings';
+import { resolveBringToFront } from './key_settings/resolve_bring_to_front';
+import { resolveLyricsKeyState } from './resolve_lyrics_key_state';
+import { runSpotifyAction } from './run_spotify_action';
+import type { UiStateHub } from './ui_state_hub';
+import { UiStateKeys } from './ui_state_keys';
 
 /** Key that shows or hides the lyrics; it is lit while they are open, and greyed (and inert) when the track has none. */
 @action({ UUID: 'com.sonny93.spotify.toggle-lyrics' })

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PluginManifest } from './plugin_manifest.ts';
 import { buildPageManifest } from './build_page_manifest.ts';
+import type { PluginManifest } from './plugin_manifest.ts';
 import { UnknownActionError } from './unknown_action_error.ts';
 
 const manifest: PluginManifest = {

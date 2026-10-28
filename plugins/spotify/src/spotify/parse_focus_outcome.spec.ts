@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { parseFocusOutcome } from './parse_focus_outcome';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
 
 const TEST_ID = 'search-modal-input';
 

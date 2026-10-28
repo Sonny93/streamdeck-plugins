@@ -1,7 +1,7 @@
-import { VoltButtons } from './volt_buttons';
-import type { VoltState } from './volt_state';
-import { VoltProtocol } from './volt_protocol';
 import type { VoltButton } from './volt_button';
+import { VoltButtons } from './volt_buttons';
+import { VoltProtocol } from './volt_protocol';
+import type { VoltState } from './volt_state';
 
 /** Reads the button states out of an input report, `undefined` when it is not a state report. */
 export function parseVoltStateReport(

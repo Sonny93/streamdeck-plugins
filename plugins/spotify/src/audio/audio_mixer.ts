@@ -1,5 +1,5 @@
-import type { AudioApp } from './audio_app';
 import type { AudioSessionChange } from '../windows/audio_session_change';
+import type { AudioApp } from './audio_app';
 
 /** What the volume dials need from the OS mixer: the apps playing sound, a way to change one of them, and the app in the foreground. */
 export type AudioMixer = Readonly<{

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { toggleSpotifyPlayback } from './toggle_spotify_playback';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { toggleSpotifyPlayback } from './toggle_spotify_playback';
 
 function buildPlayer(isPaused: boolean) {
 	return {

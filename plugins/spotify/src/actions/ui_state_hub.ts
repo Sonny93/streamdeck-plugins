@@ -1,8 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 
-import { watchUiState } from '../spotify/watch_ui_state';
 import type { SpotifyUiState } from '../spotify/spotify_ui_state';
 import type { UiStateWatcher } from '../spotify/ui_state_watcher';
+import { watchUiState } from '../spotify/watch_ui_state';
 
 type UiStateListener = (state: SpotifyUiState | undefined) => void;
 

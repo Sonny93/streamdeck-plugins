@@ -1,6 +1,6 @@
 import { SpotifyEndpoint } from './spotify_endpoint';
-import type { SpotifyTarget } from './spotify_target';
 import type { SpotifyPageTarget } from './spotify_page_target';
+import type { SpotifyTarget } from './spotify_target';
 
 const PAGE_TARGET_TYPE = 'page';
 

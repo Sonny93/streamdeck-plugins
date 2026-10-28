@@ -1,7 +1,7 @@
 import { isRecord } from './is_record.ts';
+import { parseManifestAction } from './parse_manifest_action.ts';
 import type { PluginManifest } from './plugin_manifest.ts';
 import { PluginManifestError } from './plugin_manifest_error.ts';
-import { parseManifestAction } from './parse_manifest_action.ts';
 
 /** Reads the parsed plugin manifest JSON, and fails when its name, UUID, version or actions are missing. */
 export function parsePluginManifest(raw: unknown): PluginManifest {

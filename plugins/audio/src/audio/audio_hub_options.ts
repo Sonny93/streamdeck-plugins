@@ -1,5 +1,5 @@
-import type { CoreAudio } from './core_audio';
 import type { Scheduler } from '../shared/scheduler';
+import type { CoreAudio } from './core_audio';
 
 export type AudioHubOptions = Readonly<{
 	loadCoreAudio: () => Promise<CoreAudio>;

@@ -1,5 +1,5 @@
-import { LyricsKeyState } from './lyrics_key_state';
 import type { SpotifyUiState } from '../spotify/spotify_ui_state';
+import { LyricsKeyState } from './lyrics_key_state';
 
 /** Picks the image of a "Toggle lyrics" key: lit while the lyrics are open, plain while closed, greyed when the track has none or Spotify is unreachable. */
 export function resolveLyricsKeyState(

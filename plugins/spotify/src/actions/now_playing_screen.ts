@@ -1,16 +1,16 @@
-import { toSvgDataUrl } from './to_svg_data_url';
-import { ProgressTicker } from './progress_ticker';
-import { NowPlayingTiming } from './now_playing_timing';
-import type { NowPlayingDial } from './now_playing_dial';
-import { NowPlayingMetrics } from './now_playing_metrics';
-import type { NowPlayingFrame } from './now_playing_frame';
-import { buildNowPlayingSvg } from './build_now_playing_svg';
-import { buildNowPlayingLyrics } from './build_now_playing_lyrics';
-import { findCurrentLyricIndex } from './find_current_lyric_index';
-import { resolvePlaybackPosition } from './resolve_playback_position';
-import { LyricsTransitionTracker } from './lyrics_transition_tracker';
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
+import { buildNowPlayingLyrics } from './build_now_playing_lyrics';
+import { buildNowPlayingSvg } from './build_now_playing_svg';
+import { findCurrentLyricIndex } from './find_current_lyric_index';
+import { LyricsTransitionTracker } from './lyrics_transition_tracker';
+import type { NowPlayingDial } from './now_playing_dial';
+import type { NowPlayingFrame } from './now_playing_frame';
+import { NowPlayingMetrics } from './now_playing_metrics';
 import type { NowPlayingScreenOptions } from './now_playing_screen_options';
+import { NowPlayingTiming } from './now_playing_timing';
+import { ProgressTicker } from './progress_ticker';
+import { resolvePlaybackPosition } from './resolve_playback_position';
+import { toSvgDataUrl } from './to_svg_data_url';
 
 const CANVAS_FEEDBACK_KEY = 'canvas';
 

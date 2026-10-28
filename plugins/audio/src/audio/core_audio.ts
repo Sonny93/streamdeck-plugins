@@ -1,5 +1,5 @@
-import type { AudioFlow } from './audio_flow';
 import type { AudioDevice } from './audio_device';
+import type { AudioFlow } from './audio_flow';
 import type { AudioVolume } from './audio_volume';
 
 /** The subset of Windows Core Audio needed to list the devices, switch the default one and change their volume. */

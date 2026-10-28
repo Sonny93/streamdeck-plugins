@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 import { parseEvaluateResult } from './parse_evaluate_result';
-import { SpotifyPlatformStatus } from './spotify_platform_status';
 import { SpotifyEvaluationError } from './spotify_evaluation_error';
-import { SpotifyServiceNotFoundError } from './spotify_service_not_found_error';
 import { SpotifyPlatformNotFoundError } from './spotify_platform_not_found_error';
+import { SpotifyPlatformStatus } from './spotify_platform_status';
+import { SpotifyServiceNotFoundError } from './spotify_service_not_found_error';
 
 const platformOutcomeSchema = z.discriminatedUnion('status', [
 	z.object({

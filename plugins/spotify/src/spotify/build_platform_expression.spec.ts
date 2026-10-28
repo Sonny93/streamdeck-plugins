@@ -1,8 +1,8 @@
 import vm from 'node:vm';
 import { describe, expect, it } from 'vitest';
 
-import { SpotifyPlatformBinding } from './spotify_platform_binding';
 import { buildPlatformExpression } from './build_platform_expression';
+import { SpotifyPlatformBinding } from './spotify_platform_binding';
 
 const FIBER_NODE_CAP = 200_000;
 

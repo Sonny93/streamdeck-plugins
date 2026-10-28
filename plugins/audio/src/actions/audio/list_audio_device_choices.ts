@@ -1,7 +1,7 @@
 import type { AudioFlow } from '../../audio/audio_flow';
-import { AudioTargetValues } from './audio_target_values';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
 import type { AudioDeviceChoices } from './audio_device_choices';
+import { AudioTargetValues } from './audio_target_values';
 
 type Choice = Readonly<{ label: string; value: string }>;
 type ChoiceGroup = Readonly<{ label: string; children: Choice[] }>;

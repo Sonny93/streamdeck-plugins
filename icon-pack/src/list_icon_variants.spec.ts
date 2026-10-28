@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { PackIcons } from './pack_icons.ts';
 import { listIconVariants } from './list_icon_variants.ts';
+import { PackIcons } from './pack_icons.ts';
 
 describe('listIconVariants', () => {
 	it('gives every icon a top, a bottom and an unlabeled image', () => {

@@ -1,8 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { WillAppearEvent } from '@elgato/streamdeck';
 
-import type { UiStateHub } from './ui_state_hub';
 import type { SpotifyUiState } from '../spotify/spotify_ui_state';
+import type { UiStateHub } from './ui_state_hub';
 
 type VisibleAction = WillAppearEvent['action'];
 

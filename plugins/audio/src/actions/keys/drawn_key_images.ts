@@ -1,7 +1,7 @@
-import type { KeyLabel } from './key_label';
-import type { KeyAppearance } from './key_appearance';
 import { toSvgDataUrl } from '../../shared/to_svg_data_url';
 import { buildLabeledKeySvg } from './build_labeled_key_svg';
+import type { KeyAppearance } from './key_appearance';
+import type { KeyLabel } from './key_label';
 
 type ImageTarget = Readonly<{
 	id: string;

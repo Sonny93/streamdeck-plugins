@@ -1,8 +1,8 @@
 import vm from 'node:vm';
 import { describe, expect, it } from 'vitest';
 
-import { SpotifyUiBinding } from './spotify_ui_binding';
 import { buildUiWatchScript } from './build_ui_watch_script';
+import { SpotifyUiBinding } from './spotify_ui_binding';
 
 type FakeButton = Readonly<{
 	disabled?: boolean;

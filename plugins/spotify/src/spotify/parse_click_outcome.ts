@@ -1,7 +1,7 @@
 import { parseEvaluateResult } from './parse_evaluate_result';
 import { SpotifyClickOutcome } from './spotify_click_outcome';
-import { SpotifyEvaluationError } from './spotify_evaluation_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyEvaluationError } from './spotify_evaluation_error';
 
 /**
  * Interprets the raw `Runtime.evaluate` result of the click expression.

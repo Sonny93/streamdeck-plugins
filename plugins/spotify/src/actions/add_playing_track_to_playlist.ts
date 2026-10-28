@@ -1,10 +1,10 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { TouchTapEvent } from '@elgato/streamdeck';
 
-import { runSpotifyAction } from './run_spotify_action';
-import type { LikeTargetStore } from './like_target_store';
-import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
+import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import type { LikeTargetStore } from './like_target_store';
+import { runSpotifyAction } from './run_spotify_action';
 
 type AddPlayingTrackOptions = Readonly<{
 	action: Pick<TouchTapEvent['action'], 'manifestId' | 'showAlert'>;

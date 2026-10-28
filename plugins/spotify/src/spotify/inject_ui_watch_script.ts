@@ -1,6 +1,6 @@
-import { evaluateInSpotify } from './evaluate_in_spotify';
 import type { CdpConnection } from '../cdp/cdp_connection';
 import { buildUiWatchScript } from './build_ui_watch_script';
+import { evaluateInSpotify } from './evaluate_in_spotify';
 import { parseEvaluateResult } from './parse_evaluate_result';
 
 /** Injects the idempotent window state watch script, into one execution context or the page's default one. */

@@ -1,6 +1,6 @@
-import type { SpotifySession } from './spotify_session';
 import { activateProcessWindow } from '../windows/activate_process_window';
 import { readSpotifyBrowserProcessId } from './read_spotify_browser_process_id';
+import type { SpotifySession } from './spotify_session';
 
 /**
  * Brings the Spotify window to the foreground through the OS.

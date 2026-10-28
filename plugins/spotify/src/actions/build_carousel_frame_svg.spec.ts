@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { CarouselMetrics } from './carousel_metrics';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
+import { CarouselMetrics } from './carousel_metrics';
 
 const COVER = 'data:image/jpeg;base64,AQID';
 const HEART_COLOR = CarouselMetrics.badge.heartColor;

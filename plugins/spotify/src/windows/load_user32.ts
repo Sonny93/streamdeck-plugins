@@ -1,9 +1,9 @@
 import type koffiModule from 'koffi';
 
+import { bindWindowActivation } from './bind_window_activation';
 import type { User32 } from './user32';
 import { Win32Constants } from './win32_constants';
 import type { WindowHandle } from './window_handle';
-import { bindWindowActivation } from './bind_window_activation';
 
 type Koffi = typeof koffiModule;
 type Library = ReturnType<Koffi['load']>;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { speakerGlyph } from './speaker_glyph';
 import { buildLabeledKeySvg } from './build_labeled_key_svg';
+import { speakerGlyph } from './speaker_glyph';
 
 const AMBER = '#FFB020';
 

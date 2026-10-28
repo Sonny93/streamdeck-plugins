@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { SpotifyPlayerState } from './spotify_player_state';
 import { dedupePlayerStateCallbacks } from './dedupe_player_state_callbacks';
+import type { SpotifyPlayerState } from './spotify_player_state';
 
 const PLAYING: SpotifyPlayerState = {
 	isPaused: false,

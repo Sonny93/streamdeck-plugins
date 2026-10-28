@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { isTrackInLikeTarget } from './is_track_in_like_target';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { isTrackInLikeTarget } from './is_track_in_like_target';
 
 const TRACK_URI = 'spotify:track:current';
 const PLAYLIST_URI = 'spotify:playlist:target';

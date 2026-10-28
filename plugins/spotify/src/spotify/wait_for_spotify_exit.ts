@@ -1,9 +1,9 @@
-import { SpotifyProcess } from './spotify_process';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import { isProcessImageRunning } from '../windows/is_process_image_running';
 import { retryDuringColdStart } from './retry_during_cold_start';
 import { SpotifyExitTimeoutError } from './spotify_exit_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import { SpotifyProcess } from './spotify_process';
 import { SpotifyStillRunningError } from './spotify_still_running_error';
-import { isProcessImageRunning } from '../windows/is_process_image_running';
 
 async function failWhileSpotifyRuns(): Promise<void> {
 	if (await isProcessImageRunning(SpotifyProcess.imageName)) {

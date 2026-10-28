@@ -1,9 +1,9 @@
 import vm from 'node:vm';
 import { describe, expect, it, vi } from 'vitest';
 
-import { SpotifyPlayerBinding } from './spotify_player_binding';
-import { buildPlayerWatchBody } from './build_player_watch_body';
 import { buildPlatformExpression } from './build_platform_expression';
+import { buildPlayerWatchBody } from './build_player_watch_body';
+import { SpotifyPlayerBinding } from './spotify_player_binding';
 
 type FakeImage = Readonly<{ url: string; label: string }>;
 type FakeTrack = Readonly<{

@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { VoltHub } from './volt_hub';
-import type { VoltStatus } from './volt_status';
 import { buildVoltState } from './build_volt_state';
-import { VoltNotFoundError } from './volt_not_found_error';
-import { FakeVoltConnection } from './fake_volt_connection';
 import { buildVoltStateReport } from './build_volt_state_report';
-import { VoltStateUnknownError } from './volt_state_unknown_error';
+import { FakeVoltConnection } from './fake_volt_connection';
+import { VoltHub } from './volt_hub';
 import { VoltNotConnectedError } from './volt_not_connected_error';
+import { VoltNotFoundError } from './volt_not_found_error';
+import { VoltStateUnknownError } from './volt_state_unknown_error';
+import type { VoltStatus } from './volt_status';
 
 const RECONNECT_DELAY_MILLISECONDS = 2000;
 const MONITOR_AND_PHANTOM_POWER_ON = 0x19;

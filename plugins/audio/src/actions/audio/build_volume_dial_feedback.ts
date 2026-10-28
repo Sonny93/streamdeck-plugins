@@ -1,7 +1,7 @@
-import type { AudioTarget } from '../../audio/audio_target';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
-import type { VolumeDialFeedback } from './volume_dial_feedback';
+import type { AudioTarget } from '../../audio/audio_target';
 import { resolveAudioDevice } from '../../audio/resolve_audio_device';
+import type { VolumeDialFeedback } from './volume_dial_feedback';
 
 const PERCENT = 100;
 const ACTIVE_OPACITY = 1;

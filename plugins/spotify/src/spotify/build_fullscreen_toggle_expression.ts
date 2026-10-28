@@ -1,6 +1,6 @@
-import { SpotifyTestIds } from './spotify_test_ids';
 import { SpotifyFullscreenTiming } from './spotify_fullscreen_timing';
 import { SpotifyFullscreenToggleOutcome } from './spotify_fullscreen_toggle_outcome';
+import { SpotifyTestIds } from './spotify_test_ids';
 
 /**
  * Builds the expression that clicks the full screen button and resolves once `fullscreenchange` fires.

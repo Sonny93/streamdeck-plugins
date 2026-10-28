@@ -1,9 +1,9 @@
-import type { CdpMessage } from './cdp_message';
-import { parseCdpMessage } from './parse_cdp_message';
 import type { CdpConnection } from './cdp_connection';
-import { CdpProtocolError } from './cdp_protocol_error';
 import { CdpConnectionError } from './cdp_connection_error';
 import { CdpMalformedMessageError } from './cdp_malformed_message_error';
+import type { CdpMessage } from './cdp_message';
+import { CdpProtocolError } from './cdp_protocol_error';
+import { parseCdpMessage } from './parse_cdp_message';
 
 type PendingRequest = Readonly<{
 	resolve: (result: unknown) => void;

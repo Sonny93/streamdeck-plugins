@@ -1,8 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { KeyDownEvent } from '@elgato/streamdeck';
 
-import type { SpotifyCommand } from '../spotify/spotify_command';
 import { runSpotifyCommand } from '../spotify/run_spotify_command';
+import type { SpotifyCommand } from '../spotify/spotify_command';
 
 type AlertableAction = Pick<KeyDownEvent['action'], 'manifestId' | 'showAlert'>;
 

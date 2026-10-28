@@ -1,8 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 
-import { watchPlayerState } from '../spotify/watch_player_state';
-import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
 import type { PlayerStateWatcher } from '../spotify/player_state_watcher';
+import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
+import { watchPlayerState } from '../spotify/watch_player_state';
 
 type PlayerStateListener = (state: SpotifyPlayerState | undefined) => void;
 

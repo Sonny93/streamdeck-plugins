@@ -1,11 +1,11 @@
 import { action, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
-import { UiStateKeys } from './ui_state_keys';
-import type { UiStateHub } from './ui_state_hub';
-import { runSpotifyAction } from './run_spotify_action';
-import { resolveToggleKeyState } from './resolve_toggle_key_state';
 import { openSpotifySearch } from '../spotify/open_spotify_search';
+import { resolveToggleKeyState } from './resolve_toggle_key_state';
+import { runSpotifyAction } from './run_spotify_action';
+import type { UiStateHub } from './ui_state_hub';
+import { UiStateKeys } from './ui_state_keys';
 
 /** Key that brings Spotify to front with the search focused; it is lit while the search is open. */
 @action({ UUID: 'com.sonny93.spotify.open-search' })

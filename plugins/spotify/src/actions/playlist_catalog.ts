@@ -1,10 +1,10 @@
 import { streamDeck } from '@elgato/streamdeck';
 
-import { PlaylistsDialTiming } from './playlists_dial_timing';
-import { runSpotifyQuery } from '../spotify/run_spotify_query';
-import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { listSpotifyPlaylists } from '../spotify/list_spotify_playlists';
+import { runSpotifyQuery } from '../spotify/run_spotify_query';
 import { SpotifyNotReachableError } from '../spotify/spotify_not_reachable_error';
+import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import { PlaylistsDialTiming } from './playlists_dial_timing';
 
 /**
  * Cache of the playlists of the Spotify library, shared by every "Playlists" dial.

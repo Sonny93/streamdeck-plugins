@@ -1,11 +1,11 @@
-import type { SpotifySession } from './spotify_session';
-import { parseClickOutcome } from './parse_click_outcome';
-import { evaluateInSpotify } from './evaluate_in_spotify';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
 import { buildClickExpression } from './build_click_expression';
+import { evaluateInSpotify } from './evaluate_in_spotify';
+import { parseClickOutcome } from './parse_click_outcome';
 import { retryDuringColdStart } from './retry_during_cold_start';
-import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
 import { SpotifyElementNotFoundError } from './spotify_element_not_found_error';
+import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import type { SpotifySession } from './spotify_session';
 
 async function evaluateClick(
 	session: SpotifySession,

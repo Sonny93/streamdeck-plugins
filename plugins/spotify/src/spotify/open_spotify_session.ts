@@ -1,11 +1,11 @@
 import { CdpClient } from '../cdp/cdp_client';
+import { fetchSpotifyPageTarget } from './fetch_spotify_page_target';
+import { retryDuringColdStart } from './retry_during_cold_start';
+import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
+import { SpotifyLaunchTiming } from './spotify_launch_timing';
+import { SpotifyPageNotFoundError } from './spotify_page_not_found_error';
 import type { SpotifyRuntime } from './spotify_runtime';
 import type { SpotifySession } from './spotify_session';
-import { SpotifyLaunchTiming } from './spotify_launch_timing';
-import { retryDuringColdStart } from './retry_during_cold_start';
-import { fetchSpotifyPageTarget } from './fetch_spotify_page_target';
-import { SpotifyPageNotFoundError } from './spotify_page_not_found_error';
-import { SpotifyLaunchTimeoutError } from './spotify_launch_timeout_error';
 
 /**
  * Opens the CDP connections to the Spotify UI page of an already reachable runtime.

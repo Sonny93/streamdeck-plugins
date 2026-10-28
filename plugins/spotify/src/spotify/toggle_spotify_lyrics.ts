@@ -1,7 +1,7 @@
-import { SpotifyTestIds } from './spotify_test_ids';
-import type { SpotifyCommand } from './spotify_command';
-import { buildToggleCommand } from './build_toggle_command';
 import type { BringToFrontOptions } from './bring_to_front_options';
+import { buildToggleCommand } from './build_toggle_command';
+import type { SpotifyCommand } from './spotify_command';
+import { SpotifyTestIds } from './spotify_test_ids';
 
 /** Builds the command that shows or hides the lyrics view. */
 export function toggleSpotifyLyrics(

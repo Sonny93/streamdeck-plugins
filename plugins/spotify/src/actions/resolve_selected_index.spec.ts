@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolveSelectedIndex } from './resolve_selected_index';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
+import { resolveSelectedIndex } from './resolve_selected_index';
 
 function buildPlaylist(uri: string): SpotifyPlaylist {
 	return {

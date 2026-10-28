@@ -1,8 +1,8 @@
 import type { z } from 'zod';
 
 import { SpotifyEndpoint } from './spotify_endpoint';
-import { SpotifyNotReachableError } from './spotify_not_reachable_error';
 import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
+import { SpotifyNotReachableError } from './spotify_not_reachable_error';
 
 async function fetchResponse(path: string): Promise<Response> {
 	try {

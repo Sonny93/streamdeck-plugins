@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { SpotifySession } from './spotify_session';
-import { bringSpotifyToFront } from './bring_spotify_to_front';
 import { activateProcessWindow } from '../windows/activate_process_window';
+import { bringSpotifyToFront } from './bring_spotify_to_front';
+import type { SpotifySession } from './spotify_session';
 
 vi.mock('../windows/activate_process_window');
 

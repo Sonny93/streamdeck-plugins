@@ -2,16 +2,16 @@ import { streamDeck } from '@elgato/streamdeck';
 import { action, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
-import type { LikeTarget } from './like_target';
-import { setLikeKeyState } from './set_like_key_state';
-import { runSpotifyAction } from './run_spotify_action';
-import type { PlayerStateHub } from './player_state_hub';
-import { DefaultLikeTarget } from './default_like_target';
-import type { LikeTargetStore } from './like_target_store';
-import { LikePresenceTracker } from './like_presence_tracker';
-import { runSpotifyQuery } from '../spotify/run_spotify_query';
-import { isTrackInLikeTarget } from '../spotify/is_track_in_like_target';
 import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
+import { isTrackInLikeTarget } from '../spotify/is_track_in_like_target';
+import { runSpotifyQuery } from '../spotify/run_spotify_query';
+import { DefaultLikeTarget } from './default_like_target';
+import { LikePresenceTracker } from './like_presence_tracker';
+import type { LikeTarget } from './like_target';
+import type { LikeTargetStore } from './like_target_store';
+import type { PlayerStateHub } from './player_state_hub';
+import { runSpotifyAction } from './run_spotify_action';
+import { setLikeKeyState } from './set_like_key_state';
 
 type VisibleAction = WillAppearEvent['action'];
 

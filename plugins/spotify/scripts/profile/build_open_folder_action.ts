@@ -1,5 +1,5 @@
-import type { PageAction } from './page_action.ts';
 import { BuiltInActions } from './built_in_actions.ts';
+import type { PageAction } from './page_action.ts';
 import type { ProfileFolder } from './profile_folder.ts';
 
 /** Builds the key that opens a folder; it points to the folder page by its lowercase UUID, as the Stream Deck app writes it. */

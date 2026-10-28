@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { NowPlayingFrame } from './now_playing_frame';
 import { buildNowPlayingSvg } from './build_now_playing_svg';
+import type { NowPlayingFrame } from './now_playing_frame';
 
 const COVER = 'data:image/jpeg;base64,AQID';
 const FRAME: NowPlayingFrame = {

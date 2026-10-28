@@ -1,7 +1,7 @@
-import { VoltButtons } from './volt_buttons';
-import type { VoltState } from './volt_state';
-import { VoltProtocol } from './volt_protocol';
 import { VoltButtonNames } from './volt_button_names';
+import { VoltButtons } from './volt_buttons';
+import { VoltProtocol } from './volt_protocol';
+import type { VoltState } from './volt_state';
 
 /**
  * Builds the settings report that applies a whole state.

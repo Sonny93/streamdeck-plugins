@@ -1,5 +1,5 @@
-import type { SlotGeometry } from './slot_geometry';
 import { CarouselMetrics } from './carousel_metrics';
+import type { SlotGeometry } from './slot_geometry';
 
 const HALF = 2;
 

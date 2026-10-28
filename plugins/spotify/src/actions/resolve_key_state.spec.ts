@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { ToggleKeyState } from './toggle_key_state';
-import { LyricsKeyState } from './lyrics_key_state';
 import type { SpotifyUiState } from '../spotify/spotify_ui_state';
+import { LyricsKeyState } from './lyrics_key_state';
 import { resolveLyricsKeyState } from './resolve_lyrics_key_state';
 import { resolveToggleKeyState } from './resolve_toggle_key_state';
+import { ToggleKeyState } from './toggle_key_state';
 
 const STATE: SpotifyUiState = {
 	isLyricsAvailable: true,

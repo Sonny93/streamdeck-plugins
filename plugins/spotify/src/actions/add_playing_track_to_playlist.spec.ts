@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { runSpotifyAction } from './run_spotify_action';
+import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { addPlayingTrackToPlaylist } from './add_playing_track_to_playlist';
-import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
+import { runSpotifyAction } from './run_spotify_action';
 
 const ADD_COMMAND = vi.hoisted(() => vi.fn());
 

@@ -1,5 +1,5 @@
-import type { AudioFlow } from './audio_flow';
 import type { AudioDevice } from './audio_device';
+import type { AudioFlow } from './audio_flow';
 import type { AudioVolume } from './audio_volume';
 
 /** The audio devices of Windows at one moment: the active ones, the default one of each direction, and their volume. */

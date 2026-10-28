@@ -5,14 +5,14 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 
-import { readAudioTarget } from './read_audio_target';
 import type { AudioHub } from '../../audio/audio_hub';
-import type { AudioTarget } from '../../audio/audio_target';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
+import type { AudioTarget } from '../../audio/audio_target';
 import type { AudioDeviceChoices } from './audio_device_choices';
-import { isAudioDevicesRequest } from './is_audio_devices_request';
 import type { AudioDeviceSettings } from './audio_device_settings';
+import { isAudioDevicesRequest } from './is_audio_devices_request';
 import { listAudioDeviceChoices } from './list_audio_device_choices';
+import { readAudioTarget } from './read_audio_target';
 
 type AudioDeviceActionHandle = WillAppearEvent<AudioDeviceSettings>['action'];
 type AudioSendToPluginEvent = Parameters<

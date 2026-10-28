@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseCdpMessage } from './parse_cdp_message';
 import { CdpMalformedMessageError } from './cdp_malformed_message_error';
+import { parseCdpMessage } from './parse_cdp_message';
 
 function buildResultFrame(id: number, result: unknown): string {
 	return JSON.stringify({ id, result });

@@ -1,10 +1,10 @@
-import { escapeXml } from './escape_xml';
-import type { CarouselSlot } from './carousel_slot';
-import type { SlotGeometry } from './slot_geometry';
-import { CarouselMetrics } from './carousel_metrics';
-import { formatSvgNumber } from './format_svg_number';
 import { buildCarouselHeart } from './build_carousel_heart';
+import { CarouselMetrics } from './carousel_metrics';
+import type { CarouselSlot } from './carousel_slot';
+import { escapeXml } from './escape_xml';
+import { formatSvgNumber } from './format_svg_number';
 import { resolveSlotGeometry } from './resolve_slot_geometry';
+import type { SlotGeometry } from './slot_geometry';
 
 const QUARTER_DIVISOR = 4;
 const HALF_DIVISOR = 2;

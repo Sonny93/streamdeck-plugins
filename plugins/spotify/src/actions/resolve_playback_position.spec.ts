@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { resolvePlaybackPosition } from './resolve_playback_position';
 import type { SpotifyPlayingTrack } from '../spotify/spotify_playing_track';
+import { resolvePlaybackPosition } from './resolve_playback_position';
 
 const TRACK: SpotifyPlayingTrack = {
 	title: 'A',

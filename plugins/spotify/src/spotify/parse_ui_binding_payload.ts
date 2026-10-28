@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
+import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
 import { SpotifyUiBinding } from './spotify_ui_binding';
 import type { SpotifyUiState } from './spotify_ui_state';
-import { SpotifyInvalidResponseError } from './spotify_invalid_response_error';
 
 const bindingCalledSchema = z.object({
 	name: z.string(),

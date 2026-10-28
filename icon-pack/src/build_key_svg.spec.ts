@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import type { KeyLabel } from './key_label.ts';
-import { buildKeySvg } from './build_key_svg.ts';
 import { audioFolderGlyph } from './audio_folder_glyph.ts';
+import { buildKeySvg } from './build_key_svg.ts';
+import type { KeyLabel } from './key_label.ts';
 
 const AMBER = '#FFB020';
 

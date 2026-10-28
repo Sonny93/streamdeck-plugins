@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { SpotifyShortcuts } from './spotify_shortcuts';
-import type { SpotifySession } from './spotify_session';
 import { sendSpotifyShortcut } from './send_spotify_shortcut';
+import type { SpotifySession } from './spotify_session';
+import { SpotifyShortcuts } from './spotify_shortcuts';
 
 const CONTROL_MODIFIERS = 2;
 const KEY_K_CODE = 75;

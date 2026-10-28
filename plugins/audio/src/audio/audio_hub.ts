@@ -1,10 +1,10 @@
-import type { CoreAudio } from './core_audio';
-import type { AudioTarget } from './audio_target';
-import type { AudioSnapshot } from './audio_snapshot';
-import { readAudioSnapshot } from './read_audio_snapshot';
-import type { AudioHubOptions } from './audio_hub_options';
-import { isSameAudioSnapshot } from './is_same_audio_snapshot';
 import { AudioDeviceUnavailableError } from './audio_device_unavailable_error';
+import type { AudioHubOptions } from './audio_hub_options';
+import type { AudioSnapshot } from './audio_snapshot';
+import type { AudioTarget } from './audio_target';
+import type { CoreAudio } from './core_audio';
+import { isSameAudioSnapshot } from './is_same_audio_snapshot';
+import { readAudioSnapshot } from './read_audio_snapshot';
 
 type AudioSnapshotListener = (snapshot: AudioSnapshot | undefined) => void;
 

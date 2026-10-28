@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { FakeCoreAudio } from './fake_core_audio';
 import { buildAudioDevice } from './build_audio_device';
+import { FakeCoreAudio } from './fake_core_audio';
 import { readAudioSnapshot } from './read_audio_snapshot';
 import { resolveAudioDevice } from './resolve_audio_device';
 

@@ -1,6 +1,6 @@
-import { KeyState } from './key_state';
-import { KeyPalette } from './key_palette';
 import type { KeyAppearance } from './key_appearance';
+import { KeyPalette } from './key_palette';
+import { KeyState } from './key_state';
 import type { KeyStateValue } from './key_state_value';
 
 const COLORS: Readonly<Record<KeyStateValue, string>> = {

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import type { PluginManifest } from './plugin_manifest.ts';
-import { SpotifyDeckLayout } from './spotify_deck_layout.ts';
 import { buildProfileArchive } from './build_profile_archive.ts';
 import { buildProfileEntries } from './build_profile_entries.ts';
+import type { PluginManifest } from './plugin_manifest.ts';
+import { SpotifyDeckLayout } from './spotify_deck_layout.ts';
 
 const manifest: PluginManifest = {
 	name: 'Spotify Deck',

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { buildFakeUser32 } from './fake_user32';
 import { activateTaskbarWindow } from './activate_taskbar_window';
+import { buildFakeUser32 } from './fake_user32';
 import { WindowActivationError } from './window_activation_error';
 
 const PROCESS_ID = 4242;

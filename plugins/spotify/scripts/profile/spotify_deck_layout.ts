@@ -1,5 +1,5 @@
-import type { ProfileLayout } from './profile_layout.ts';
 import type { ControlPlacement } from './control_placement.ts';
+import type { ProfileLayout } from './profile_layout.ts';
 
 type DialActionIds = readonly [string, string, string, string];
 

@@ -1,10 +1,10 @@
-import { join } from 'node:path';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { parsePluginManifest } from './parse_plugin_manifest.ts';
 import { ProfilePaths } from './profile_paths.ts';
 import { SpotifyDeckLayout } from './spotify_deck_layout.ts';
-import { parsePluginManifest } from './parse_plugin_manifest.ts';
 
 const placements = [
 	...SpotifyDeckLayout.keys,

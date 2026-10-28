@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { summarizeAudioApps } from './summarize_audio_apps';
 import type { AudioSessionSnapshot } from '../windows/audio_session_snapshot';
+import { summarizeAudioApps } from './summarize_audio_apps';
 
 const SPOTIFY_PATH =
 	'C:\\Program Files\\WindowsApps\\SpotifyAB.SpotifyMusic_x64\\Spotify.exe';

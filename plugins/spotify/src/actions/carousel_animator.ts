@@ -1,6 +1,6 @@
-import { wrapIndex } from './wrap_index';
-import { CarouselTiming } from './carousel_timing';
 import type { CarouselAnimatorOptions } from './carousel_animator_options';
+import { CarouselTiming } from './carousel_timing';
+import { wrapIndex } from './wrap_index';
 
 /**
  * Drives the scroll position of one dial's carousel.

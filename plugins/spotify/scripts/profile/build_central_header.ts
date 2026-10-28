@@ -1,5 +1,5 @@
-import { ZipFormat } from './zip_format.ts';
 import { encodeZipRecord } from './encode_zip_record.ts';
+import { ZipFormat } from './zip_format.ts';
 
 /** Builds the central directory header of an entry, which points back to its local header. */
 export function buildCentralHeader(

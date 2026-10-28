@@ -1,5 +1,5 @@
-import { SpotifyPlatformStatus } from './spotify_platform_status';
 import { SpotifyPlatformBinding } from './spotify_platform_binding';
+import { SpotifyPlatformStatus } from './spotify_platform_status';
 
 const MAX_FIBER_NODES = 200_000;
 

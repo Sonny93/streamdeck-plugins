@@ -1,11 +1,11 @@
 import type koffiModule from 'koffi';
 
-import { loadKoffi } from './load_koffi';
-import type { Kernel32 } from './kernel32';
-import type { FileHandle } from './file_handle';
 import { onceAsync } from '../shared/once_async';
-import { Win32Constants } from './win32_constants';
+import type { FileHandle } from './file_handle';
+import type { Kernel32 } from './kernel32';
+import { loadKoffi } from './load_koffi';
 import { NativeCallError } from './native_call_error';
+import { Win32Constants } from './win32_constants';
 
 type Koffi = typeof koffiModule;
 type Library = ReturnType<Koffi['load']>;

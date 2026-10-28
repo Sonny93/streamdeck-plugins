@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { fetchSpotifyLyrics } from './fetch_spotify_lyrics';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { fetchSpotifyLyrics } from './fetch_spotify_lyrics';
 
 type TransportRequest = (
 	url: string,

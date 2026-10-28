@@ -1,7 +1,7 @@
 import type { WillAppearEvent } from '@elgato/streamdeck';
 
-import { PlayPauseKeyState } from './play_pause_key_state';
 import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
+import { PlayPauseKeyState } from './play_pause_key_state';
 
 /** Shows the pause icon on a "Play / Pause" key while Spotify is playing, and the play icon otherwise. */
 export async function setPlayPauseKeyState(

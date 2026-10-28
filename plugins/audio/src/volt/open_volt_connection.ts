@@ -1,16 +1,16 @@
-import { VoltProtocol } from './volt_protocol';
-import { VoltOpenError } from './volt_open_error';
-import { VoltReadError } from './volt_read_error';
-import { VoltWriteError } from './volt_write_error';
-import type { Kernel32 } from '../windows/kernel32';
-import type { VoltConnection } from './volt_connection';
-import { loadKernel32 } from '../windows/load_kernel32';
-import { loadCfgmgr32 } from '../windows/load_cfgmgr32';
 import type { FileHandle } from '../windows/file_handle';
-import { VoltNotFoundError } from './volt_not_found_error';
+import { HidInterfaceClass } from '../windows/hid_interface_class';
+import type { Kernel32 } from '../windows/kernel32';
+import { loadCfgmgr32 } from '../windows/load_cfgmgr32';
+import { loadKernel32 } from '../windows/load_kernel32';
 import { Win32Constants } from '../windows/win32_constants';
 import { isVoltInterfacePath } from './is_volt_interface_path';
-import { HidInterfaceClass } from '../windows/hid_interface_class';
+import type { VoltConnection } from './volt_connection';
+import { VoltNotFoundError } from './volt_not_found_error';
+import { VoltOpenError } from './volt_open_error';
+import { VoltProtocol } from './volt_protocol';
+import { VoltReadError } from './volt_read_error';
+import { VoltWriteError } from './volt_write_error';
 
 function openHandle(
 	kernel32: Kernel32,

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { playSpotifyPlaylist } from './play_spotify_playlist';
 import { buildFakePlatformSession } from './build_fake_platform_session';
+import { playSpotifyPlaylist } from './play_spotify_playlist';
 
 function buildPlayer() {
 	return { play: vi.fn((..._args: unknown[]) => Promise.resolve()) };

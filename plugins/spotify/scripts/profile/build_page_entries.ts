@@ -1,8 +1,8 @@
-import type { ZipEntry } from './zip_entry.ts';
-import { ProfileFormat } from './profile_format.ts';
+import { buildDirectoryEntry } from './build_directory_entry.ts';
 import { buildJsonEntry } from './build_json_entry.ts';
 import type { PageManifest } from './page_manifest.ts';
-import { buildDirectoryEntry } from './build_directory_entry.ts';
+import { ProfileFormat } from './profile_format.ts';
+import type { ZipEntry } from './zip_entry.ts';
 
 /** Builds the entries of one page: its directory, its empty Images directory and its `manifest.json`. */
 export function buildPageEntries(
