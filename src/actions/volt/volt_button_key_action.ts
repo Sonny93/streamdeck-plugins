@@ -1,10 +1,10 @@
 import { streamDeck, SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
-import type { VoltHub } from '../volt/volt_hub';
-import type { VoltStatus } from '../volt/volt_status';
-import type { VoltButton } from '../volt/volt_button';
+import type { VoltHub } from '../../volt/volt_hub';
 import { setVoltKeyState } from './set_volt_key_state';
+import type { VoltStatus } from '../../volt/volt_status';
+import type { VoltButton } from '../../volt/volt_button';
 
 /** Key that shows whether a front panel button of the Volt 1 is on, and flips it when pressed. */
 export abstract class VoltButtonKeyAction extends SingletonAction {

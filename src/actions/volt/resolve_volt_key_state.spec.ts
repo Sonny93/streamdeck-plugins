@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { VoltKeyState } from './volt_key_state';
-import { buildVoltState } from '../volt/build_volt_state';
+import { buildVoltState } from '../../volt/build_volt_state';
 import { resolveVoltKeyState } from './resolve_volt_key_state';
 
 describe('resolveVoltKeyState', () => {

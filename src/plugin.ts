@@ -4,8 +4,8 @@ import { VoltHub } from './volt/volt_hub';
 import { VoltTiming } from './volt/volt_timing';
 import { scheduleTimeout } from './shared/schedule_timeout';
 import { openVoltConnection } from './volt/open_volt_connection';
-import { VoltMonitorKeyAction } from './actions/volt_monitor_key_action';
-import { VoltVintageKeyAction } from './actions/volt_vintage_key_action';
+import { VoltMonitorKeyAction } from './actions/volt/volt_monitor_key_action';
+import { VoltVintageKeyAction } from './actions/volt/volt_vintage_key_action';
 
 const voltHub = new VoltHub({
 	openConnection: openVoltConnection,

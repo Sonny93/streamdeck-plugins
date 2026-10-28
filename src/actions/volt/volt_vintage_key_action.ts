@@ -1,6 +1,6 @@
 import { action } from '@elgato/streamdeck';
 
-import type { VoltButton } from '../volt/volt_button';
+import type { VoltButton } from '../../volt/volt_button';
 import { VoltButtonKeyAction } from './volt_button_key_action';
 
 /** Key for the VINTAGE button of the Volt 1 (tube preamp emulation). */
