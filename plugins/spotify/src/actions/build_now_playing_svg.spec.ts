@@ -62,7 +62,7 @@ describe('buildNowPlayingSvg', () => {
 	it('should truncate a very long title', () => {
 		const svg = build({ ...FRAME, title: 'A'.repeat(50) });
 
-		expect(svg).toContain(`>${'A'.repeat(43)}…</text>`);
+		expect(svg).toContain(`>${'A'.repeat(35)}…</text>`);
 	});
 
 	it('should show the elapsed time before the progress bar and the duration after it', () => {
@@ -149,7 +149,7 @@ describe('buildNowPlayingSvg', () => {
 			lyrics: { current: 'Hola', next: undefined },
 		});
 
-		expect(svg).toContain(`>${'A'.repeat(21)}…</text>`);
+		expect(svg).toContain(`>${'A'.repeat(16)}…</text>`);
 		expect(svg).toContain('clip-path="url(#now-playing-info)"');
 	});
 
@@ -169,5 +169,11 @@ describe('buildNowPlayingSvg', () => {
 		expect(svg).toMatch(
 			/<g transform="translate\(0,-5\)" opacity="0.75">.*>Hola<\/text>.*<\/g><g transform="translate\(0,15\)" opacity="0.25">.*>Adiós<\/text><\/g>/
 		);
+	});
+
+	it('should keep a long title of narrow letters that fits the width', () => {
+		const title = 'i'.repeat(60);
+
+		expect(build({ ...FRAME, title })).toContain(`>${title}</text>`);
 	});
 });

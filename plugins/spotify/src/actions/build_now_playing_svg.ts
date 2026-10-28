@@ -1,7 +1,6 @@
 import { fitText } from './fit_text';
 import { wrapText } from './wrap_text';
 import { escapeXml } from './escape_xml';
-import { truncateText } from './truncate_text';
 import { formatTrackTime } from './format_track_time';
 import { formatSvgNumber } from './format_svg_number';
 import { NowPlayingMetrics } from './now_playing_metrics';
@@ -149,11 +148,17 @@ function buildTrackInfo(frame: NowPlayingFrame): string {
 	const artistsStyle = isSplit ? splitArtists : artists;
 	const texts = [
 		buildText(
-			truncateText({ text: frame.title, maxLength: titleStyle.maxLength }),
+			fitText({
+				text: frame.title,
+				fits: fitsWidth(titleStyle, titleStyle.maxWidth),
+			}),
 			titleStyle
 		),
 		buildText(
-			truncateText({ text: artistLine, maxLength: artistsStyle.maxLength }),
+			fitText({
+				text: artistLine,
+				fits: fitsWidth(artistsStyle, artistsStyle.maxWidth),
+			}),
 			artistsStyle
 		),
 	].join('');
@@ -163,13 +168,20 @@ function buildTrackInfo(frame: NowPlayingFrame): string {
 	return `${buildClip(INFO_CLIP_ID, 0, infoClipRight)}<g clip-path="url(#${INFO_CLIP_ID})">${texts}</g>`;
 }
 
-function fitsLyricsRow(style: LyricsStyle): (text: string) => boolean {
+function fitsWidth(
+	style: Omit<TextStyle, 'y' | 'color'>,
+	maxWidth: number
+): (text: string) => boolean {
 	return (text) =>
 		estimateTextWidth({
 			text,
 			fontSize: style.fontSize,
 			isBold: style.fontWeight !== undefined,
-		}) <= NowPlayingMetrics.lyrics.textWidth;
+		}) <= maxWidth;
+}
+
+function fitsLyricsRow(style: LyricsStyle): (text: string) => boolean {
+	return fitsWidth(style, NowPlayingMetrics.lyrics.textWidth);
 }
 
 function buildLyricsRows(lyrics: NowPlayingLyrics): LyricsRow[] {
