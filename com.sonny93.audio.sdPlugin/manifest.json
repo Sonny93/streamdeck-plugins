@@ -19,6 +19,7 @@
 			"UUID": "com.sonny93.audio.volt-monitor",
 			"Icon": "imgs/actions/volt-monitor/icon",
 			"Tooltip": "Turns the MONITOR button of the Volt 1 on or off, and shows whether it is on.",
+			"PropertyInspectorPath": "ui/volt_monitor_settings.html",
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
@@ -32,6 +33,7 @@
 			"UUID": "com.sonny93.audio.volt-vintage",
 			"Icon": "imgs/actions/volt-vintage/icon",
 			"Tooltip": "Turns the VINTAGE button of the Volt 1 on or off, and shows whether it is on.",
+			"PropertyInspectorPath": "ui/volt_vintage_settings.html",
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [

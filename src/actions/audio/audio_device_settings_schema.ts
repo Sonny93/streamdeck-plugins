@@ -1,11 +1,8 @@
 import { z } from 'zod';
 
-/**
- * Per-action settings of the audio device actions, written by the property inspector; unknown keys are ignored.
- * Only the "Default Output" key offers a label, drawn by the plugin so that it takes the color of the key state.
- */
-export const audioDeviceSettingsSchema = z.object({
+import { keyLabelSettingsSchema } from '../keys/key_label_settings_schema';
+
+/** Per-action settings of the audio device actions: the picked device and, on keys, the drawn label; unknown keys are ignored. */
+export const audioDeviceSettingsSchema = keyLabelSettingsSchema.extend({
 	device: z.string().optional(),
-	label: z.string().optional(),
-	labelPosition: z.enum(['top', 'bottom']).optional(),
 });

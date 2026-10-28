@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { AudioKeyState } from './audio_key_state';
+import { KeyState } from '../keys/key_state';
 import { FakeCoreAudio } from '../../audio/fake_core_audio';
 import { resolveMuteKeyState } from './resolve_mute_key_state';
 import { buildAudioDevice } from '../../audio/build_audio_device';
@@ -22,18 +22,18 @@ describe('resolveMuteKeyState', () => {
 
 		expect(
 			resolveMuteKeyState(snapshot, { kind: 'default', flow: 'input' })
-		).toBe(AudioKeyState.on);
+		).toBe(KeyState.on);
 		expect(
 			resolveMuteKeyState(snapshot, { kind: 'default', flow: 'output' })
-		).toBe(AudioKeyState.off);
+		).toBe(KeyState.off);
 	});
 
 	it('dims the key while the devices are unknown or the device is unplugged', () => {
 		expect(
 			resolveMuteKeyState(undefined, { kind: 'default', flow: 'input' })
-		).toBe(AudioKeyState.unavailable);
+		).toBe(KeyState.unavailable);
 		expect(
 			resolveMuteKeyState(readSnapshot(), { kind: 'device', deviceId: 'fiio' })
-		).toBe(AudioKeyState.unavailable);
+		).toBe(KeyState.unavailable);
 	});
 });
