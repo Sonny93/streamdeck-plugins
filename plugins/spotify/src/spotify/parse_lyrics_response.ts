@@ -12,7 +12,7 @@ const lyricsResponseSchema = z.object({
 	syncType: z.string().nullable(),
 	lines: z.array(
 		z.object({
-			startTimeMs: z.coerce.number().pipe(z.number().finite().nonnegative()),
+			startTimeMs: z.coerce.number().pipe(z.number().nonnegative()),
 			words: z.string(),
 		})
 	),

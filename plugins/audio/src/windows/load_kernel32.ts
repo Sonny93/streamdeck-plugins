@@ -5,6 +5,7 @@ import type { Kernel32 } from './kernel32';
 import type { FileHandle } from './file_handle';
 import { onceAsync } from '../shared/once_async';
 import { Win32Constants } from './win32_constants';
+import { NativeCallError } from './native_call_error';
 
 type Koffi = typeof koffiModule;
 type Library = ReturnType<Koffi['load']>;
@@ -33,7 +34,7 @@ function callOnWorker(
 				resolve(result);
 				return;
 			}
-			reject(error);
+			reject(new NativeCallError({ cause: error }));
 		});
 	});
 }

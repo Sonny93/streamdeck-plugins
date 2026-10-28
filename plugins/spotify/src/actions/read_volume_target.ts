@@ -16,7 +16,8 @@ export function readVolumeTarget(rawSettings: unknown): VolumeTarget {
 					imageName === undefined || imageName === '' ? undefined : imageName,
 			};
 		}
-		default:
+		case 'spotify':
+		case undefined:
 			return { kind: 'spotify' };
 	}
 }

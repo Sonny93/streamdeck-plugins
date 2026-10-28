@@ -13,9 +13,9 @@
 		"check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test"
 	},
 	"devDependencies": {
-		"@minimalstuff/tooling": "^0.6.0",
-		"oxfmt": "^0.72.0",
-		"oxlint": "^1.89.0",
+		"@minimalstuff/tooling": "^0.7.0",
+		"oxfmt": "^0.75.0",
+		"oxlint": "^1.90.0",
 		"oxlint-tsgolint": "^7.0.2005"
 	}
 }
