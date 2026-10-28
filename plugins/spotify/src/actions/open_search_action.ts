@@ -1,4 +1,4 @@
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import { openSpotifySearch } from '../spotify/open_spotify_search';
@@ -8,8 +8,9 @@ import type { UiStateHub } from './ui_state_hub';
 import { UiStateKeys } from './ui_state_keys';
 
 /** Key that brings Spotify to front with the search focused; it is lit while the search is open. */
-@action({ UUID: 'com.sonny93.spotify.open-search' })
 export class OpenSearchAction extends SingletonAction {
+	override readonly manifestId = 'com.sonny93.spotify.open-search';
+
 	private readonly keys: UiStateKeys;
 
 	constructor(hub: UiStateHub) {

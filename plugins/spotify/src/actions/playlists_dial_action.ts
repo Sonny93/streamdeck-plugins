@@ -1,5 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type {
 	DialAction,
 	DialDownEvent,
@@ -42,8 +42,9 @@ type PlaylistsDial = DialAction<PlaylistsDialSettings>;
  * While the Stream Deck is inactive and a track is loaded, the strip shows the playing track instead;
  * the first rotation, press or tap after that only brings the carousel back.
  */
-@action({ UUID: 'com.sonny93.spotify.playlists' })
 export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> {
+	override readonly manifestId = 'com.sonny93.spotify.playlists';
+
 	private readonly selectedUris = new Map<string, string | undefined>();
 	private readonly animators = new Map<string, CarouselAnimator>();
 	private readonly catalog = new PlaylistCatalog();

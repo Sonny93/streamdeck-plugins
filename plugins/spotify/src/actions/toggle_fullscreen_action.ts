@@ -1,4 +1,4 @@
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import { toggleSpotifyFullscreen } from '../spotify/toggle_spotify_fullscreen';
@@ -11,8 +11,9 @@ import type { UiStateHub } from './ui_state_hub';
 import { UiStateKeys } from './ui_state_keys';
 
 /** Key that enters or leaves the Spotify full screen mode; it is lit while Spotify is in full screen. */
-@action({ UUID: 'com.sonny93.spotify.toggle-fullscreen' })
 export class ToggleFullscreenAction extends SingletonAction<BringToFrontSettings> {
+	override readonly manifestId = 'com.sonny93.spotify.toggle-fullscreen';
+
 	private readonly keys: UiStateKeys;
 
 	constructor(hub: UiStateHub) {

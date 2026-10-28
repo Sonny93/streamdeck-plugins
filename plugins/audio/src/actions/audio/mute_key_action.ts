@@ -1,4 +1,3 @@
-import { action } from '@elgato/streamdeck';
 import type { KeyDownEvent } from '@elgato/streamdeck';
 
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
@@ -27,8 +26,9 @@ const APPEARANCES: Readonly<Record<KeyStateValue, KeyAppearance>> = {
  * Key that mutes or unmutes its device, the default input unless another one is picked.
  * The microphone is amber while live and red, struck through, while muted.
  */
-@action({ UUID: 'com.sonny93.audio.mute' })
 export class MuteKeyAction extends AudioDeviceKeyAction {
+	override readonly manifestId = 'com.sonny93.audio.mute';
+
 	protected override readonly fallbackTarget: AudioTarget | undefined = {
 		kind: 'default',
 		flow: 'input',

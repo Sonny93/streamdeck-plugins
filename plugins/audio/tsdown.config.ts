@@ -1,13 +1,10 @@
-import commonjs from '@rollup/plugin-commonjs';
-import nodeResolve from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
-import typescript from '@rollup/plugin-typescript';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import url from 'node:url';
+import { defineConfig } from 'tsdown';
+import type { Rolldown } from 'tsdown';
 
-const isWatching = Boolean(process.env.ROLLUP_WATCH);
 const SD_PLUGIN_DIRECTORY = 'com.sonny93.audio.sdPlugin';
 const BUNDLED_NODE_MODULES = `${SD_PLUGIN_DIRECTORY}/bin/node_modules`;
 const KOFFI_PACKAGE = 'koffi';
@@ -27,10 +24,8 @@ const KOFFI_SKIPPED_EXTENSIONS = new Set([
 /**
  * Tells whether a file of the koffi packages is needed at runtime.
  * Documentation, vendored headers and C sources are left out.
- * @param {string} packageDirectory
- * @param {string} source
  */
-function isKoffiRuntimeFile(packageDirectory, source) {
+function isKoffiRuntimeFile(packageDirectory: string, source: string): boolean {
 	const relativePath = path.relative(packageDirectory, source);
 	const [firstSegment = ''] = relativePath.split(path.sep);
 	if (KOFFI_SKIPPED_DIRECTORIES.has(firstSegment)) {
@@ -42,15 +37,14 @@ function isKoffiRuntimeFile(packageDirectory, source) {
 	return !KOFFI_SKIPPED_EXTENSIONS.has(path.extname(source));
 }
 
-/**
- * @param {string} directory
- * @returns {string | undefined}
- */
-function readPackageVersion(directory) {
+function readPackageVersion(directory: string): unknown {
 	try {
-		return JSON.parse(
+		const packageJson: unknown = JSON.parse(
 			fs.readFileSync(path.join(directory, 'package.json'), 'utf8')
-		).version;
+		);
+		return typeof packageJson === 'object' && packageJson !== null
+			? Reflect.get(packageJson, 'version')
+			: undefined;
 	} catch {
 		return undefined;
 	}
@@ -59,10 +53,8 @@ function readPackageVersion(directory) {
 /**
  * Copies a package, dereferencing pnpm symlinks, unless the same version is already in place.
  * The skip matters because a running plugin keeps the native addon loaded, and Windows refuses to overwrite it.
- * @param {string} source real directory of the package
- * @param {string} destination
  */
-function copyPackageOnce(source, destination) {
+function copyPackageOnce(source: string, destination: string): void {
 	if (readPackageVersion(source) === readPackageVersion(destination)) {
 		return;
 	}
@@ -78,7 +70,7 @@ function copyPackageOnce(source, destination) {
  * koffi is a native addon, so it is kept external and shipped next to the bundle.
  * The loader of koffi expects its platform package at ../../../@koromix/koffi-<platform> from its own folder.
  */
-function copyKoffiPlugin() {
+function copyKoffiPlugin(): Rolldown.Plugin {
 	return {
 		name: 'copy-koffi',
 		writeBundle() {
@@ -104,45 +96,46 @@ function copyKoffiPlugin() {
 	};
 }
 
-/** @type {import('rollup').RollupOptions} */
-const config = {
-	input: 'src/plugin.ts',
-	external: [KOFFI_PACKAGE],
-	output: {
-		file: `${SD_PLUGIN_DIRECTORY}/bin/plugin.js`,
-		sourcemap: isWatching,
-		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) =>
-			url.pathToFileURL(
-				path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
-			).href,
-	},
-	plugins: [
-		{
-			name: 'watch-externals',
-			buildStart() {
-				this.addWatchFile(`${SD_PLUGIN_DIRECTORY}/manifest.json`);
-			},
+/** Marks the bundle folder as ES modules, so Node loads `plugin.js` as one. */
+function emitModulePackageFilePlugin(): Rolldown.Plugin {
+	return {
+		name: 'emit-module-package-file',
+		generateBundle() {
+			this.emitFile({
+				fileName: 'package.json',
+				source: '{ "type": "module" }',
+				type: 'asset',
+			});
 		},
-		typescript({ mapRoot: isWatching ? './' : undefined }),
-		nodeResolve({
-			browser: false,
-			exportConditions: ['node'],
-			preferBuiltins: true,
-		}),
-		commonjs(),
-		!isWatching && terser(),
-		{
-			name: 'emit-module-package-file',
-			generateBundle() {
-				this.emitFile({
-					fileName: 'package.json',
-					source: '{ "type": "module" }',
-					type: 'asset',
-				});
-			},
-		},
-		copyKoffiPlugin(),
-	],
-};
+	};
+}
 
-export default config;
+export default defineConfig(({ watch = false }) => {
+	const isWatching = watch !== false;
+	return {
+		entry: { plugin: 'src/plugin.ts' },
+		outDir: `${SD_PLUGIN_DIRECTORY}/bin`,
+		// The bin folder also holds the copied koffi packages, which a running plugin keeps locked.
+		clean: false,
+		format: 'esm',
+		platform: 'node',
+		target: 'node24',
+		fixedExtension: false,
+		deps: {
+			neverBundle: [KOFFI_PACKAGE],
+			alwaysBundle: [/^@elgato\//u, /^zod(?:\/|$)/u],
+			onlyBundle: false,
+		},
+		minify: !isWatching,
+		sourcemap: isWatching,
+		outputOptions: {
+			sourcemapPathTransform: (relativeSourcePath, sourcemapPath) =>
+				url.pathToFileURL(
+					path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
+				).href,
+		},
+		watch: isWatching ? ['src', `${SD_PLUGIN_DIRECTORY}/manifest.json`] : false,
+		onSuccess: isWatching ? 'pnpm run restart' : undefined,
+		plugins: [emitModulePackageFilePlugin(), copyKoffiPlugin()],
+	};
+});

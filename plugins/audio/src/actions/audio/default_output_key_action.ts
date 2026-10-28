@@ -1,4 +1,3 @@
-import { action } from '@elgato/streamdeck';
 import type { KeyDownEvent } from '@elgato/streamdeck';
 
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
@@ -13,8 +12,9 @@ import type { AudioDeviceSettings } from './audio_device_settings';
 import { resolveDefaultOutputKeyState } from './resolve_default_output_key_state';
 
 /** Key that makes its device the default output of Windows (every role), lit while it is; it has no default label. */
-@action({ UUID: 'com.sonny93.audio.default-output' })
 export class DefaultOutputKeyAction extends AudioDeviceKeyAction {
+	override readonly manifestId = 'com.sonny93.audio.default-output';
+
 	protected override readonly fallbackTarget: AudioTarget | undefined =
 		undefined;
 	protected override readonly defaultLabel: string | undefined = undefined;

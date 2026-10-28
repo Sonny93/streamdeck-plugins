@@ -11,8 +11,7 @@
 		"noUncheckedIndexedAccess": true,
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true,
-		"skipLibCheck": true,
-		"rootDir": "./src"
+		"skipLibCheck": true
 	},
-	"include": ["src/**/*.ts"]
+	"include": ["src/**/*.ts", "tsdown.config.ts"]
 }

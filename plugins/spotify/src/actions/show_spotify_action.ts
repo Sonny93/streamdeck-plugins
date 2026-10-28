@@ -1,4 +1,4 @@
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import { bringSpotifyToFront } from '../spotify/bring_spotify_to_front';
@@ -11,8 +11,9 @@ import { UiStateKeys } from './ui_state_keys';
  * Key that brings the Spotify window to the foreground (launching Spotify when it is closed); pressing it again keeps it there.
  * It is lit while the Spotify window has the focus.
  */
-@action({ UUID: 'com.sonny93.spotify.show-spotify' })
 export class ShowSpotifyAction extends SingletonAction {
+	override readonly manifestId = 'com.sonny93.spotify.show-spotify';
+
 	private readonly keys: UiStateKeys;
 
 	constructor(hub: UiStateHub) {

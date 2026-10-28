@@ -1,5 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
@@ -20,8 +20,9 @@ type VisibleAction = WillAppearEvent['action'];
  * The key title is the target name, and the key state tells whether the playing track is already in the target.
  * Presence checks never launch Spotify, while pressing the key does.
  */
-@action({ UUID: 'com.sonny93.spotify.like' })
 export class LikeAction extends SingletonAction {
+	override readonly manifestId = 'com.sonny93.spotify.like';
+
 	private readonly presence = new LikePresenceTracker({
 		query: (options) => runSpotifyQuery(isTrackInLikeTarget(options)),
 		onChange: (isInTarget) => {

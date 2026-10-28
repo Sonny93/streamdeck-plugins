@@ -1,4 +1,4 @@
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import { toggleSpotifyLyrics } from '../spotify/toggle_spotify_lyrics';
@@ -11,8 +11,9 @@ import type { UiStateHub } from './ui_state_hub';
 import { UiStateKeys } from './ui_state_keys';
 
 /** Key that shows or hides the lyrics; it is lit while they are open, and greyed (and inert) when the track has none. */
-@action({ UUID: 'com.sonny93.spotify.toggle-lyrics' })
 export class ToggleLyricsAction extends SingletonAction<BringToFrontSettings> {
+	override readonly manifestId = 'com.sonny93.spotify.toggle-lyrics';
+
 	private readonly keys: UiStateKeys;
 
 	constructor(private readonly hub: UiStateHub) {

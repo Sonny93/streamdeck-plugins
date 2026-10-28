@@ -1,4 +1,3 @@
-import { action } from '@elgato/streamdeck';
 import type {
 	DialDownEvent,
 	DialRotateEvent,
@@ -17,8 +16,9 @@ import { buildVolumeDialFeedback } from './build_volume_dial_feedback';
  * Stream Deck+ dial for the volume of its device, the default output unless another one is picked.
  * Rotate to change the volume (unmuting the device), press the dial or tap the strip to mute or unmute it.
  */
-@action({ UUID: 'com.sonny93.audio.volume' })
 export class VolumeDialAction extends AudioDeviceAction {
+	override readonly manifestId = 'com.sonny93.audio.volume';
+
 	protected override readonly fallbackTarget: AudioTarget | undefined = {
 		kind: 'default',
 		flow: 'output',

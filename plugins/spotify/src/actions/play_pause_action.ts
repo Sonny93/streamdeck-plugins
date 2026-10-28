@@ -1,5 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
 
 import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
@@ -8,8 +8,9 @@ import type { PlayerStateHub } from './player_state_hub';
 import { runSpotifyAction } from './run_spotify_action';
 import { setPlayPauseKeyState } from './set_play_pause_key_state';
 
-@action({ UUID: 'com.sonny93.spotify.play-pause' })
 export class PlayPauseAction extends SingletonAction {
+	override readonly manifestId = 'com.sonny93.spotify.play-pause';
+
 	private unsubscribe: (() => void) | undefined;
 
 	constructor(private readonly playerStateHub: PlayerStateHub) {

@@ -1,5 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
-import { action, SingletonAction } from '@elgato/streamdeck';
+import { SingletonAction } from '@elgato/streamdeck';
 import type {
 	DialAction,
 	DialDownEvent,
@@ -40,8 +40,9 @@ const CANVAS_FEEDBACK_KEY = 'canvas';
  * over the dial's slice of the playing track's cover.
  * While the "now playing" screen shows, the first rotation, press or tap only brings the volume back.
  */
-@action({ UUID: 'com.sonny93.spotify.volume' })
 export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
+	override readonly manifestId = 'com.sonny93.spotify.volume';
+
 	private readonly targets = new Map<string, VolumeTarget>();
 	private readonly lastImages = new Map<string, string>();
 	private readonly queues = new Map<string, Promise<void>>();
