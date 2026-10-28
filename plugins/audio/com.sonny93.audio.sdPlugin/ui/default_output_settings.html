@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Output">
+			<sdpi-select
+				setting="device"
+				datasource="listOutputDevices"
+				hot-reload
+				loading="Looking for outputs..."
+				placeholder="Pick an output"
+			></sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Label">
+			<sdpi-textfield
+				setting="label"
+				placeholder="e.g. Headphones"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Label position">
+			<sdpi-select setting="labelPosition" default="top">
+				<option value="top">Top</option>
+				<option value="bottom">Bottom</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>About the label</summary>
+				<p>
+					The label takes the color of the icon. Leave the Stream Deck title of
+					the key empty so it does not show on top of it.
+				</p>
+			</details>
+		</sdpi-item>
+	</body>
+</html>

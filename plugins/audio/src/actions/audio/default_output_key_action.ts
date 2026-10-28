@@ -1,0 +1,45 @@
+import { action } from '@elgato/streamdeck';
+import type { KeyDownEvent } from '@elgato/streamdeck';
+
+import { speakerGlyph } from '../keys/speaker_glyph';
+import type { KeyAppearance } from '../keys/key_appearance';
+import type { AudioTarget } from '../../audio/audio_target';
+import type { KeyStateValue } from '../keys/key_state_value';
+import type { AudioSnapshot } from '../../audio/audio_snapshot';
+import { AudioDeviceKeyAction } from './audio_device_key_action';
+import type { AudioDeviceChoices } from './audio_device_choices';
+import type { AudioDeviceSettings } from './audio_device_settings';
+import { toggleKeyAppearance } from '../keys/toggle_key_appearance';
+import { resolveDefaultOutputKeyState } from './resolve_default_output_key_state';
+
+/** Key that makes its device the default output of Windows (every role), lit while it is; it has no default label. */
+@action({ UUID: 'com.sonny93.audio.default-output' })
+export class DefaultOutputKeyAction extends AudioDeviceKeyAction {
+	protected override readonly fallbackTarget: AudioTarget | undefined =
+		undefined;
+	protected override readonly defaultLabel: string | undefined = undefined;
+	protected override readonly choices: AudioDeviceChoices = {
+		event: 'listOutputDevices',
+		flows: ['output'],
+		offersDefaults: false,
+	};
+
+	override async onKeyDown(
+		ev: KeyDownEvent<AudioDeviceSettings>
+	): Promise<void> {
+		await this.runChange(ev.action, (target) =>
+			this.hub.setDefaultDevice(target)
+		);
+	}
+
+	protected override resolveKeyState(
+		snapshot: AudioSnapshot | undefined,
+		target: AudioTarget | undefined
+	): KeyStateValue {
+		return resolveDefaultOutputKeyState(snapshot, target);
+	}
+
+	protected override appearanceOf(state: KeyStateValue): KeyAppearance {
+		return toggleKeyAppearance(speakerGlyph, state);
+	}
+}

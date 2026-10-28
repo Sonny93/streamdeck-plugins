@@ -1,0 +1,92 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Audio Deck",
+	"Version": "0.1.0.0",
+	"Author": "Sonny93",
+	"Description": "Control the audio of the PC from Stream Deck: Universal Audio Volt 1 front panel, and more to come.",
+	"UUID": "com.sonny93.audio",
+	"Category": "Audio Deck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"Icon": "imgs/plugin/marketplace",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": { "MinimumVersion": "7.1" },
+	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
+	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Actions": [
+		{
+			"Name": "Volt 1 Monitor",
+			"UUID": "com.sonny93.audio.volt-monitor",
+			"Icon": "imgs/actions/volt-monitor/icon",
+			"Tooltip": "Turns the MONITOR button of the Volt 1 on or off, and shows whether it is on.",
+			"PropertyInspectorPath": "ui/volt_monitor_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/volt-monitor/key-off" },
+				{ "Image": "imgs/actions/volt-monitor/key" },
+				{ "Image": "imgs/actions/volt-monitor/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Volt 1 Vintage",
+			"UUID": "com.sonny93.audio.volt-vintage",
+			"Icon": "imgs/actions/volt-vintage/icon",
+			"Tooltip": "Turns the VINTAGE button of the Volt 1 on or off, and shows whether it is on.",
+			"PropertyInspectorPath": "ui/volt_vintage_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/volt-vintage/key-off" },
+				{ "Image": "imgs/actions/volt-vintage/key" },
+				{ "Image": "imgs/actions/volt-vintage/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Default Output",
+			"UUID": "com.sonny93.audio.default-output",
+			"Icon": "imgs/actions/default-output/icon",
+			"Tooltip": "Makes the picked output the default one of Windows, for media and communications, and lights up while it is.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/default_output_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/default-output/key-off" },
+				{ "Image": "imgs/actions/default-output/key" },
+				{ "Image": "imgs/actions/default-output/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Mute",
+			"UUID": "com.sonny93.audio.mute",
+			"Icon": "imgs/actions/mute/icon",
+			"Tooltip": "Mutes or unmutes a device, the default input unless another one is picked, and shows whether it is muted.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/mute_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/mute/key-off" },
+				{ "Image": "imgs/actions/mute/key" },
+				{ "Image": "imgs/actions/mute/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Device Volume",
+			"UUID": "com.sonny93.audio.volume",
+			"Icon": "imgs/actions/volume/icon",
+			"Tooltip": "Changes the volume of a device, the default output unless another one is picked.",
+			"Controllers": ["Encoder"],
+			"PropertyInspectorPath": "ui/volume_settings.html",
+			"Encoder": {
+				"layout": "$B1",
+				"Icon": "imgs/actions/volume/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Change the volume",
+					"Push": "Mute / unmute",
+					"Touch": "Mute / unmute"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/volume/key" }]
+		}
+	]
+}
