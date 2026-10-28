@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Device">
+			<sdpi-select
+				setting="device"
+				datasource="listAudioDevices"
+				default="default:input"
+				hot-reload
+				loading="Looking for devices..."
+			></sdpi-select>
+		</sdpi-item>
+	</body>
+</html>

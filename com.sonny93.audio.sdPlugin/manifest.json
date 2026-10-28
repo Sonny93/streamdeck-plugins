@@ -39,6 +39,52 @@
 				{ "Image": "imgs/actions/volt-vintage/key" },
 				{ "Image": "imgs/actions/volt-vintage/key-unavailable" }
 			]
+		},
+		{
+			"Name": "Default Output",
+			"UUID": "com.sonny93.audio.default-output",
+			"Icon": "imgs/actions/default-output/icon",
+			"Tooltip": "Makes the picked output the default one of Windows, for media and communications, and lights up while it is.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/default_output_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/default-output/key-off" },
+				{ "Image": "imgs/actions/default-output/key" },
+				{ "Image": "imgs/actions/default-output/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Mute",
+			"UUID": "com.sonny93.audio.mute",
+			"Icon": "imgs/actions/mute/icon",
+			"Tooltip": "Mutes or unmutes a device, the default input unless another one is picked, and shows whether it is muted.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/mute_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/mute/key-off" },
+				{ "Image": "imgs/actions/mute/key" },
+				{ "Image": "imgs/actions/mute/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Device Volume",
+			"UUID": "com.sonny93.audio.volume",
+			"Icon": "imgs/actions/volume/icon",
+			"Tooltip": "Changes the volume of a device, the default output unless another one is picked.",
+			"Controllers": ["Encoder"],
+			"PropertyInspectorPath": "ui/volume_settings.html",
+			"Encoder": {
+				"layout": "$B1",
+				"Icon": "imgs/actions/volume/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Change the volume",
+					"Push": "Mute / unmute",
+					"Touch": "Mute / unmute"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/volume/key" }]
 		}
 	]
 }
