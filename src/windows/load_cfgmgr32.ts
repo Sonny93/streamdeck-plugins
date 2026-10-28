@@ -4,12 +4,12 @@ import { loadKoffi } from './load_koffi';
 import type { Cfgmgr32 } from './cfgmgr32';
 import { onceAsync } from '../shared/once_async';
 import { Win32Constants } from './win32_constants';
+import { declareGuidType } from './declare_guid_type';
 import { splitMultiString } from './split_multi_string';
 import { DeviceInterfaceListError } from './device_interface_list_error';
 
 type Koffi = typeof koffiModule;
 
-const GUID_TAIL_LENGTH = 8;
 const ANY_DEVICE = null;
 
 function assertSuccess(call: string, result: unknown): void {
@@ -19,12 +19,7 @@ function assertSuccess(call: string, result: unknown): void {
 }
 
 function declareCfgmgr32(koffi: Koffi): Cfgmgr32 {
-	koffi.struct('GUID', {
-		Data1: 'uint32',
-		Data2: 'uint16',
-		Data3: 'uint16',
-		Data4: koffi.array('uint8', GUID_TAIL_LENGTH),
-	});
+	declareGuidType(koffi);
 	const library = koffi.load('cfgmgr32.dll');
 	const getListSize = library.func(
 		'uint32 __stdcall CM_Get_Device_Interface_List_SizeW(_Out_ uint32 *length, _In_ GUID *interfaceClass, void *deviceId, uint32 flags)'
