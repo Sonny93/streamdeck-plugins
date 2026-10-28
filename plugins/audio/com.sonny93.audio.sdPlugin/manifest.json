@@ -3,7 +3,7 @@
 	"Name": "Audio Deck",
 	"Version": "0.1.0.0",
 	"Author": "Sonny93",
-	"Description": "Control the audio of the PC from Stream Deck: Universal Audio Volt 1 front panel, and more to come.",
+	"Description": "Control the PC audio from Stream Deck: Universal Audio Volt 1 front panel, default output, device mute and volume.",
 	"UUID": "com.sonny93.audio",
 	"Category": "Audio Deck",
 	"CategoryIcon": "imgs/plugin/category-icon",
