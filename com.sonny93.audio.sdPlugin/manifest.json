@@ -1,0 +1,44 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Audio Deck",
+	"Version": "0.1.0.0",
+	"Author": "Sonny93",
+	"Description": "Control the audio of the PC from Stream Deck: Universal Audio Volt 1 front panel, and more to come.",
+	"UUID": "com.sonny93.audio",
+	"Category": "Audio Deck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"Icon": "imgs/plugin/marketplace",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": { "MinimumVersion": "7.1" },
+	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
+	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Actions": [
+		{
+			"Name": "Volt 1 Monitor",
+			"UUID": "com.sonny93.audio.volt-monitor",
+			"Icon": "imgs/actions/volt-monitor/icon",
+			"Tooltip": "Turns the MONITOR button of the Volt 1 on or off, and shows whether it is on.",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/volt-monitor/key-off" },
+				{ "Image": "imgs/actions/volt-monitor/key" },
+				{ "Image": "imgs/actions/volt-monitor/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Volt 1 Vintage",
+			"UUID": "com.sonny93.audio.volt-vintage",
+			"Icon": "imgs/actions/volt-vintage/icon",
+			"Tooltip": "Turns the VINTAGE button of the Volt 1 on or off, and shows whether it is on.",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/volt-vintage/key-off" },
+				{ "Image": "imgs/actions/volt-vintage/key" },
+				{ "Image": "imgs/actions/volt-vintage/key-unavailable" }
+			]
+		}
+	]
+}
