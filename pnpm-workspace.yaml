@@ -3,3 +3,6 @@ packages:
 
 allowBuilds:
   koffi: false
+
+overrides:
+  '@elgato/utils>zod': ^4.6.7
