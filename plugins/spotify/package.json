@@ -1,0 +1,29 @@
+{
+	"name": "spotify-deck",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "rollup -c",
+		"watch": "rollup -c -w --watch.onEnd=\"pnpm run restart\"",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p scripts",
+		"test": "vitest run",
+		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
+	},
+	"dependencies": {
+		"@elgato/streamdeck": "^3.0.1",
+		"koffi": "^3.3.2",
+		"zod": "^4.6.5"
+	},
+	"devDependencies": {
+		"@elgato/cli": "^1.10.1",
+		"@rollup/plugin-commonjs": "^29.0.3",
+		"@rollup/plugin-node-resolve": "^16.0.3",
+		"@rollup/plugin-terser": "^1.0.0",
+		"@rollup/plugin-typescript": "^12.3.0",
+		"@types/node": "~24.19.1",
+		"rollup": "^4.64.0",
+		"tslib": "^2.8.1",
+		"typescript": "^6.0.3",
+		"vitest": "^5.0.3"
+	}
+}

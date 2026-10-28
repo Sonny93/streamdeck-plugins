@@ -6,7 +6,7 @@ import {
 export default minimalstuffPreset({
 	ignorePatterns: [
 		...OXFMT_DEFAULT_IGNORE_PATTERNS,
-		'*.sdPlugin/bin/**',
+		'**/*.sdPlugin/bin/**',
 		'pnpm-lock.yaml',
 	],
 });

@@ -1,4 +1,4 @@
 node_modules/
-*.sdPlugin/bin
-*.sdPlugin/logs
-*.sdPlugin/profiles/*.streamDeckProfile
+**/*.sdPlugin/bin
+**/*.sdPlugin/logs
+**/*.sdPlugin/profiles/*.streamDeckProfile
