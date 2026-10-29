@@ -14,6 +14,7 @@ const PLAYING: SpotifyPlayerState = {
 	isPaused: false,
 	trackUri: 'spotify:track:a',
 	track: undefined,
+	activeDeviceId: undefined,
 };
 
 function mockWatcher() {

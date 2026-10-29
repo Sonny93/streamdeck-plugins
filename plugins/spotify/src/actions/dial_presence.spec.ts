@@ -27,11 +27,17 @@ type PlayerState = {
 	isPaused: boolean;
 	trackUri: string | undefined;
 	track: undefined;
+	activeDeviceId: undefined;
 };
 
 function buildPresence(isInTarget: (trackUri: string) => boolean) {
 	const hub: { current: PlayerState | undefined } = {
-		current: { isPaused: false, trackUri: TRACK_A, track: undefined },
+		current: {
+			isPaused: false,
+			trackUri: TRACK_A,
+			track: undefined,
+			activeDeviceId: undefined,
+		},
 	};
 	const onChange = vi.fn();
 	const queryMock = vi.fn((options: Readonly<{ trackUri: string }>) =>
@@ -76,7 +82,12 @@ describe('DialPresence', () => {
 
 	it('should not report the presence while nothing plays', async () => {
 		const { presence, hub, queryMock } = buildPresence(() => true);
-		hub.current = { isPaused: true, trackUri: undefined, track: undefined };
+		hub.current = {
+			isPaused: true,
+			trackUri: undefined,
+			track: undefined,
+			activeDeviceId: undefined,
+		};
 
 		await presence.refresh('dial', PLAYLIST_A);
 
@@ -89,7 +100,12 @@ describe('DialPresence', () => {
 			(trackUri) => trackUri === TRACK_B
 		);
 		await presence.refresh('dial', PLAYLIST_A);
-		hub.current = { isPaused: false, trackUri: TRACK_B, track: undefined };
+		hub.current = {
+			isPaused: false,
+			trackUri: TRACK_B,
+			track: undefined,
+			activeDeviceId: undefined,
+		};
 
 		await presence.refreshAll();
 

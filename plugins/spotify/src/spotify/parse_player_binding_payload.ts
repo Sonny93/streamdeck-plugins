@@ -25,6 +25,7 @@ const playerPayloadSchema = z.object({
 	isPaused: z.boolean(),
 	trackUri: z.string().nullable(),
 	track: trackPayloadSchema.nullable(),
+	activeDeviceId: z.string().nullable(),
 });
 
 function decodeJson(payload: string): unknown {
@@ -82,5 +83,6 @@ export function parsePlayerBindingPayload(
 		isPaused: payload.data.isPaused,
 		trackUri: payload.data.trackUri ?? undefined,
 		track: toPlayingTrack(payload.data.track),
+		activeDeviceId: payload.data.activeDeviceId ?? undefined,
 	};
 }

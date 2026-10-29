@@ -5,4 +5,5 @@ export const SpotifyServices = {
 	playlist: 'PlaylistAPI',
 	rootlist: 'RootlistAPI',
 	likedSongsUri: 'LibraryLikedSongsUri',
+	connect: 'ConnectAPI',
 } as const;

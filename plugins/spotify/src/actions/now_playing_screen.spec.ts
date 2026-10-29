@@ -20,12 +20,14 @@ const PLAYING: SpotifyPlayerState = {
 		positionTimestamp: 0,
 		playbackSpeed: 1,
 	},
+	activeDeviceId: undefined,
 };
 const PAUSED: SpotifyPlayerState = { ...PLAYING, isPaused: true };
 const NOTHING_LOADED: SpotifyPlayerState = {
 	isPaused: true,
 	trackUri: undefined,
 	track: undefined,
+	activeDeviceId: undefined,
 };
 
 type FeedbackMock = ReturnType<

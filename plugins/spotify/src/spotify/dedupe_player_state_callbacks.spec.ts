@@ -15,6 +15,7 @@ const PLAYING: SpotifyPlayerState = {
 		positionTimestamp: 5_000,
 		playbackSpeed: 1,
 	},
+	activeDeviceId: undefined,
 };
 
 function buildCallbacks() {

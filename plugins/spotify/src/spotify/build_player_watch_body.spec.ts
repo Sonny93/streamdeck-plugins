@@ -22,7 +22,37 @@ type FakePlayerState = Readonly<{
 	speed?: number;
 }>;
 
-function buildFakePage(initialState: FakePlayerState) {
+type FakeConnectState = Readonly<{
+	activeDevice: Readonly<{ id: string }> | null;
+}>;
+
+function buildFakeConnect(initialState: FakeConnectState) {
+	let connectState = initialState;
+	let listener: () => void = () => undefined;
+	const removeListener = vi.fn();
+	const addListener = vi.fn((_event: string, callback: () => void) => {
+		listener = callback;
+		return removeListener;
+	});
+	return {
+		service: {
+			getState: () => connectState,
+			getEvents: () => ({ addListener }),
+		},
+		addListener,
+		removeListener,
+		changeState: async (nextState: FakeConnectState): Promise<void> => {
+			connectState = nextState;
+			listener();
+			await Promise.resolve();
+		},
+	};
+}
+
+function buildFakePage(
+	initialState: FakePlayerState,
+	connect?: Readonly<{ service: unknown }>
+) {
 	let playerState = initialState;
 	let listener: () => void = () => undefined;
 	const removeListener = vi.fn();
@@ -35,6 +65,9 @@ function buildFakePage(initialState: FakePlayerState) {
 		getEvents: () => ({ addListener }),
 	};
 	const registryMap = new Map<symbol, unknown>([[Symbol('PlayerAPI'), player]]);
+	if (connect !== undefined) {
+		registryMap.set(Symbol('ConnectAPI'), connect.service);
+	}
 	const registry = {
 		_map: registryMap,
 		resolve: (key: symbol): unknown => registryMap.get(key),
@@ -95,9 +128,10 @@ function trackOf(
 function payloadOf(
 	isPaused: boolean,
 	trackUri: string | null,
-	track: Record<string, unknown> | null = trackOf()
+	track: Record<string, unknown> | null = trackOf(),
+	activeDeviceId: string | null = null
 ): string {
-	return JSON.stringify({ isPaused, trackUri, track });
+	return JSON.stringify({ isPaused, trackUri, track, activeDeviceId });
 }
 
 function lastReport(page: Readonly<{ reportedPayloads: unknown[] }>): unknown {
@@ -241,5 +275,51 @@ describe('buildPlayerWatchBody', () => {
 			payloadOf(false, TRACK.uri),
 			payloadOf(false, TRACK.uri),
 		]);
+	});
+
+	it('should report the Spotify Connect device that plays', async () => {
+		const connect = buildFakeConnect({ activeDevice: { id: 'phone' } });
+		const page = buildFakePage(PLAYING, connect);
+
+		await page.runScript();
+
+		expect(page.reportedPayloads).toEqual([
+			payloadOf(false, TRACK.uri, trackOf(), 'phone'),
+		]);
+	});
+
+	it('should report again when playback moves to another device', async () => {
+		const connect = buildFakeConnect({ activeDevice: { id: 'phone' } });
+		const page = buildFakePage(PLAYING, connect);
+		await page.runScript();
+
+		await connect.changeState({ activeDevice: { id: 'local_device' } });
+
+		expect(page.reportedPayloads).toEqual([
+			payloadOf(false, TRACK.uri, trackOf(), 'phone'),
+			payloadOf(false, TRACK.uri, trackOf(), 'local_device'),
+		]);
+	});
+
+	it('should report a null device when no device plays', async () => {
+		const page = buildFakePage(
+			PLAYING,
+			buildFakeConnect({ activeDevice: null })
+		);
+
+		await page.runScript();
+
+		expect(lastReport(page)).toMatchObject({ activeDeviceId: null });
+	});
+
+	it('should replace its Spotify Connect listener when injected twice', async () => {
+		const connect = buildFakeConnect({ activeDevice: null });
+		const page = buildFakePage(PLAYING, connect);
+
+		await page.runScript();
+		await page.runScript();
+
+		expect(connect.addListener).toHaveBeenCalledTimes(2);
+		expect(connect.removeListener).toHaveBeenCalledTimes(1);
 	});
 });

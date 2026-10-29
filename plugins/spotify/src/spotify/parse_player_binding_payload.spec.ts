@@ -27,12 +27,14 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: true,
 			trackUri: 'spotify:track:abc',
 			track: null,
+			activeDeviceId: null,
 		});
 
 		expect(parsePlayerBindingPayload(buildBindingCall(payload))).toEqual({
 			isPaused: true,
 			trackUri: 'spotify:track:abc',
 			track: undefined,
+			activeDeviceId: undefined,
 		});
 	});
 
@@ -41,6 +43,7 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: false,
 			trackUri: 'spotify:track:abc',
 			track: TRACK_PAYLOAD,
+			activeDeviceId: null,
 		});
 
 		expect(parsePlayerBindingPayload(buildBindingCall(payload))?.track).toEqual(
@@ -57,6 +60,7 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: false,
 			trackUri: 'spotify:track:abc',
 			track: { ...TRACK_PAYLOAD, imageUrl: 'file:///cover.jpg' },
+			activeDeviceId: null,
 		});
 
 		expect(
@@ -69,6 +73,7 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: false,
 			trackUri: 'spotify:track:abc',
 			track: { ...TRACK_PAYLOAD, imageUrl: null },
+			activeDeviceId: null,
 		});
 
 		expect(
@@ -81,13 +86,28 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: false,
 			trackUri: null,
 			track: null,
+			activeDeviceId: null,
 		});
 
 		expect(parsePlayerBindingPayload(buildBindingCall(payload))).toEqual({
 			isPaused: false,
 			trackUri: undefined,
 			track: undefined,
+			activeDeviceId: undefined,
 		});
+	});
+
+	it('should return the Spotify Connect device that plays', () => {
+		const payload = JSON.stringify({
+			isPaused: false,
+			trackUri: null,
+			track: null,
+			activeDeviceId: 'local_device',
+		});
+
+		expect(
+			parsePlayerBindingPayload(buildBindingCall(payload))?.activeDeviceId
+		).toBe('local_device');
 	});
 
 	it('should return undefined when the call belongs to another binding', () => {
@@ -107,6 +127,7 @@ describe('parsePlayerBindingPayload', () => {
 			isPaused: 'yes',
 			trackUri: null,
 			track: null,
+			activeDeviceId: null,
 		});
 
 		expect(() => parsePlayerBindingPayload(buildBindingCall(payload))).toThrow(
