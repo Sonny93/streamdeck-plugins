@@ -26,6 +26,8 @@ export function buildFakePlatformSession(
 	const context = vm.createContext({
 		window: {},
 		document: { getElementById: () => root },
+		setTimeout: (callback: () => void, delay: number) =>
+			setTimeout(callback, delay),
 	});
 	const send = vi.fn(
 		async (_method: string, params?: SendParams): Promise<unknown> => {

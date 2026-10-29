@@ -103,6 +103,16 @@
 			"States": [{ "Image": "imgs/actions/next-track/key" }]
 		},
 		{
+			"Name": "Play on device",
+			"UUID": "com.sonny93.spotify.play-on-device",
+			"PropertyInspectorPath": "ui/play_on_device_settings.html",
+			"Icon": "imgs/actions/play-on-device/icon",
+			"Tooltip": "Move playback to a Spotify Connect device: this PC, your phone, a TV or a speaker.",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [{ "Image": "imgs/actions/play-on-device/key" }]
+		},
+		{
 			"Name": "Like",
 			"UUID": "com.sonny93.spotify.like",
 			"Icon": "imgs/actions/like/icon",

@@ -7,6 +7,7 @@ import { NextTrackAction } from './actions/next_track_action';
 import { NowPlayingScreen } from './actions/now_playing_screen';
 import { NowPlayingTiming } from './actions/now_playing_timing';
 import { OpenSearchAction } from './actions/open_search_action';
+import { PlayOnDeviceAction } from './actions/play_on_device_action';
 import { PlayPauseAction } from './actions/play_pause_action';
 import { PlayerStateHub } from './actions/player_state_hub';
 import { PlaylistsDialAction } from './actions/playlists_dial_action';
@@ -45,6 +46,7 @@ streamDeck.actions.registerAction(new ShowSpotifyAction(uiStateHub));
 streamDeck.actions.registerAction(new ToggleLyricsAction(uiStateHub));
 streamDeck.actions.registerAction(new ToggleFullscreenAction(uiStateHub));
 streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));
+streamDeck.actions.registerAction(new PlayOnDeviceAction(playerStateHub));
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());
 streamDeck.actions.registerAction(
