@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildLabeledKeySvg } from './build_labeled_key_svg';
-import { sunGlyph } from './sun_glyph';
+import { ringGlyphForTest } from './ring_glyph_for_test';
 
-const SKY_BLUE = '#4FC3F7';
+const AMBER = '#FFB020';
 
 describe('buildLabeledKeySvg', () => {
 	it('draws the icon and the label in the color of the key', () => {
 		const svg = buildLabeledKeySvg({
-			glyph: sunGlyph,
-			color: SKY_BLUE,
-			label: { text: 'Bureau', position: 'top' },
+			glyph: ringGlyphForTest,
+			color: AMBER,
+			label: { text: 'Casque', position: 'top' },
 		});
 
-		expect(svg).toContain(`stroke="${SKY_BLUE}"`);
-		expect(svg).toMatch(/<text[^>]*fill="#4FC3F7"[^>]*>Bureau<\/text>/);
+		expect(svg).toContain(`stroke="${AMBER}"`);
+		expect(svg).toMatch(/<text[^>]*fill="#FFB020"[^>]*>Casque<\/text>/);
 	});
 
 	it('puts the label above or below the icon', () => {
@@ -22,9 +22,9 @@ describe('buildLabeledKeySvg', () => {
 			Number(
 				/<text[^>]* y="(\d+)"/.exec(
 					buildLabeledKeySvg({
-						glyph: sunGlyph,
-						color: SKY_BLUE,
-						label: { text: 'Gauche', position },
+						glyph: ringGlyphForTest,
+						color: AMBER,
+						label: { text: 'Enceintes', position },
 					})
 				)?.[1]
 			);
@@ -36,19 +36,19 @@ describe('buildLabeledKeySvg', () => {
 	it('escapes the label', () => {
 		expect(
 			buildLabeledKeySvg({
-				glyph: sunGlyph,
-				color: SKY_BLUE,
-				label: { text: 'TV & <PC>', position: 'top' },
+				glyph: ringGlyphForTest,
+				color: AMBER,
+				label: { text: 'PC & <TV>', position: 'top' },
 			})
-		).toContain('>TV &amp; &lt;PC&gt;</text>');
+		).toContain('>PC &amp; &lt;TV&gt;</text>');
 	});
 
 	it('shortens a label too long for the key', () => {
 		expect(
 			buildLabeledKeySvg({
-				glyph: sunGlyph,
-				color: SKY_BLUE,
-				label: { text: 'Écran du bureau, en haut à gauche', position: 'top' },
+				glyph: ringGlyphForTest,
+				color: AMBER,
+				label: { text: 'Haut-parleurs du bureau, à gauche', position: 'top' },
 			})
 		).toMatch(/>[^<]+…<\/text>/);
 	});

@@ -6,7 +6,7 @@ type NativeFunction = ReturnType<
 	ReturnType<(typeof koffiModule)['load']>['func']
 >;
 
-/** Runs a native function on a koffi worker thread, so a slow call (DDC/CI takes tens of milliseconds) does not freeze the plugin. */
+/** Runs a native function on a koffi worker thread, so a slow call, such as a DDC/CI request, does not freeze the plugin. */
 export function callOnWorker(
 	nativeFunction: NativeFunction,
 	...args: unknown[]

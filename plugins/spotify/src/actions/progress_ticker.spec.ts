@@ -1,12 +1,12 @@
+import type { Scheduler } from 'deck-kit/async/scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { CarouselScheduler } from './carousel_scheduler';
 import { ProgressTicker } from './progress_ticker';
 
 function buildTicker() {
 	const pending: { callback: () => void; delay: number; cancelled: boolean }[] =
 		[];
-	const schedule: CarouselScheduler = (callback, delay) => {
+	const schedule: Scheduler = (callback, delay) => {
 		const entry = { callback, delay, cancelled: false };
 		pending.push(entry);
 		return () => {

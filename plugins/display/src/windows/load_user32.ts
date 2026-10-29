@@ -1,7 +1,7 @@
+import { onceAsync } from 'deck-kit/async/once_async';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
 import type koffiModule from 'koffi';
 
-import { onceAsync } from '../shared/once_async';
-import { loadKoffi } from './load_koffi';
 import { Win32Constants } from './win32_constants';
 
 type Library = ReturnType<(typeof koffiModule)['load']>;

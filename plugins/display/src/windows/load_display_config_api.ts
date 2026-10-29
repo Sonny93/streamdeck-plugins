@@ -1,4 +1,5 @@
-import { onceAsync } from '../shared/once_async';
+import { onceAsync } from 'deck-kit/async/once_async';
+
 import type { DisplayConfigApi } from './display_config_api';
 import { DisplayConfigError } from './display_config_error';
 import { loadUser32 } from './load_user32';

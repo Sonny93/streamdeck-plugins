@@ -1,11 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { DrawnKeyImages } from './drawn_key_images';
-import { KeyPalette } from './key_palette';
-import { speakerGlyph } from './speaker_glyph';
+import { ringGlyphForTest } from './ring_glyph_for_test';
 
-const ACTIVE = { glyph: speakerGlyph, color: KeyPalette.active } as const;
-const IDLE = { glyph: speakerGlyph, color: KeyPalette.idle } as const;
+const ACTIVE = { glyph: ringGlyphForTest, color: '#FFB020' } as const;
+const IDLE = { glyph: ringGlyphForTest, color: '#B3B3B3' } as const;
 
 function createKey() {
 	return {

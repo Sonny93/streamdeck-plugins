@@ -1,9 +1,9 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
 
 import type { MonitorSnapshot } from '../../displays/monitor_snapshot';
 import { MonitorUnavailableError } from '../../displays/monitor_unavailable_error';
 import { hdrGlyph } from '../keys/hdr_glyph';
-import type { KeyAppearance } from '../keys/key_appearance';
 import type { KeyStateValue } from '../keys/key_state_value';
 import { toggleKeyAppearance } from '../keys/toggle_key_appearance';
 import type { DisplayActionSettings } from './display_action_settings';

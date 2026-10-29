@@ -1,4 +1,5 @@
-import type { Scheduler } from '../shared/scheduler';
+import type { Scheduler } from 'deck-kit/async/scheduler';
+
 import type { DisplaySystem } from './display_system';
 
 export type DisplayHubOptions = Readonly<{

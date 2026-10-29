@@ -1,4 +1,4 @@
-import { fitText } from './fit_text';
+import { fitText } from 'deck-kit/text/fit_text';
 
 const WORD_SEPARATOR = ' ';
 

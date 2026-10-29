@@ -1,6 +1,7 @@
+import { escapeXml } from 'deck-kit/text/escape_xml';
+
 import { buildDialBackdrop } from './build_dial_backdrop';
 import type { DialBackdrop } from './dial_backdrop';
-import { escapeXml } from './escape_xml';
 import { formatSvgNumber } from './format_svg_number';
 import { truncateText } from './truncate_text';
 import { VolumeDialMetrics } from './volume_dial_metrics';

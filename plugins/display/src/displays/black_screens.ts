@@ -1,5 +1,6 @@
-import type { Scheduler } from '../shared/scheduler';
-import type { NativePointer } from '../windows/native_pointer';
+import type { Scheduler } from 'deck-kit/async/scheduler';
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
+
 import type { WindowApi } from '../windows/window_api';
 import type { DisplayInfo } from './display_info';
 

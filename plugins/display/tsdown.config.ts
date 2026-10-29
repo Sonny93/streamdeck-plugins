@@ -123,7 +123,7 @@ export default defineConfig(({ watch = false }) => {
 		fixedExtension: false,
 		deps: {
 			neverBundle: [KOFFI_PACKAGE],
-			alwaysBundle: [/^@elgato\//u, /^zod(?:\/|$)/u],
+			alwaysBundle: [/^@elgato\//u, /^deck-kit\//u, /^zod(?:\/|$)/u],
 			onlyBundle: false,
 		},
 		minify: !isWatching,
@@ -134,7 +134,13 @@ export default defineConfig(({ watch = false }) => {
 					path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
 				).href,
 		},
-		watch: isWatching ? ['src', `${SD_PLUGIN_DIRECTORY}/manifest.json`] : false,
+		watch: isWatching
+			? [
+					'src',
+					'../../packages/deck-kit/src',
+					`${SD_PLUGIN_DIRECTORY}/manifest.json`,
+				]
+			: false,
 		onSuccess: isWatching ? 'pnpm run restart' : undefined,
 		plugins: [emitModulePackageFilePlugin(), copyKoffiPlugin()],
 	};

@@ -1,15 +1,14 @@
+import { onceAsync } from 'deck-kit/async/once_async';
+import { callOnWorker } from 'deck-kit/windows/call_on_worker';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
 import type koffiModule from 'koffi';
 
-import { onceAsync } from '../shared/once_async';
 import type { FileHandle } from './file_handle';
 import type { Kernel32 } from './kernel32';
-import { loadKoffi } from './load_koffi';
-import { NativeCallError } from './native_call_error';
 import { Win32Constants } from './win32_constants';
 
 type Koffi = typeof koffiModule;
 type Library = ReturnType<Koffi['load']>;
-type NativeFunction = ReturnType<Library['func']>;
 
 const NO_SECURITY_ATTRIBUTES = null;
 const NO_TEMPLATE_FILE = null;
@@ -21,22 +20,6 @@ function isOpenHandle(value: unknown): value is FileHandle {
 		value !== Win32Constants.invalidHandle &&
 		value !== Win32Constants.nullHandle
 	);
-}
-
-/** Runs a native function on a koffi worker thread, so a blocking call does not freeze the plugin. */
-function callOnWorker(
-	nativeFunction: NativeFunction,
-	...args: unknown[]
-): Promise<unknown> {
-	return new Promise((resolve, reject) => {
-		nativeFunction.async(...args, (error: unknown, result: unknown) => {
-			if (error === null || error === undefined) {
-				resolve(result);
-				return;
-			}
-			reject(new NativeCallError({ cause: error }));
-		});
-	});
 }
 
 function bindCreateFile(library: Library): Kernel32['createFile'] {

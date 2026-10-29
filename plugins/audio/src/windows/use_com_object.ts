@@ -1,5 +1,6 @@
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
+
 import type { ComRuntime } from './com_runtime';
-import type { NativePointer } from './native_pointer';
 
 /** Runs `use` with a COM object, then releases the object whatever happens. */
 export function useComObject<TResult>(

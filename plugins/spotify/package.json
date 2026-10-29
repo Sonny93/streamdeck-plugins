@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "^3.0.3",
+		"deck-kit": "workspace:*",
 		"koffi": "^3.3.4",
 		"zod": "^4.6.7"
 	},

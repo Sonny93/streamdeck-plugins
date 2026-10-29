@@ -9,6 +9,8 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 
 import type { AudioMixer } from '../audio/audio_mixer';
 import { AudioAppsDataSource } from './audio_apps_data_source';
@@ -17,10 +19,8 @@ import { listAudioAppChoices } from './list_audio_app_choices';
 import type { NowPlayingScreen } from './now_playing_screen';
 import { ProgressTicker } from './progress_ticker';
 import { readVolumeTarget } from './read_volume_target';
-import { scheduleTimeout } from './schedule_timeout';
 import { toDialBackdrop } from './to_dial_backdrop';
 import { toNowPlayingDial } from './to_now_playing_dial';
-import { toSvgDataUrl } from './to_svg_data_url';
 import { VolumeControl } from './volume_control';
 import { VolumeController } from './volume_controller';
 import type { VolumeDialSettings } from './volume_dial_settings';

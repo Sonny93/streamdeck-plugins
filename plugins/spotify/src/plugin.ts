@@ -1,4 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
+import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
 
 import { InactivityMonitor } from './actions/inactivity_monitor';
 import { LikeAction } from './actions/like_action';
@@ -12,7 +13,6 @@ import { PlayPauseAction } from './actions/play_pause_action';
 import { PlayerStateHub } from './actions/player_state_hub';
 import { PlaylistsDialAction } from './actions/playlists_dial_action';
 import { PreviousTrackAction } from './actions/previous_track_action';
-import { scheduleTimeout } from './actions/schedule_timeout';
 import { ShowSpotifyAction } from './actions/show_spotify_action';
 import { ToggleFullscreenAction } from './actions/toggle_fullscreen_action';
 import { ToggleLyricsAction } from './actions/toggle_lyrics_action';

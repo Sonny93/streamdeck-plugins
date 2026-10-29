@@ -1,7 +1,7 @@
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
 import type koffiModule from 'koffi';
 
 import type { Guid } from './guid';
-import type { NativePointer } from './native_pointer';
 
 type Koffi = typeof koffiModule;
 

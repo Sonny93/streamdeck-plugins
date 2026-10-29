@@ -1,6 +1,5 @@
+import { keyLabelSettingsSchema } from 'deck-kit/keys/key_label_settings_schema';
 import { z } from 'zod';
-
-import { keyLabelSettingsSchema } from '../keys/key_label_settings_schema';
 
 /** A percentage typed in a property inspector, which may come as text; anything else is dropped. */
 const percentSchema = z.coerce

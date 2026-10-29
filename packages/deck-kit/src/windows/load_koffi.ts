@@ -1,6 +1,6 @@
 import type koffiModule from 'koffi';
 
-import { onceAsync } from '../shared/once_async';
+import { onceAsync } from '../async/once_async';
 
 /**
  * Imports koffi lazily, once.

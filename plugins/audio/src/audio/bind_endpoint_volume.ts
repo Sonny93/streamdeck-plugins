@@ -1,6 +1,7 @@
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
+
 import { acquireOutPointer } from '../windows/acquire_out_pointer';
 import { checkHresult } from '../windows/check_hresult';
-import type { NativePointer } from '../windows/native_pointer';
 import { useComObject } from '../windows/use_com_object';
 import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';

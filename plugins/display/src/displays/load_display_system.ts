@@ -1,5 +1,6 @@
-import { onceAsync } from '../shared/once_async';
-import type { Scheduler } from '../shared/scheduler';
+import { onceAsync } from 'deck-kit/async/once_async';
+import type { Scheduler } from 'deck-kit/async/scheduler';
+
 import { loadDdcApi } from '../windows/load_ddc_api';
 import { loadDisplayConfigApi } from '../windows/load_display_config_api';
 import { loadGammaApi } from '../windows/load_gamma_api';

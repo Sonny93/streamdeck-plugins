@@ -1,6 +1,7 @@
-import { onceAsync } from '../shared/once_async';
+import { onceAsync } from 'deck-kit/async/once_async';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
+
 import { isNativeHandle } from './is_native_handle';
-import { loadKoffi } from './load_koffi';
 import { loadUser32 } from './load_user32';
 import { Win32Constants } from './win32_constants';
 import type { WindowApi } from './window_api';

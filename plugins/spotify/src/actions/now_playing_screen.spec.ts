@@ -1,8 +1,8 @@
+import type { Scheduler } from 'deck-kit/async/scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import type { SpotifyPlayerState } from '../spotify/spotify_player_state';
-import type { CarouselScheduler } from './carousel_scheduler';
 import { NowPlayingScreen } from './now_playing_screen';
 import { NowPlayingTiming } from './now_playing_timing';
 
@@ -57,7 +57,7 @@ function buildScreen(
 	const inactivityListeners = new Set<() => void>();
 	const ticks: { callback: () => void; delay: number; cancelled: boolean }[] =
 		[];
-	const schedule: CarouselScheduler = (callback, delay) => {
+	const schedule: Scheduler = (callback, delay) => {
 		const tick = { callback, delay, cancelled: false };
 		ticks.push(tick);
 		return () => {

@@ -1,4 +1,5 @@
-import type { Scheduler } from '../shared/scheduler';
+import type { Scheduler } from 'deck-kit/async/scheduler';
+
 import type { CoreAudio } from './core_audio';
 
 export type AudioHubOptions = Readonly<{

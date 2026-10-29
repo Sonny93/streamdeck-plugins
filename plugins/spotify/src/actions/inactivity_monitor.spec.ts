@@ -1,6 +1,6 @@
+import type { Scheduler } from 'deck-kit/async/scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { CarouselScheduler } from './carousel_scheduler';
 import { InactivityMonitor } from './inactivity_monitor';
 
 const DELAY = 30_000;
@@ -8,7 +8,7 @@ const DELAY = 30_000;
 function buildMonitor() {
 	const pending: { callback: () => void; delay: number; cancelled: boolean }[] =
 		[];
-	const schedule: CarouselScheduler = (callback, delay) => {
+	const schedule: Scheduler = (callback, delay) => {
 		const entry = { callback, delay, cancelled: false };
 		pending.push(entry);
 		return () => {

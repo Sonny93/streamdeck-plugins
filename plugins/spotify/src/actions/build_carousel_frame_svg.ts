@@ -1,10 +1,11 @@
+import { escapeXml } from 'deck-kit/text/escape_xml';
+
 import { buildCarouselHeart } from './build_carousel_heart';
 import { buildCarouselSlotSvg } from './build_carousel_slot_svg';
 import { buildDialBackdrop } from './build_dial_backdrop';
 import { CarouselMetrics } from './carousel_metrics';
 import type { CarouselSlot } from './carousel_slot';
 import type { DialBackdrop } from './dial_backdrop';
-import { escapeXml } from './escape_xml';
 import { formatSvgNumber } from './format_svg_number';
 import { resolveSlotGeometry } from './resolve_slot_geometry';
 import { truncateText } from './truncate_text';

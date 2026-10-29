@@ -8,6 +8,7 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
 
 import { isTrackInLikeTarget } from '../spotify/is_track_in_like_target';
 import { playSpotifyPlaylist } from '../spotify/play_spotify_playlist';
@@ -27,7 +28,6 @@ import type { PlaylistsDialSettings } from './playlists_dial_settings';
 import { readSelectedUri } from './read_selected_uri';
 import { resolveSelectedIndex } from './resolve_selected_index';
 import { runSpotifyAction } from './run_spotify_action';
-import { scheduleTimeout } from './schedule_timeout';
 import { toNowPlayingDial } from './to_now_playing_dial';
 import { wrapIndex } from './wrap_index';
 

@@ -9,7 +9,7 @@ const LABEL_FONT_FAMILY = 'Segoe UI, Arial, sans-serif';
 /** A key without label: the icon fills the key like the images of the plugin manifests. */
 const UNLABELED_LAYOUT = { glyphScale: 4, glyphTop: 24 } as const;
 
-/** Same layout as the labeled keys of Audio Deck (`plugins/audio/src/actions/keys/build_labeled_key_svg.ts`), so a pack key lines up with a plugin key. */
+/** Same layout as the labeled keys of the plugins (`packages/deck-kit/src/keys/build_labeled_key_svg.ts`), so a pack key lines up with a plugin key. */
 const LABELED_LAYOUTS = {
 	top: { glyphScale: 3.4, glyphTop: 48, labelBaseline: 34 },
 	bottom: { glyphScale: 3.4, glyphTop: 14, labelBaseline: 130 },

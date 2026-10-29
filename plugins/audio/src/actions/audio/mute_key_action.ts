@@ -1,8 +1,8 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
 
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
 import type { AudioTarget } from '../../audio/audio_target';
-import type { KeyAppearance } from '../keys/key_appearance';
 import { KeyPalette } from '../keys/key_palette';
 import { KeyState } from '../keys/key_state';
 import type { KeyStateValue } from '../keys/key_state_value';

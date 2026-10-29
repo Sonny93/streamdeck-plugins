@@ -1,4 +1,5 @@
-import { escapeXml } from './escape_xml';
+import { escapeXml } from 'deck-kit/text/escape_xml';
+
 import { formatSvgNumber } from './format_svg_number';
 import { NowPlayingMetrics } from './now_playing_metrics';
 

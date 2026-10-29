@@ -1,7 +1,7 @@
+import type { Scheduler } from 'deck-kit/async/scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
 import { CarouselAnimator } from './carousel_animator';
-import type { CarouselScheduler } from './carousel_scheduler';
 
 const MAX_TICKS = 200;
 
@@ -17,7 +17,7 @@ function buildAnimator(
 	onFrame: (position: number) => Promise<void> = () => Promise.resolve()
 ) {
 	const queue: ScheduledTick[] = [];
-	const schedule: CarouselScheduler = (callback) => {
+	const schedule: Scheduler = (callback) => {
 		const entry: ScheduledTick = { callback, cancelled: false };
 		queue.push(entry);
 		return () => {

@@ -7,6 +7,7 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 
 import { listSpotifyDevices } from '../spotify/list_spotify_devices';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
@@ -21,7 +22,6 @@ import { rememberPickedDevice } from './remember_picked_device';
 import { resolveDeviceKey } from './resolve_device_key';
 import { runSpotifyAction } from './run_spotify_action';
 import { SpotifyDevicesDataSource } from './spotify_devices_data_source';
-import { toSvgDataUrl } from './to_svg_data_url';
 
 type DeviceKey = KeyAction<PlayOnDeviceSettings>;
 type PlayOnDeviceSendToPluginEvent = Parameters<

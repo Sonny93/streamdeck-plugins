@@ -1,7 +1,7 @@
-import type { CarouselScheduler } from './carousel_scheduler';
+import type { Scheduler } from 'deck-kit/async/scheduler';
 
 type ProgressTickerOptions = Readonly<{
-	schedule: CarouselScheduler;
+	schedule: Scheduler;
 	intervalMilliseconds: number;
 	onTick: () => void;
 }>;

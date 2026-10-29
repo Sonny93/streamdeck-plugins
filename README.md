@@ -38,9 +38,11 @@ mise x -- just restart
 
 ## Develop
 
-From a plugin folder, `mise x -- pnpm watch` rebuilds on every change and restarts the plugin. A change to the manifest (new action, layout or state) also needs `mise x -- just restart`.
+The code that several plugins share lives in [`packages/deck-kit`](packages/deck-kit), bundled into each plugin.
 
-Before committing, run the checks from the repo root: lint, format, typecheck and tests of every plugin.
+From a plugin folder, `mise x -- pnpm watch` rebuilds on every change, `packages/deck-kit` included, and restarts the plugin. A change to the manifest (new action, layout or state) also needs `mise x -- just restart`.
+
+Before committing, run the checks from the repo root: lint, format, typecheck and tests of every package.
 
 ```sh
 mise x -- pnpm check

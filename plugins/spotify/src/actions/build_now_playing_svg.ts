@@ -1,7 +1,8 @@
+import { escapeXml } from 'deck-kit/text/escape_xml';
+import { estimateTextWidth } from 'deck-kit/text/estimate_text_width';
+import { fitText } from 'deck-kit/text/fit_text';
+
 import { buildBackdropImage } from './build_backdrop_image';
-import { escapeXml } from './escape_xml';
-import { estimateTextWidth } from './estimate_text_width';
-import { fitText } from './fit_text';
 import { formatSvgNumber } from './format_svg_number';
 import { formatTrackTime } from './format_track_time';
 import type { NowPlayingFrame } from './now_playing_frame';

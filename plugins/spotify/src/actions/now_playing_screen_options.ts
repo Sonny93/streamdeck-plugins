@@ -1,5 +1,6 @@
+import type { Scheduler } from 'deck-kit/async/scheduler';
+
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
-import type { CarouselScheduler } from './carousel_scheduler';
 import type { InactivityMonitor } from './inactivity_monitor';
 import type { PlayerStateHub } from './player_state_hub';
 
@@ -15,7 +16,7 @@ export type NowPlayingScreenOptions = Readonly<{
 	playerStateHub: Pick<PlayerStateHub, 'current' | 'subscribe'>;
 	fetchCover: (url: string) => Promise<string>;
 	fetchLyrics: (trackUri: string) => Promise<readonly SpotifyLyricsLine[]>;
-	schedule: CarouselScheduler;
+	schedule: Scheduler;
 	now: () => number;
 	onError: (error: unknown) => void;
 }>;

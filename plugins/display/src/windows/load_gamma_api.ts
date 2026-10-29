@@ -1,8 +1,9 @@
-import { onceAsync } from '../shared/once_async';
+import { onceAsync } from 'deck-kit/async/once_async';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
+
 import type { GammaApi } from './gamma_api';
 import { isNativeHandle } from './is_native_handle';
-import { loadKoffi } from './load_koffi';
-import type { NativePointer } from './native_pointer';
 import { Win32Constants } from './win32_constants';
 
 const DISPLAY_DRIVER = 'DISPLAY';

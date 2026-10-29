@@ -3,13 +3,13 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { DrawnKeyImages } from 'deck-kit/keys/drawn_key_images';
+import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
+import { readKeyLabel } from 'deck-kit/keys/read_key_label';
 
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
 import type { AudioTarget } from '../../audio/audio_target';
-import { DrawnKeyImages } from '../keys/drawn_key_images';
-import type { KeyAppearance } from '../keys/key_appearance';
 import type { KeyStateValue } from '../keys/key_state_value';
-import { readKeyLabel } from '../keys/read_key_label';
 import { AudioDeviceAction } from './audio_device_action';
 import type { AudioDeviceSettings } from './audio_device_settings';
 

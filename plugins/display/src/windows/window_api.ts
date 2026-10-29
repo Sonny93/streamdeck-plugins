@@ -1,4 +1,4 @@
-import type { NativePointer } from './native_pointer';
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
 
 type WindowRect = Readonly<{
 	left: number;

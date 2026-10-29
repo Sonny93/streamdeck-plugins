@@ -1,4 +1,5 @@
-import { onceAsync } from '../shared/once_async';
+import { onceAsync } from 'deck-kit/async/once_async';
+
 import { loadComRuntime } from '../windows/load_com_runtime';
 import { bindDefaultDeviceSwitch } from './bind_default_device_switch';
 import { bindDeviceListing } from './bind_device_listing';

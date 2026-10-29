@@ -1,4 +1,5 @@
-import type { KeyAppearance } from './key_appearance';
+import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
+
 import { KeyPalette } from './key_palette';
 import { KeyState } from './key_state';
 import type { KeyStateValue } from './key_state_value';

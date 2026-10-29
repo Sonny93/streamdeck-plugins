@@ -1,4 +1,4 @@
-import type { NativePointer } from './native_pointer';
+import type { NativePointer } from 'deck-kit/windows/native_pointer';
 
 /** Tells whether a value koffi handed out is a non-null pointer. */
 export function isNativeHandle(value: unknown): value is NativePointer {

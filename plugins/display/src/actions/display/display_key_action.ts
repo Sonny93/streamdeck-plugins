@@ -3,12 +3,12 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { DrawnKeyImages } from 'deck-kit/keys/drawn_key_images';
+import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
+import { readKeyLabel } from 'deck-kit/keys/read_key_label';
 
 import type { MonitorSnapshot } from '../../displays/monitor_snapshot';
-import { DrawnKeyImages } from '../keys/drawn_key_images';
-import type { KeyAppearance } from '../keys/key_appearance';
 import type { KeyStateValue } from '../keys/key_state_value';
-import { readKeyLabel } from '../keys/read_key_label';
 import { DisplayAction } from './display_action';
 import type { DisplayActionConfig } from './display_action_config';
 import type { DisplayActionSettings } from './display_action_settings';

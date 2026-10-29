@@ -1,10 +1,10 @@
+import { onceAsync } from 'deck-kit/async/once_async';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
 import type koffiModule from 'koffi';
 
-import { onceAsync } from '../shared/once_async';
 import type { Cfgmgr32 } from './cfgmgr32';
 import { declareGuidType } from './declare_guid_type';
 import { DeviceInterfaceListError } from './device_interface_list_error';
-import { loadKoffi } from './load_koffi';
 import { splitMultiString } from './split_multi_string';
 import { Win32Constants } from './win32_constants';
 

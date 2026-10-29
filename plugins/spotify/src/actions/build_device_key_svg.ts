@@ -1,11 +1,12 @@
+import { keyBackground } from 'deck-kit/keys/key_background';
+import { escapeXml } from 'deck-kit/text/escape_xml';
+import { estimateTextWidth } from 'deck-kit/text/estimate_text_width';
+import { fitText } from 'deck-kit/text/fit_text';
+
 import type { SpotifyDevice } from '../spotify/spotify_device';
 import { deviceGlyph } from './device_glyph';
-import { escapeXml } from './escape_xml';
-import { estimateTextWidth } from './estimate_text_width';
-import { fitText } from './fit_text';
 
 const KEY_SIZE = 144;
-const BACKGROUND = '#121212';
 const ACTIVE_COLOR = '#1DB954';
 const IDLE_COLOR = '#B3B3B3';
 const GLYPH_BOX = 24;
@@ -46,7 +47,7 @@ export function buildDeviceKeySvg(
 	const glyphLeft = Math.round((KEY_SIZE - GLYPH_BOX * GLYPH_SCALE) / 2);
 	return [
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${KEY_SIZE}" height="${KEY_SIZE}" viewBox="0 0 ${KEY_SIZE} ${KEY_SIZE}">`,
-		`<rect width="${KEY_SIZE}" height="${KEY_SIZE}" fill="${BACKGROUND}"/>`,
+		`<rect width="${KEY_SIZE}" height="${KEY_SIZE}" fill="${keyBackground}"/>`,
 		`<g transform="translate(${glyphLeft} ${GLYPH_TOP}) scale(${GLYPH_SCALE})">${deviceGlyph(options.kind, color)}</g>`,
 		options.label === '' ? '' : buildLabel(options.label, color),
 		'</svg>',

@@ -1,5 +1,6 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { DialAction } from '@elgato/streamdeck';
+import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
@@ -9,7 +10,6 @@ import { formatPlaylistPosition } from './format_playlist_position';
 import type { PlaylistsCarouselRendererOptions } from './playlists_carousel_renderer_options';
 import type { PlaylistsDialSettings } from './playlists_dial_settings';
 import { toDialBackdrop } from './to_dial_backdrop';
-import { toSvgDataUrl } from './to_svg_data_url';
 import { wrapIndex } from './wrap_index';
 
 const SPOTIFY_CLOSED_TITLE = 'Spotify closed';

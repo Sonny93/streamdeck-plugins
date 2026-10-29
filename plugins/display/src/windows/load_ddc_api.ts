@@ -1,8 +1,9 @@
-import { onceAsync } from '../shared/once_async';
-import { callOnWorker } from './call_on_worker';
+import { onceAsync } from 'deck-kit/async/once_async';
+import { callOnWorker } from 'deck-kit/windows/call_on_worker';
+import { loadKoffi } from 'deck-kit/windows/load_koffi';
+
 import type { DdcApi } from './ddc_api';
 import { isNativeHandle } from './is_native_handle';
-import { loadKoffi } from './load_koffi';
 import { loadUser32 } from './load_user32';
 import { Win32Constants } from './win32_constants';
 

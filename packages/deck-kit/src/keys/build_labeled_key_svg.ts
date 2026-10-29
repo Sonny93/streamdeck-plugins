@@ -1,8 +1,8 @@
-import { escapeXml } from '../../shared/escape_xml';
-import { estimateTextWidth } from '../../shared/estimate_text_width';
-import { fitText } from '../../shared/fit_text';
+import { escapeXml } from '../text/escape_xml';
+import { estimateTextWidth } from '../text/estimate_text_width';
+import { fitText } from '../text/fit_text';
+import { keyBackground } from './key_background';
 import type { KeyLabel } from './key_label';
-import { KeyPalette } from './key_palette';
 
 const KEY_SIZE = 144;
 const GLYPH_BOX = 24;
@@ -49,7 +49,7 @@ export function buildLabeledKeySvg(
 	const glyphLeft = Math.round((KEY_SIZE - GLYPH_BOX * layout.glyphScale) / 2);
 	return [
 		`<svg xmlns="http://www.w3.org/2000/svg" width="${KEY_SIZE}" height="${KEY_SIZE}" viewBox="0 0 ${KEY_SIZE} ${KEY_SIZE}">`,
-		`<rect width="${KEY_SIZE}" height="${KEY_SIZE}" fill="${KeyPalette.background}"/>`,
+		`<rect width="${KEY_SIZE}" height="${KEY_SIZE}" fill="${keyBackground}"/>`,
 		`<g transform="translate(${glyphLeft} ${layout.glyphTop}) scale(${layout.glyphScale})">${glyph(color)}</g>`,
 		buildLabel(label, color),
 		'</svg>',
