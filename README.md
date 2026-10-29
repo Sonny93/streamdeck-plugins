@@ -1,11 +1,12 @@
 # streamdeck-plugins
 
-Stream Deck plugins for a Windows PC, built for the Stream Deck +: Spotify control and PC audio control, in one pnpm workspace.
+Stream Deck plugins for a Windows PC, built for the Stream Deck +: Spotify control, PC audio control and monitor control, in one pnpm workspace.
 
 | Plugin                                    | What it controls                                                    |
 | ----------------------------------------- | ------------------------------------------------------------------- |
 | [Spotify Deck](plugins/spotify/README.md) | The Spotify desktop app: playback, likes, playlists, lyrics, volume |
 | [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, Windows audio devices           |
+| [Display Deck](plugins/display/README.md) | Monitors: turning them off, brightness, HDR                         |
 
 [Sonny93 Keys](icon-pack/README.md) is an icon pack for the native folder and Back keys, in the same look as the plugin keys.
 
@@ -33,7 +34,7 @@ mise x -- pnpm exec streamdeck link com.sonny93.<name>.sdPlugin
 mise x -- just restart
 ```
 
-`<name>` is `spotify` or `audio`. `just restart` restarts the Stream Deck app so it loads the plugin.
+`<name>` is `spotify`, `audio` or `display`. `just restart` restarts the Stream Deck app so it loads the plugin.
 
 ## Develop
 

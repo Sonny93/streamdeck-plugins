@@ -1,0 +1,78 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Display Deck",
+	"Version": "0.1.0.0",
+	"Author": "Sonny93",
+	"Description": "Control the PC monitors from Stream Deck: turn them off without moving the windows, brightness over DDC/CI or Windows, HDR.",
+	"UUID": "com.sonny93.display",
+	"Category": "Display Deck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"Icon": "imgs/plugin/marketplace",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": { "MinimumVersion": "7.1" },
+	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
+	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Actions": [
+		{
+			"Name": "Screen Power",
+			"UUID": "com.sonny93.display.power",
+			"Icon": "imgs/actions/power/icon",
+			"Tooltip": "Turns monitors off and on again, the main one unless others are picked. A black screen keeps the Windows layout.",
+			"PropertyInspectorPath": "ui/power_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/power/key-off" },
+				{ "Image": "imgs/actions/power/key" },
+				{ "Image": "imgs/actions/power/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Brightness",
+			"UUID": "com.sonny93.display.brightness-key",
+			"Icon": "imgs/actions/brightness/icon",
+			"Tooltip": "Sets the brightness of monitors to a value, or moves it up or down, the main one unless others are picked.",
+			"PropertyInspectorPath": "ui/brightness_key_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/brightness/key-off" },
+				{ "Image": "imgs/actions/brightness/key" },
+				{ "Image": "imgs/actions/brightness/key-unavailable" }
+			]
+		},
+		{
+			"Name": "Brightness Dial",
+			"UUID": "com.sonny93.display.brightness",
+			"Icon": "imgs/actions/brightness/icon",
+			"Tooltip": "Changes the brightness of monitors, the main one unless others are picked.",
+			"PropertyInspectorPath": "ui/brightness_dial_settings.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "$B1",
+				"Icon": "imgs/actions/brightness/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Change the brightness",
+					"Push": "Go to the preset brightness",
+					"Touch": "Turn the screen off / on"
+				}
+			},
+			"States": [{ "Image": "imgs/actions/brightness/key" }]
+		},
+		{
+			"Name": "HDR",
+			"UUID": "com.sonny93.display.hdr",
+			"Icon": "imgs/actions/hdr/icon",
+			"Tooltip": "Turns the HDR of a monitor on or off, the main one unless another is picked, and lights up while it is on.",
+			"PropertyInspectorPath": "ui/hdr_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{ "Image": "imgs/actions/hdr/key-off" },
+				{ "Image": "imgs/actions/hdr/key" },
+				{ "Image": "imgs/actions/hdr/key-unavailable" }
+			]
+		}
+	]
+}

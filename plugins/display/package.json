@@ -1,0 +1,24 @@
+{
+	"name": "display-deck",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "tsdown",
+		"watch": "tsdown --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
+	},
+	"dependencies": {
+		"@elgato/streamdeck": "^3.0.3",
+		"koffi": "^3.3.4",
+		"zod": "^4.6.7"
+	},
+	"devDependencies": {
+		"@elgato/cli": "^1.10.3",
+		"@types/node": "~24.19.2",
+		"tsdown": "^0.23.2",
+		"typescript": "^7.0.2",
+		"vitest": "^5.0.5"
+	}
+}

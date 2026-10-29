@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Monitor">
+			<sdpi-select
+				setting="monitor"
+				datasource="listMonitors"
+				default="primary"
+				hot-reload
+				loading="Looking for monitors..."
+			></sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Action">
+			<sdpi-select setting="brightnessKeyMode" default="set">
+				<option value="set">Set to a value</option>
+				<option value="up">Brighter</option>
+				<option value="down">Dimmer</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Value (%)">
+			<sdpi-textfield
+				setting="value"
+				pattern="\d{1,3}"
+				placeholder="50"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Step (%)">
+			<sdpi-textfield
+				setting="step"
+				pattern="\d{1,3}"
+				placeholder="5"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Control">
+			<sdpi-select setting="brightnessControl" default="auto">
+				<option value="auto">Auto</option>
+				<option value="monitor">Monitor (DDC/CI)</option>
+				<option value="windows">Windows</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Label">
+			<sdpi-textfield
+				setting="label"
+				placeholder="The value or step"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Label position">
+			<sdpi-select setting="labelPosition" default="top">
+				<option value="top">Top</option>
+				<option value="bottom">Bottom</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>About the control</summary>
+				<p>
+					Monitor changes the backlight over DDC/CI. Windows dims the picture
+					instead: from 50 to 100 % in SDR, through the SDR content brightness
+					in HDR. Auto uses the monitor, unless it has no DDC/CI or is known to
+					ignore it, like the Odyssey G95SD.
+				</p>
+			</details>
+		</sdpi-item>
+	</body>
+</html>

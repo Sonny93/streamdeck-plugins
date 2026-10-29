@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Monitor">
+			<sdpi-select
+				setting="monitor"
+				datasource="listMonitors"
+				default="primary"
+				hot-reload
+				loading="Looking for monitors..."
+			></sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Turn off with">
+			<sdpi-select setting="offMode" default="blackScreen">
+				<option value="blackScreen">Black screen</option>
+				<option value="standby">Monitor standby (DDC/CI)</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Label">
+			<sdpi-textfield setting="label" placeholder="Screen"></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Label position">
+			<sdpi-select setting="labelPosition" default="top">
+				<option value="top">Top</option>
+				<option value="bottom">Bottom</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>Black screen or standby</summary>
+				<p>
+					A black screen covers the monitor and lowers its backlight, but
+					Windows keeps it in its layout, so no window moves. The standby really
+					turns the monitor off, but many monitors then leave Windows, which
+					moves the windows around.
+				</p>
+			</details>
+		</sdpi-item>
+	</body>
+</html>
