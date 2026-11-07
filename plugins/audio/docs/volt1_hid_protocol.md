@@ -1,4 +1,4 @@
-# Universal Audio Volt 1 — vendor HID protocol
+# Universal Audio Volt 1: vendor HID protocol
 
 Deduced by observation (no official documentation). The PowerShell scripts in `tools/volt1/` are the original experiments.
 

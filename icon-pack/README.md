@@ -11,6 +11,10 @@ An icon pack for the keys a plugin cannot draw on, the native folders and their 
 
 Each icon comes three ways: label on top, label at the bottom, and no label for a key that uses the native title. The label positions match the labels of Audio Deck.
 
+## Install
+
+The release zip carries the pack: see [Install a release](../docs/install.md).
+
 ## Install from source
 
 After installing the workspace as described in the [root README](../README.md), from this folder:
