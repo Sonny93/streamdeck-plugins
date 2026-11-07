@@ -4,6 +4,8 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-07
+
 ### Added
 
 - Spotify Deck: control the Spotify desktop app from Stream Deck with keys for playback, likes, playlists, lyrics, full screen and volume, and a Play on device key that moves playback to a Spotify Connect device.
