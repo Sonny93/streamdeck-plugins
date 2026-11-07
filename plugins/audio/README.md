@@ -21,6 +21,12 @@ The Volt 1 has no public protocol. [`docs/volt1_hid_protocol.md`](docs/volt1_hid
 
 Windows has no public API to change the default device. Default Output uses the same undocumented interface as the Windows sound settings, so a Windows update could break it.
 
+## Elgato audio
+
+- **Restart Elgato Audio**: kills the Elgato audio server (`ElgatoAudioControlServer.exe`) and waits up to 15 seconds for it to run again, then shows a check mark, or the alert when it does not come back. A second press during a restart is ignored. If the server was not running, the key only waits for it.
+
+The key never starts the server itself: it relies on the server starting again by itself after it was killed, as it does on a standard Elgato install.
+
 ## Labels
 
 Every key draws its label in the color of its icon, at the top or the bottom of the key. Set the text and position in the action settings. Leave the text empty to use the default label, or no label for Default Output.

@@ -71,6 +71,16 @@
 			]
 		},
 		{
+			"Name": "Restart Elgato Audio",
+			"UUID": "com.sonny93.audio.restart-elgato-audio",
+			"Icon": "imgs/actions/restart-elgato-audio/icon",
+			"Tooltip": "Restarts the Elgato audio server: kills it, waits for it to start again, and shows a check mark once it is back.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/restart_elgato_audio_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [{ "Image": "imgs/actions/restart-elgato-audio/key" }]
+		},
+		{
 			"Name": "Device Volume",
 			"UUID": "com.sonny93.audio.volume",
 			"Icon": "imgs/actions/volume/icon",
