@@ -14,7 +14,7 @@ import { ReleasePaths } from './release_paths.ts';
 
 /**
  * Builds the files of a GitHub release into `dist/`: one package per plugin, the icon packs and the profiles,
- * then the bundle zip with all of them and the install script. Returns the paths of the files produced.
+ * then the bundle zip with all of them, the install script and its launcher. Returns the paths of the files produced.
  */
 export async function runPackageRelease(): Promise<string[]> {
 	const version = await readReleaseVersion();
@@ -66,7 +66,10 @@ export async function runPackageRelease(): Promise<string[]> {
 			pluginFiles,
 			iconPackFiles,
 			profileFiles,
-			installScriptFile: ReleasePaths.installScriptFile,
+			rootFiles: [
+				ReleasePaths.installScriptFile,
+				ReleasePaths.setupLauncherFile,
+			],
 			bundleFile: path.join(
 				outputDirectory,
 				`${ReleaseFormats.bundleNamePrefix}${await readFullReleaseVersion()}.zip`

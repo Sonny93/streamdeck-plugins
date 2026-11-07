@@ -109,7 +109,9 @@ jobs:
             echo "$BUNDLE is missing" >&2
             exit 1
           fi
-          unzip -l "$BUNDLE" | grep -q ' install.ps1$' || { echo "$BUNDLE has no install.ps1 at its root" >&2; exit 1; }
+          for ROOT_FILE in install.ps1 Setup.cmd; do
+            unzip -l "$BUNDLE" | grep -q " $ROOT_FILE\$" || { echo "$BUNDLE has no $ROOT_FILE at its root" >&2; exit 1; }
+          done
           EXTRACTED=$(mktemp -d)
           unzip -q "$BUNDLE" -d "$EXTRACTED"
           shopt -s nullglob
@@ -130,7 +132,7 @@ jobs:
               exit 1
             fi
           done
-          BUNDLED_COUNT=$(find "$EXTRACTED" -type f -not -name install.ps1 | wc -l)
+          BUNDLED_COUNT=$(find "$EXTRACTED" -type f -not -name install.ps1 -not -name Setup.cmd | wc -l)
           if [[ "$BUNDLED_COUNT" -ne "${#PACKAGES[@]}" ]]; then
             echo "$BUNDLE holds $BUNDLED_COUNT packages, dist has ${#PACKAGES[@]}" >&2
             exit 1

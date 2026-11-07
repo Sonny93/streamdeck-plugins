@@ -4,6 +4,14 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+### Added
+
+- `Setup.cmd` at the root of the release zip: double-click it to install the plugins, the icon pack and the profile, without opening PowerShell.
+
+### Changed
+
+- `install.ps1` installs only the plugins and icon packs that are missing or changed, leaves Stream Deck open when everything is up to date, and does not import the profile again when a profile with the same name exists. The new `-Force` switch installs every plugin and icon pack whatever its version.
+
 ## [1.0.0] - 2026-11-07
 
 ### Added

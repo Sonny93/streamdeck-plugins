@@ -19,15 +19,15 @@ A Stream Deck + profile lays the keys and dials of these plugins out over severa
 
 ## Install
 
-Download `streamdeck-plugins-<version>.zip` from the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest) and extract it entirely. From the extracted folder, in a normal (not Administrator) PowerShell window:
+Download `streamdeck-plugins-<version>.zip` from the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest), extract it entirely, then double-click `Setup.cmd` in the extracted folder. Windows may warn about an unknown publisher: choose More info, then Run anyway. Stream Deck may ask you to confirm each install.
+
+`Setup.cmd` installs the plugins and the icon pack and imports the Stream Deck + profile. To install without the profile, run the script from a normal (not Administrator) PowerShell window in the extracted folder:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-Add `-WithProfile` to also import the Stream Deck + profile. Stream Deck may ask you to confirm each install.
-
-To update, install the new release the same way. See [Install a release](docs/install.md) for what the script does and how to install a single file.
+To update, run `Setup.cmd` or the script from the new release: only what changed is installed, and the profile is skipped when one with the same name exists. See [Install a release](docs/install.md) for the details and how to install a single file.
 
 ## Develop
 

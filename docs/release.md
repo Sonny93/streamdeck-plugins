@@ -18,7 +18,7 @@ Or use Actions, Release, Run workflow on GitHub.
 
 ## Publish a prerelease
 
-To test the pipeline and the files first, add `-f prerelease=true`. The entries stay under Unreleased and the release is marked as a prerelease. Its files carry the base version: `1.0.0-next.0` ships files versioned `1.0.0`, because a four-part manifest version cannot carry the suffix.
+To test the pipeline and the files first, add `-f prerelease=true`. The entries stay under Unreleased and the release is marked as a prerelease. Its files carry the base version: `1.0.0-next.0` ships files versioned `1.0.0`, because a four-part manifest version cannot carry the suffix. To reinstall a prerelease over the previous one, run `install.ps1` with `-Force` (see [Install a release](install.md)).
 
 ```sh
 gh workflow run release.yml -f increment=<patch|minor|major> -f prerelease=true

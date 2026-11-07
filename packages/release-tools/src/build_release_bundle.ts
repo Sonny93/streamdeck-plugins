@@ -17,7 +17,7 @@ async function buildFileEntry(
 }
 
 /**
- * Writes the zip that holds every release file, the same bytes as the individual files, with the install script at its root:
+ * Writes the zip that holds every release file, the same bytes as the individual files, with the install script and its launcher at its root:
  * plugins under `plugins/`, icon packs under `icons/` and profiles under `profiles/`. Returns the path of the zip.
  */
 export async function buildReleaseBundle(
@@ -25,7 +25,7 @@ export async function buildReleaseBundle(
 		pluginFiles: readonly string[];
 		iconPackFiles: readonly string[];
 		profileFiles: readonly string[];
-		installScriptFile: string;
+		rootFiles: readonly string[];
 		bundleFile: string;
 	}>
 ): Promise<string> {
@@ -39,7 +39,7 @@ export async function buildReleaseBundle(
 		...options.profileFiles.map((file) =>
 			buildFileEntry({ folder: ReleaseFormats.bundleProfilesFolder, file })
 		),
-		buildFileEntry({ folder: '', file: options.installScriptFile }),
+		...options.rootFiles.map((file) => buildFileEntry({ folder: '', file })),
 	]);
 	entries.sort((first, second) => compareCodeUnits(first.name, second.name));
 	await writeFile(options.bundleFile, buildZip({ entries }));
