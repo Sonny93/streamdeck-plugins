@@ -5,7 +5,7 @@
 	"scripts": {
 		"build": "tsdown",
 		"watch": "tsdown --watch",
-		"typecheck": "tsc --noEmit && tsc --noEmit -p scripts",
+		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
 		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
 	},

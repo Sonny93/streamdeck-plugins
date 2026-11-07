@@ -110,29 +110,6 @@ function emitModulePackageFilePlugin(): Rolldown.Plugin {
 	};
 }
 
-/**
- * Regenerates the Spotify Deck profile archive shipped in the plugin directory.
- * The generator is TypeScript run natively by Node, so it is imported at runtime instead of being bundled into this config.
- */
-function buildProfilePlugin(): Rolldown.Plugin {
-	return {
-		name: 'build-profile',
-		async writeBundle() {
-			const { buildProfile } = await import(
-				url.pathToFileURL(
-					path.join(
-						import.meta.dirname,
-						'scripts',
-						'profile',
-						'build_profile.ts'
-					)
-				).href
-			);
-			await buildProfile({ rootDirectory: import.meta.dirname });
-		},
-	};
-}
-
 export default defineConfig(({ watch = false }) => {
 	const isWatching = watch !== false;
 	return {
@@ -165,10 +142,6 @@ export default defineConfig(({ watch = false }) => {
 				]
 			: false,
 		onSuccess: isWatching ? 'pnpm run restart' : undefined,
-		plugins: [
-			emitModulePackageFilePlugin(),
-			copyKoffiPlugin(),
-			buildProfilePlugin(),
-		],
+		plugins: [emitModulePackageFilePlugin(), copyKoffiPlugin()],
 	};
 });

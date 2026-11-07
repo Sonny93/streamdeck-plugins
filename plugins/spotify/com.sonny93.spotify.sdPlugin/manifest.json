@@ -13,15 +13,6 @@
 	"Software": { "MinimumVersion": "7.1" },
 	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
 	"Nodejs": { "Version": "24", "Debug": "enabled" },
-	"Profiles": [
-		{
-			"Name": "profiles/spotify-deck",
-			"DeviceType": 7,
-			"AutoInstall": true,
-			"DontAutoSwitchWhenInstalled": false,
-			"Readonly": false
-		}
-	],
 	"Actions": [
 		{
 			"Name": "Open search",

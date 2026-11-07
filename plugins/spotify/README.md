@@ -13,10 +13,6 @@ Spotify has no local API for its desktop app, so the plugin drives the app throu
 
 The desktop app itself fetches the lyrics, with its own session: the plugin needs no Spotify account setup or API key.
 
-## Profile
-
-The build generates a `spotify-deck` profile for the Stream Deck +, with every action in place. Stream Deck installs it with the plugin.
-
 ## Troubleshooting
 
 ### `Spotify did not open its DevTools port 9229`
