@@ -3,5 +3,5 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
 	ignorePatterns: ['**/*.sdPlugin/bin/**'],
-	extends: [minimalstuffPreset()],
+	extends: [minimalstuffPreset({ subpathImports: false })],
 });

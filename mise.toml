@@ -1,4 +1,4 @@
 [tools]
 node = "26"
-pnpm = "latest"
+pnpm = "12.18.0"
 just = "latest"

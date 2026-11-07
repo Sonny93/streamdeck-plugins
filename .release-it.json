@@ -1,0 +1,26 @@
+{
+	"$schema": "https://unpkg.com/release-it@21/schema/release-it.json",
+	"git": {
+		"requireCleanWorkingDir": true,
+		"commitMessage": "chore(release): ${version}",
+		"tagName": "v${version}",
+		"tagAnnotation": "v${version}",
+		"tagExclude": "*.*.*-*",
+		"commit": true,
+		"tag": true,
+		"push": false
+	},
+	"github": {
+		"release": false
+	},
+	"npm": {
+		"publish": false
+	},
+	"plugins": {
+		"@release-it/keep-a-changelog": {
+			"filename": "CHANGELOG.md",
+			"addUnreleased": true,
+			"addVersionUrl": false
+		}
+	}
+}

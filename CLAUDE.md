@@ -5,13 +5,16 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 ## Verify
 
 - `mise x -- pnpm check` from the root runs lint, format check, typecheck and the tests of every package. Node and pnpm come from mise and are not on the bare PATH.
-- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck|display-deck|deck-kit|icon-pack> exec vitest run <path>`.
+- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck|display-deck|deck-kit|icon-pack|release-tools> exec vitest run <path>`.
+- Package tests run one at a time (`--workspace-concurrency=1`): vitest 5 shares its module cache at the workspace root, and parallel runs fail with `ENOTEMPTY` on `node_modules/.vitest-cache`.
+- `mise x -- pnpm package` writes the release files into `dist/` and needs a `pnpm build` first.
 - `mise x -- pnpm format` can need a second run before `format:check` passes, because the lint fixes and oxfmt's import sorting each change the other's output.
 - The user tests on their own Stream Deck + and Volt 1: after a build, ask them to check the device rather than claiming it works.
 
 ## Conventions
 
 - Load `typescript-conventions` before touching TypeScript, and `commit` to commit.
+- Every user-visible change adds a line under `## [Unreleased]` in `CHANGELOG.md` in the same commit: release-it fails on an empty section.
 - Keys share one look: background `#121212`, one accent per domain (amber `#FFB020` audio, green `#1DB954` Spotify, sky blue `#4FC3F7` displays, white for neutral folders, grey for navigation), and a label the plugin draws in SVG in the icon color, because a plugin cannot change the color of the native title.
 
 ## Decisions
@@ -22,6 +25,11 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 - Actions declare `override readonly manifestId` instead of the SDK's `@action` decorator: oxc leaves decorators untransformed and Node cannot run them.
 - Code moves to `packages/deck-kit` on its second use across plugins, not before. Plugins import `deck-kit/<folder>/<file>` and bundle it through `deps.alwaysBundle`, since tsdown leaves dependencies external and `bin/node_modules` only ships koffi.
 - `icon-pack/` copies the key layout of `deck-kit` instead of importing it: Node runs its TypeScript natively and cannot resolve the extensionless imports of the plugins, so a layout change goes to both.
+- `deck-kit/src/zip` is the exception: its imports keep the `.ts` extension because Node runs it natively from the Spotify profile build and from `release-tools`.
+- The oxlint preset runs with `subpathImports: false`, because the plugins rely on extensionless relative imports that tsdown resolves.
+- Releases run only through the dispatched `release.yml`, which calls the shared `minimalstuff/tooling` release workflow; never `pnpm release`, release-it or `git tag` locally, since tags are reserved to the CI deploy key.
+- One version covers every plugin, the icon pack and the profile. `release-tools` writes it at pack time (`streamdeck pack --version`) into a staged copy, because `pack` rewrites the manifest it packs; the committed manifests keep their placeholder version. A prerelease (`1.0.0-next.0`) ships files versioned `1.0.0`, since a four-part manifest version cannot carry the suffix.
+- `supportedArchitectures` in `pnpm-workspace.yaml` installs the win32 packages on Linux too, so the koffi copy works on the Linux CI runners.
 - A plugin joins as `plugins/<name>` with its history: a move commit in its own repo, then a merge with `--allow-unrelated-histories`.
 - Windows APIs go through koffi FFI instead of native addons, so no C++ toolchain is needed: the tsdown config copies the prebuilt `@koromix/koffi-win32-x64` into `bin/node_modules`, and `allowBuilds` keeps koffi's install script off.
 - `.gitattributes` forces LF because Git for Windows checks out CRLF here (`core.autocrlf=true`), which makes oxfmt flag every file.
@@ -31,3 +39,5 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 - One repo per plugin: merged into this workspace.
 - A visual charter document: the look is the code above.
 - Styling the native folder and Back keys from a plugin: the SDK does not allow it, so an icon pack does it instead.
+- A release hook that commits the version into the manifests: rewriting them risks breaking `format:check` on a release commit that skips the checks.
+- The Marketplace: the plugins are personal, so they ship as GitHub release files even though only the Marketplace auto-updates.

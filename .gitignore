@@ -5,3 +5,4 @@ node_modules/
 icon-pack/*.sdIconPack/icons
 icon-pack/*.sdIconPack/icons.json
 icon-pack/*.sdIconPack/icon.png
+dist/
