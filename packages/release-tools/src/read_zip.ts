@@ -1,7 +1,6 @@
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
-
 import { findEndRecord } from './find_end_record.ts';
 import { readZipEntry } from './read_zip_entry.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 import { ZipReadError } from './zip_read_error.ts';
 import { ZipReadLayout } from './zip_read_layout.ts';
 

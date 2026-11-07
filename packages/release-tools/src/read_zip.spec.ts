@@ -1,9 +1,9 @@
-import { buildDirectoryEntry } from 'deck-kit/zip/build_directory_entry';
-import { buildZip } from 'deck-kit/zip/build_zip';
 import { crc32, deflateRawSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 
 import { readZip } from './read_zip.ts';
+import { buildDirectoryEntry } from './zip/build_directory_entry.ts';
+import { buildZip } from './zip/build_zip.ts';
 import { ZipReadError } from './zip_read_error.ts';
 
 const DEFLATE_METHOD = 8;

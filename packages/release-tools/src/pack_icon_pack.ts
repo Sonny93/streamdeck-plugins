@@ -1,4 +1,3 @@
-import { buildZip } from 'deck-kit/zip/build_zip';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -7,6 +6,7 @@ import { copyToStaging } from './copy_to_staging.ts';
 import { ReleaseFormats } from './release_formats.ts';
 import { requireBuiltFile } from './require_built_file.ts';
 import { setManifestVersion } from './set_manifest_version.ts';
+import { buildZip } from './zip/build_zip.ts';
 
 const BUILT_FILES = ['icons.json', 'icon.png'] as const;
 

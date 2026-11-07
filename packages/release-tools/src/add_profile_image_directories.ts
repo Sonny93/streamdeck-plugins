@@ -1,7 +1,6 @@
-import { buildDirectoryEntry } from 'deck-kit/zip/build_directory_entry';
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
-
 import { compareCodeUnits } from './compare_code_units.ts';
+import { buildDirectoryEntry } from './zip/build_directory_entry.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 const PROFILE_FOLDER = /^Profiles\/[^/]+\.sdProfile$/u;
 const PAGE_FOLDER = /^Profiles\/[^/]+\.sdProfile\/Profiles\/[^/]+$/u;

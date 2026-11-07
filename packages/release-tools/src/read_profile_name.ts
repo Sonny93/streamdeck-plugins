@@ -1,6 +1,5 @@
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
-
 import { InvalidProfileError } from './invalid_profile_error.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 const PROFILE_MANIFEST_PATH = /^Profiles\/[^/]+\.sdProfile\/manifest\.json$/u;
 

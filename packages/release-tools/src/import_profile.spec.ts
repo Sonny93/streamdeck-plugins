@@ -1,5 +1,3 @@
-import { buildZip } from 'deck-kit/zip/build_zip';
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 import {
 	access,
 	mkdir,
@@ -15,6 +13,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { importProfile } from './import_profile.ts';
 import { UnsafeArchivePathError } from './unsafe_archive_path_error.ts';
+import { buildZip } from './zip/build_zip.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 const MANIFEST_PATH = 'Profiles/AAA.sdProfile/manifest.json';
 

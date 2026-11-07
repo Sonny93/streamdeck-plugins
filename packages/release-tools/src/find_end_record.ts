@@ -1,5 +1,4 @@
-import { ZipFormat } from 'deck-kit/zip/zip_format';
-
+import { ZipFormat } from './zip/zip_format.ts';
 import { ZipReadError } from './zip_read_error.ts';
 import { ZipReadLayout } from './zip_read_layout.ts';
 

@@ -25,7 +25,6 @@ Stream Deck + plugins for a Windows PC, one pnpm workspace with each plugin unde
 - Actions declare `override readonly manifestId` instead of the SDK's `@action` decorator: oxc leaves decorators untransformed and Node cannot run them.
 - Code moves to `packages/deck-kit` on its second use across plugins, not before. Plugins import `deck-kit/<folder>/<file>` and bundle it through `deps.alwaysBundle`, since tsdown leaves dependencies external and `bin/node_modules` only ships koffi.
 - `icon-pack/` copies the key layout of `deck-kit` instead of importing it: Node runs its TypeScript natively and cannot resolve the extensionless imports of the plugins, so a layout change goes to both.
-- `deck-kit/src/zip` is the exception: its imports keep the `.ts` extension because Node runs it natively from `release-tools`.
 - The oxlint preset runs with `subpathImports: false`, because the plugins rely on extensionless relative imports that tsdown resolves.
 - Releases run only through the dispatched `release.yml`, which calls the shared `minimalstuff/tooling` release workflow; never `pnpm release`, release-it or `git tag` locally, since tags are reserved to the CI deploy key.
 - One version covers every plugin, the icon pack and the profile. `release-tools` writes it at pack time (`streamdeck pack --version`) into a staged copy, because `pack` rewrites the manifest it packs; the committed manifests keep their placeholder version. A prerelease (`1.0.0-next.0`) ships files versioned `1.0.0`, since a four-part manifest version cannot carry the suffix.

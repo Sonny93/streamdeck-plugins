@@ -1,7 +1,7 @@
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
-import { ZipFormat } from 'deck-kit/zip/zip_format';
 import { crc32, inflateRawSync } from 'node:zlib';
 
+import type { ZipEntry } from './zip/zip_entry.ts';
+import { ZipFormat } from './zip/zip_format.ts';
 import { ZipReadError } from './zip_read_error.ts';
 import { ZipReadLayout } from './zip_read_layout.ts';
 

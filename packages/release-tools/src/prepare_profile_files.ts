@@ -1,8 +1,8 @@
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 import path from 'node:path';
 
 import { formatProfileFile } from './format_profile_file.ts';
 import { UnsafeArchivePathError } from './unsafe_archive_path_error.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 /** A file or folder to create: `contents` is `null` for a folder. */
 export type PreparedProfileFile = Readonly<{

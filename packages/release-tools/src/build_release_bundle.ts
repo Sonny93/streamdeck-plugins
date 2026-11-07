@@ -1,10 +1,10 @@
-import { buildZip } from 'deck-kit/zip/build_zip';
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { compareCodeUnits } from './compare_code_units.ts';
 import { ReleaseFormats } from './release_formats.ts';
+import { buildZip } from './zip/build_zip.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 async function buildFileEntry(
 	options: Readonly<{ folder: string; file: string }>

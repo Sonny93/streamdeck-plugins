@@ -1,8 +1,8 @@
-import { buildDirectoryEntry } from 'deck-kit/zip/build_directory_entry';
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 import { describe, expect, it } from 'vitest';
 
 import { addProfileImageDirectories } from './add_profile_image_directories.ts';
+import { buildDirectoryEntry } from './zip/build_directory_entry.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 const PROFILE = 'Profiles/AAA.sdProfile';
 const PAGE = `${PROFILE}/Profiles/BBB`;

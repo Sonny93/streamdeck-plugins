@@ -1,9 +1,9 @@
-import { buildDirectoryEntry } from 'deck-kit/zip/build_directory_entry';
-import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { compareCodeUnits } from './compare_code_units.ts';
+import { buildDirectoryEntry } from './zip/build_directory_entry.ts';
+import type { ZipEntry } from './zip/zip_entry.ts';
 
 function toArchivePath(
 	options: Readonly<{ directory: string; absolutePath: string }>
