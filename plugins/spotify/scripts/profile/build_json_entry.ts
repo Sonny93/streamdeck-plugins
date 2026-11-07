@@ -1,4 +1,4 @@
-import type { ZipEntry } from './zip_entry.ts';
+import type { ZipEntry } from 'deck-kit/zip/zip_entry';
 
 /** Builds a zip entry that holds the value as compact JSON, the way the Stream Deck app writes its manifests. */
 export function buildJsonEntry(

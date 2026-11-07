@@ -1,5 +1,6 @@
+import { buildZip } from 'deck-kit/zip/build_zip';
+
 import { buildProfileEntries } from './build_profile_entries.ts';
-import { buildZip } from './build_zip.ts';
 import type { PluginManifest } from './plugin_manifest.ts';
 import type { ProfileLayout } from './profile_layout.ts';
 

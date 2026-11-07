@@ -1,5 +1,7 @@
+import { buildDirectoryEntry } from 'deck-kit/zip/build_directory_entry';
+import type { ZipEntry } from 'deck-kit/zip/zip_entry';
+
 import { buildBackToParentAction } from './build_back_to_parent_action.ts';
-import { buildDirectoryEntry } from './build_directory_entry.ts';
 import { buildJsonEntry } from './build_json_entry.ts';
 import { buildOpenFolderAction } from './build_open_folder_action.ts';
 import { buildPageEntries } from './build_page_entries.ts';
@@ -11,7 +13,6 @@ import type { PluginManifest } from './plugin_manifest.ts';
 import type { ProfileFolder } from './profile_folder.ts';
 import { ProfileFormat } from './profile_format.ts';
 import type { ProfileLayout } from './profile_layout.ts';
-import type { ZipEntry } from './zip_entry.ts';
 
 function buildFolderEntries(
 	options: Readonly<{

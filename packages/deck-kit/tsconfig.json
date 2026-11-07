@@ -10,6 +10,8 @@
 		"noImplicitOverride": true,
 		"noUncheckedIndexedAccess": true,
 		"isolatedModules": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
 		"verbatimModuleSyntax": true,
 		"skipLibCheck": true
 	},
