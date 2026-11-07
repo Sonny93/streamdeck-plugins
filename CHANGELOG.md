@@ -12,3 +12,4 @@ All notable changes to streamdeck-plugins are written here for the people who us
 - Sonny93 Keys, an icon pack for the native folder and Back keys in the look of the plugin keys.
 - A Stream Deck + profile that lays out the keys and dials of the plugins of this repository over 6 pages, with a BeamNG page for the BeamNG Deck plugin.
 - Each GitHub release carries one zip with the packaged plugins, the icon pack and the profile, each installable with a double-click, and an `install.ps1` script that installs them in one go, after removing the dead links a deleted development checkout leaves in the Stream Deck folders.
+- The code is available under the MIT license.
