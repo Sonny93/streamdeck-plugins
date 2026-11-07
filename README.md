@@ -32,7 +32,7 @@ The script:
 - Removes the dead links a deleted development checkout left in the Stream Deck folders, and refuses live ones.
 - Opens each package so that Stream Deck installs it. Stream Deck may ask you to confirm each install.
 
-The release also carries each file on its own: double-click a `.streamDeckPlugin` file per plugin, the `.streamDeckIconPack` file for the Sonny93 Keys icon pack, or the `.streamDeckProfile` file for the profile.
+The extracted folder also holds each file on its own: double-click a `.streamDeckPlugin` file in `plugins` per plugin, the `.streamDeckIconPack` file in `icons` for the Sonny93 Keys icon pack, or the `.streamDeckProfile` file in `profiles` for the profile.
 
 The profile also expects the `com.sonny93.beamng` plugin (BeamNG Deck, in another repository). The keys of a missing plugin stay empty.
 
@@ -115,7 +115,7 @@ Or use Actions, Release, Run workflow on GitHub. The workflow:
 
 - Runs the checks, then bumps the version, rolls the changelog, tags the commit and creates the GitHub release with the changelog section as its notes.
 - Builds the release tag and checks that every package carries the release version.
-- Attaches the plugins, the icon pack, the profile and the zip that bundles them with `install.ps1` to the release.
+- Attaches the zip that bundles the plugins, the icon pack, the profile and `install.ps1` to the release.
 
 `mise x -- pnpm package` builds the same files into `dist/` locally, after `mise x -- pnpm build`.
 

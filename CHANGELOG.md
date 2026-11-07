@@ -11,4 +11,4 @@ All notable changes to streamdeck-plugins are written here for the people who us
 - Display Deck: turn monitors off without moving the windows, change their brightness and switch HDR.
 - Sonny93 Keys, an icon pack for the native folder and Back keys in the look of the plugin keys.
 - A Stream Deck + profile that lays out the keys and dials of the plugins of this repository over 6 pages, with a BeamNG page for the BeamNG Deck plugin.
-- Each GitHub release carries the packaged plugins, the icon pack and the profile, to install with a double-click, and a zip of all of them with an `install.ps1` script that installs them in one go, after removing the dead links a deleted development checkout leaves in the Stream Deck folders.
+- Each GitHub release carries one zip with the packaged plugins, the icon pack and the profile, each installable with a double-click, and an `install.ps1` script that installs them in one go, after removing the dead links a deleted development checkout leaves in the Stream Deck folders.

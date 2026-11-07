@@ -139,7 +139,7 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: dist/*
+          path: dist/streamdeck-plugins-*.zip
           if-no-files-found: error
           retention-days: 1
 
@@ -154,7 +154,7 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.PACKAGES_DIRECTORY }}
 
-      - name: Attach the packages to the GitHub release
+      - name: Attach the release zip to the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.release.outputs.tag }}
