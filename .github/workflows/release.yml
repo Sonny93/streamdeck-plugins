@@ -6,7 +6,7 @@ on:
       increment:
         description: Version increment
         type: choice
-        options: [patch, minor, major]
+        options: [patch, minor, major, prerelease]
         required: true
       prerelease:
         description: Publish a prerelease (entries stay under Unreleased)
@@ -32,10 +32,10 @@ jobs:
     needs: checks
     permissions:
       contents: write
-    uses: minimalstuff/tooling/.github/workflows/release.yml@f64bb778d0ba50466cae8112d66efad4a4cb7ba8 # v0.9.1
+    uses: minimalstuff/tooling/.github/workflows/release.yml@80826a3ade0bb206c6c2b77fb1ce1b226513b9ab # v0.10.0
     with:
       increment: ${{ inputs.increment }}
-      release-script: ${{ inputs.prerelease && 'release:next' || 'release' }}
+      release-script: ${{ (inputs.prerelease || inputs.increment == 'prerelease') && 'release:next' || 'release' }}
       node-version-file: mise.toml
     secrets:
       release-deploy-key: ${{ secrets.RELEASE_DEPLOY_KEY }}

@@ -105,6 +105,12 @@ To test the pipeline and the files first, add `-f prerelease=true`: the entries 
 gh workflow run release.yml -f increment=<patch|minor|major> -f prerelease=true
 ```
 
+The next prerelease of the same version uses `increment=prerelease` (`1.0.0-next.0` becomes `1.0.0-next.1`); `patch`, `minor` and `major` would start a new series, `major` giving `2.0.0-next.0`:
+
+```sh
+gh workflow run release.yml -f increment=prerelease
+```
+
 Or use Actions, Release, Run workflow on GitHub. The workflow:
 
 - Runs the checks, then bumps the version, rolls the changelog, tags the commit and creates the GitHub release with the changelog section as its notes.
