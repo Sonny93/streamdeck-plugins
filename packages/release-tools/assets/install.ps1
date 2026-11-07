@@ -125,7 +125,7 @@ function Get-PluginProcesses {
 
 function Wait-PluginProcessesExit {
     $deadline = (Get-Date).AddSeconds($PluginExitTimeoutSeconds)
-    while ((Get-PluginProcesses).Count -gt 0) {
+    while (@(Get-PluginProcesses).Count -gt 0) {
         if ((Get-Date) -gt $deadline) {
             throw "A com.sonny93 plugin process is still running after $PluginExitTimeoutSeconds seconds. End its node.exe in Task Manager and run this script again."
         }
