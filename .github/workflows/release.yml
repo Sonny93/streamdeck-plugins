@@ -100,6 +100,42 @@ jobs:
             fi
           done
 
+      - name: Verify the bundle holds the same packages as the individual files
+        run: |
+          set -euo pipefail
+          FULL_VERSION=$(node -p 'JSON.parse(require("fs").readFileSync("package.json", "utf8")).version')
+          BUNDLE="dist/streamdeck-plugins-$FULL_VERSION.zip"
+          if [[ ! -f "$BUNDLE" ]]; then
+            echo "$BUNDLE is missing" >&2
+            exit 1
+          fi
+          unzip -l "$BUNDLE" | grep -q ' install.ps1$' || { echo "$BUNDLE has no install.ps1 at its root" >&2; exit 1; }
+          EXTRACTED=$(mktemp -d)
+          unzip -q "$BUNDLE" -d "$EXTRACTED"
+          shopt -s nullglob
+          PACKAGES=(dist/*.streamDeckPlugin dist/*.streamDeckIconPack dist/*.streamDeckProfile)
+          for PACKAGE in "${PACKAGES[@]}"; do
+            NAME=$(basename "$PACKAGE")
+            case "$NAME" in
+              *.streamDeckPlugin) FOLDER=plugins ;;
+              *.streamDeckIconPack) FOLDER=icons ;;
+              *) FOLDER=profiles ;;
+            esac
+            if [[ ! -f "$EXTRACTED/$FOLDER/$NAME" ]]; then
+              echo "$BUNDLE has no $FOLDER/$NAME" >&2
+              exit 1
+            fi
+            if [[ "$(sha256sum < "$PACKAGE")" != "$(sha256sum < "$EXTRACTED/$FOLDER/$NAME")" ]]; then
+              echo "$FOLDER/$NAME differs from $PACKAGE" >&2
+              exit 1
+            fi
+          done
+          BUNDLED_COUNT=$(find "$EXTRACTED" -type f -not -name install.ps1 | wc -l)
+          if [[ "$BUNDLED_COUNT" -ne "${#PACKAGES[@]}" ]]; then
+            echo "$BUNDLE holds $BUNDLED_COUNT packages, dist has ${#PACKAGES[@]}" >&2
+            exit 1
+          fi
+
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ env.ARTIFACT_NAME }}

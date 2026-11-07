@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"package": "node src/package_release.ts",
+		"profile:import": "node src/profile_import.ts",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run"
 	},

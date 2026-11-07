@@ -20,7 +20,7 @@ mise x -- pnpm build
 mise x -- pnpm link-pack
 ```
 
-`build` draws the PNG images into `com.sonny93.keys.sdIconPack`. `link-pack` links that folder into the Stream Deck icon packs folder, the way `streamdeck link` does for a plugin. Restart Stream Deck to load the pack, then pick the images from the icon library in the key image menu.
+`build` draws the PNG images into `com.sonny93.keys.sdIconPack`. `link-pack` links that folder into the Stream Deck icon packs folder, the way `streamdeck link` does for a plugin. That link is a junction: to install a released icon pack afterwards, remove it first with `cmd /c rmdir "%APPDATA%\Elgato\StreamDeck\IconPacks\com.sonny93.keys.sdIconPack"`, which keeps this folder, or the link breaks when you delete the checkout. Restart Stream Deck to load the pack, then pick the images from the icon library in the key image menu.
 
 ## Change an icon
 

@@ -18,15 +18,25 @@ Stream Deck plugins for a Windows PC, built for the Stream Deck +: Spotify contr
 
 ## Install
 
-Download the files of the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest) and double-click each one you want:
+Download `streamdeck-plugins-<version>.zip` from the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest) and extract it entirely. Then, from the extracted folder in a normal (not Administrator) PowerShell window:
 
-- A `.streamDeckPlugin` file per plugin.
-- The `.streamDeckIconPack` file for the Sonny93 Keys icon pack.
-- The `.streamDeckProfile` file for a Stream Deck + profile.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
 
-The profile also expects the `com.sonny93.beamng` plugin (BeamNG Deck, in another repository) and the third-party Mouse Simulator plugin (`com.vivremotion.mousesimulator`, from the Marketplace). The keys of a missing plugin stay empty.
+Add `-WithProfile` the first time to import the Stream Deck + profile too. Each profile import adds a profile, so it is opt-in.
 
-To update, download the new release and double-click the files again: Stream Deck does not update plugins from outside its Marketplace.
+The script:
+
+- Closes Stream Deck, then starts it again when it is done.
+- Removes the dead links a deleted development checkout left in the Stream Deck folders, and refuses live ones.
+- Opens each package so that Stream Deck installs it. Stream Deck may ask you to confirm each install.
+
+The release also carries each file on its own: double-click a `.streamDeckPlugin` file per plugin, the `.streamDeckIconPack` file for the Sonny93 Keys icon pack, or the `.streamDeckProfile` file for the profile.
+
+The profile also expects the `com.sonny93.beamng` plugin (BeamNG Deck, in another repository). The keys of a missing plugin stay empty.
+
+To update, download the new release and install it again: Stream Deck does not update plugins from outside its Marketplace.
 
 A plugin linked for development with `streamdeck link` must be unlinked first, because installing over a linked plugin can write into the repository folder. From the folder of that plugin:
 
@@ -34,7 +44,7 @@ A plugin linked for development with `streamdeck link` must be unlinked first, b
 mise x -- pnpm exec streamdeck unlink com.sonny93.<name>
 ```
 
-`<name>` is `spotify`, `audio` or `display`.
+`<name>` is `spotify`, `audio` or `display`. For the icon pack, see its [README](icon-pack/README.md).
 
 ## Develop
 
@@ -70,6 +80,15 @@ mise x -- pnpm check
 
 `mise x -- pnpm format` fixes lint and format issues.
 
+The profile lives in [`profiles/spotify-deck`](profiles/spotify-deck) as plain folders and JSON. Edit it on the device, export it from Stream Deck, then import the export over the folder and format it:
+
+```sh
+mise x -- pnpm profile:import <path/to/export.streamDeckProfile>
+mise x -- pnpm format
+```
+
+The folder name is the profile name in lower case with dashes. Pass a name as a second argument to choose another one.
+
 ## Release
 
 Every user-visible change adds a line under `## [Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md). One version covers every plugin, the icon pack and the profile.
@@ -90,13 +109,21 @@ Or use Actions, Release, Run workflow on GitHub. The workflow:
 
 - Runs the checks, then bumps the version, rolls the changelog, tags the commit and creates the GitHub release with the changelog section as its notes.
 - Builds the release tag and checks that every package carries the release version.
-- Attaches the plugins, the icon pack and the profile to the release.
+- Attaches the plugins, the icon pack, the profile and the zip that bundles them with `install.ps1` to the release.
 
 `mise x -- pnpm package` builds the same files into `dist/` locally, after `mise x -- pnpm build`.
 
 The release needs a one-time GitHub setup: the `release` environment, the deploy key and the tag ruleset. Follow [Releasing, one-time setup](https://github.com/minimalstuff/tooling/blob/main/docs/releasing.md#one-time-setup) and skip the npm parts.
 
 ## Troubleshooting
+
+### Stream Deck says "Unable to install" after I deleted my development checkout
+
+`streamdeck link` and `pnpm link-pack` leave junctions in `%APPDATA%\Elgato\StreamDeck\Plugins` and `IconPacks`. Once the checkout is gone they point nowhere, and Stream Deck cannot install over them. `install.ps1` removes them. To remove them by hand, from PowerShell:
+
+```powershell
+Get-ChildItem "$env:APPDATA\Elgato\StreamDeck\Plugins","$env:APPDATA\Elgato\StreamDeck\IconPacks" -Filter 'com.sonny93.*' -Force | Where-Object { $_.LinkType -eq 'Junction' -and -not (Test-Path -LiteralPath $_.Target) } | ForEach-Object { cmd /c rmdir $_.FullName }
+```
 
 ### The build fails with `EPERM` on `koffi-win32-x64`
 

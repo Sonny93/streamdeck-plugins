@@ -1,0 +1,17 @@
+{
+	"AppIdentifier": "*",
+	"Device": {
+		"Model": "20GBD9901",
+		"UUID": "aeac9a98-ce18-42ae-9257-3dd37630147f"
+	},
+	"Name": "Spotify Deck",
+	"Pages": {
+		"Current": "00000000-0000-0000-0000-000000000000",
+		"Default": "2b852f9b-1d6d-431c-a2c3-9519a39837f3",
+		"Pages": [
+			"fdcc4ecc-8d3f-430b-b396-8ef617fd69c8",
+			"5e448032-5be3-4bc5-9bbc-d10f5ce649e2"
+		]
+	},
+	"Version": "3.0"
+}

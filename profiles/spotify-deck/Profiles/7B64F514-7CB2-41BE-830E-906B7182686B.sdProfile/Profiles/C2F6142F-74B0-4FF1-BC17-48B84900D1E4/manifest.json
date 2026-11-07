@@ -1,0 +1,127 @@
+{
+	"Controllers": [
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "4656d2f7-d575-45ea-bbb8-35f627bcbb87",
+					"AutoExit": {
+						"Delay": 0,
+						"Enabled": false
+					},
+					"LinkedTitle": true,
+					"Name": "Dossier parent",
+					"Plugin": {
+						"Name": "Open Parent Folder",
+						"UUID": "com.elgato.streamdeck.profile.backtoparent",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.elgato.streamdeck.profile.backtoparent"
+				},
+				"1,0": {
+					"ActionID": "615eaf1f-bbac-4045-9ec6-82ce873d325d",
+					"LinkedTitle": true,
+					"Name": "Volt 1 Monitor",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.audio.volt-monitor"
+				},
+				"1,1": {
+					"ActionID": "057cd335-ad9d-45f7-a981-9f2d25611f08",
+					"LinkedTitle": true,
+					"Name": "Default Output",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"label": "Casque"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.audio.default-output"
+				},
+				"2,0": {
+					"ActionID": "32212fd9-fb62-4e00-b061-5f08a93ec7bf",
+					"LinkedTitle": true,
+					"Name": "Volt 1 Vintage",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 1,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.audio.volt-vintage"
+				},
+				"2,1": {
+					"ActionID": "3b286637-0a9d-490c-8c95-35e503f9d48d",
+					"LinkedTitle": true,
+					"Name": "Default Output",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"label": "Enceintes",
+						"labelPosition": "top"
+					},
+					"State": 1,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 12,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#ffffff"
+						},
+						{},
+						{}
+					],
+					"UUID": "com.sonny93.audio.default-output"
+				},
+				"3,1": {
+					"ActionID": "cb46fa54-72c3-4ed7-ba94-cd5561c4812c",
+					"LinkedTitle": true,
+					"Name": "Mute",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.audio.mute"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": null,
+			"Type": "Encoder"
+		}
+	],
+	"Icon": "",
+	"Name": ""
+}

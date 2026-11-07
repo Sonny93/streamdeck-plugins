@@ -1,0 +1,112 @@
+{
+	"Controllers": [
+		{
+			"Actions": {
+				"3,1": {
+					"ActionID": "7fa3006c-8d63-4b78-b360-6fb7c06355b1",
+					"LinkedTitle": true,
+					"Name": "Créer un dossier",
+					"Plugin": {
+						"Name": "Create Folder",
+						"UUID": "com.elgato.streamdeck.profile.openchild",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"ProfileUUID": "c2f6142f-74b0-4ff1-bc17-48b84900d1e4"
+					},
+					"State": 0,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 9,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"Image": "Images/A0BOCA5BA50RLFFAEOVVA3N180Z.png",
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#ffffff"
+						}
+					],
+					"UUID": "com.elgato.streamdeck.profile.openchild"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "6854af08-fd33-497c-ae49-3f410e27709f",
+					"LinkedTitle": true,
+					"Name": "Playlists",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.playlists"
+				},
+				"1,0": {
+					"ActionID": "771a41af-42fe-4cb8-a7d5-99b6ce9ec684",
+					"LinkedTitle": true,
+					"Name": "Volume",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"target": "spotify"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.volume"
+				},
+				"2,0": {
+					"ActionID": "df120d0e-6a07-479f-81bc-807697d727e8",
+					"LinkedTitle": true,
+					"Name": "Volume",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"target": "focused"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.volume"
+				},
+				"3,0": {
+					"ActionID": "9b3b08c9-4791-458a-b526-4886c56b258c",
+					"LinkedTitle": true,
+					"Name": "Volume",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"appImageName": "msedge.exe",
+						"target": "app"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.volume"
+				}
+			},
+			"Type": "Encoder"
+		}
+	],
+	"Icon": "",
+	"Name": ""
+}

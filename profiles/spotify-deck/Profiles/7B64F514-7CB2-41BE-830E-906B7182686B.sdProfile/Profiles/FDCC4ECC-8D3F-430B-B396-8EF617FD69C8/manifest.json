@@ -1,0 +1,118 @@
+{
+	"Controllers": [
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "90fc78dc-cb48-4caf-a549-101daf1fed95",
+					"LinkedTitle": true,
+					"Name": "Previous track",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.previous-track"
+				},
+				"0,1": {
+					"ActionID": "b8eb3558-51ac-40c0-9ba9-2d006cd9f869",
+					"LinkedTitle": true,
+					"Name": "Create Folder",
+					"Plugin": {
+						"Name": "Create Folder",
+						"UUID": "com.elgato.streamdeck.profile.openchild",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"ProfileUUID": "e46003e6-4bce-4b86-af18-ff38edf58d14"
+					},
+					"State": 0,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 12,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"Image": "Images/18RD63MN0L729BF0EQRJ8OLKE8Z.png",
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#ffffff"
+						}
+					],
+					"UUID": "com.elgato.streamdeck.profile.openchild"
+				},
+				"1,0": {
+					"ActionID": "d362daba-a910-4391-a73b-057119730093",
+					"LinkedTitle": true,
+					"Name": "Play / Pause",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 1,
+					"States": [{}, {}],
+					"UUID": "com.sonny93.spotify.play-pause"
+				},
+				"2,0": {
+					"ActionID": "aafe6981-4f43-49c2-8da4-dd4943166242",
+					"LinkedTitle": true,
+					"Name": "Next track",
+					"Plugin": {
+						"Name": "Spotify Deck",
+						"UUID": "com.sonny93.spotify",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.spotify.next-track"
+				},
+				"3,0": {
+					"ActionID": "6f791486-e75a-4968-93ed-50eb2ffafd19",
+					"LinkedTitle": true,
+					"Name": "Create Folder",
+					"Plugin": {
+						"Name": "Create Folder",
+						"UUID": "com.elgato.streamdeck.profile.openchild",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"ProfileUUID": "ed823ecc-4e2c-4be7-a15c-cba7eefc4a49"
+					},
+					"State": 0,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 12,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"Image": "Images/EHJCGIJKD96BL74SNR7TBVHRE0Z.png",
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#01ff34"
+						}
+					],
+					"UUID": "com.elgato.streamdeck.profile.openchild"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": null,
+			"Type": "Encoder"
+		}
+	],
+	"Icon": "",
+	"Name": ""
+}

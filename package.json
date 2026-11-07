@@ -12,6 +12,7 @@
 		"test": "pnpm -r --workspace-concurrency=1 run test",
 		"build": "pnpm -r run build",
 		"package": "pnpm --filter release-tools run package",
+		"profile:import": "pnpm --filter release-tools run profile:import",
 		"release": "release-it",
 		"release:next": "release-it --preRelease=next --plugins.@release-it/keep-a-changelog.keepUnreleased=true",
 		"check": "pnpm run lint && pnpm run format:check && pnpm run typecheck && pnpm run test"

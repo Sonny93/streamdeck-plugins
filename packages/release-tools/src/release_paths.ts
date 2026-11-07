@@ -10,6 +10,13 @@ export const ReleasePaths = {
 	pluginsDirectory: path.join(ROOT_DIRECTORY, 'plugins'),
 	iconPackDirectory: path.join(ROOT_DIRECTORY, 'icon-pack'),
 	profilesDirectory: path.join(ROOT_DIRECTORY, 'profiles'),
+	installScriptFile: path.join(
+		ROOT_DIRECTORY,
+		'packages',
+		'release-tools',
+		'assets',
+		'install.ps1'
+	),
 	distDirectory: DIST_DIRECTORY,
 	stagingDirectory: path.join(DIST_DIRECTORY, '.staging'),
 } as const;
