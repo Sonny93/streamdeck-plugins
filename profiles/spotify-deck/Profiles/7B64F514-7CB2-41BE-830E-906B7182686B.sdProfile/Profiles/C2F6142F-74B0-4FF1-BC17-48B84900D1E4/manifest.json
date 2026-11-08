@@ -113,6 +113,21 @@
 					"State": 0,
 					"States": [{}, {}, {}],
 					"UUID": "com.sonny93.audio.mute"
+				},
+				"3,0": {
+					"ActionID": "e6e178bf-4853-42b4-9b1b-acfa93457e43",
+					"LinkedTitle": true,
+					"Name": "Restart Elgato Audio",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.audio.restart-elgato-audio"
 				}
 			},
 			"Type": "Keypad"

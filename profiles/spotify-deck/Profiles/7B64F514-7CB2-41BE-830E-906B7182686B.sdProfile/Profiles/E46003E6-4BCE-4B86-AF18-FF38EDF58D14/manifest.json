@@ -32,26 +32,78 @@
 					"States": [{}, {}, {}],
 					"UUID": "com.sonny93.display.hdr"
 				},
-				"2,0": {
-					"ActionID": "e6e178bf-4853-42b4-9b1b-acfa93457e43",
+				"1,0": {
+					"ActionID": "2edc1adf-c69d-45af-af02-2eee7ca4eb15",
 					"LinkedTitle": true,
-					"Name": "Restart Elgato Audio",
+					"Name": "Screen Power",
 					"Plugin": {
-						"Name": "Audio Deck",
-						"UUID": "com.sonny93.audio",
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.display.power"
+				},
+				"2,0": {
+					"ActionID": "b8f2a03e-8d8a-477c-b92c-cc4765e864f0",
+					"LinkedTitle": true,
+					"Name": "Brightness",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"brightnessKeyMode": "set",
+						"value": 100
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.display.brightness-key"
+				},
+				"3,0": {
+					"ActionID": "042c04ba-a4df-4944-9a16-f8e63a3f930b",
+					"LinkedTitle": true,
+					"Name": "Brightness",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"brightnessKeyMode": "set",
+						"value": 30
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.display.brightness-key"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "b2acddbe-70a2-439c-944d-b72a3c845e09",
+					"LinkedTitle": true,
+					"Name": "Brightness Dial",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
 						"Version": "0.1.0.0"
 					},
 					"Resources": null,
 					"Settings": {},
 					"State": 0,
 					"States": [{}],
-					"UUID": "com.sonny93.audio.restart-elgato-audio"
+					"UUID": "com.sonny93.display.brightness"
 				}
 			},
-			"Type": "Keypad"
-		},
-		{
-			"Actions": null,
 			"Type": "Encoder"
 		}
 	],
