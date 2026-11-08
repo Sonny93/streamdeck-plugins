@@ -92,7 +92,10 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 		}
 	}
 
-	/** Applies a change to the monitors of an action, showing an alert when it has none or the change fails. */
+	/**
+	 * Applies a change to the monitors of an action, showing an alert when it has none or the change fails.
+	 * Right after the plugin starts there is no snapshot yet, and the first read takes seconds of DDC/CI: it waits for it.
+	 */
 	protected async runChange(
 		action: DisplayActionHandle,
 		change: (
@@ -101,8 +104,9 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 		) => Promise<void>
 	): Promise<void> {
 		const config = this.configOf(action.id);
-		const monitors = resolveTargetMonitors(this.hub.current, config.target);
 		try {
+			const snapshot = this.hub.current ?? (await this.hub.refresh());
+			const monitors = resolveTargetMonitors(snapshot, config.target);
 			if (monitors.length === 0) {
 				await showAlert(action);
 				return;

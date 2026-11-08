@@ -119,6 +119,21 @@ describe('DisplayHub', () => {
 		expect(system.vcpOf(UserSetup.topIiyama.id, 0x10)).toBe(60);
 	});
 
+	it('keeps a brightness asked under a black screen for when the monitor wakes', async () => {
+		const system = createSystem();
+		const { hub } = createHub(system);
+		await hub.refresh();
+		await hub.toggleScreens([UserSetup.topIiyama.id], 'blackScreen');
+
+		await hub.setBrightness(UserSetup.topIiyama.id, 'monitor', 100);
+		await hub.changeBrightness(UserSetup.topIiyama.id, 'monitor', -20);
+		expect(system.vcpOf(UserSetup.topIiyama.id, 0x10)).toBe(0);
+		expect(monitorOf(hub, UserSetup.topIiyama.id)?.monitorBrightness).toBe(80);
+
+		await hub.toggleScreens([UserSetup.topIiyama.id], 'blackScreen');
+		expect(system.vcpOf(UserSetup.topIiyama.id, 0x10)).toBe(80);
+	});
+
 	it('keeps the backlight of a monitor that ignores DDC/CI brightness', async () => {
 		const system = createSystem();
 		const { hub } = createHub(system);

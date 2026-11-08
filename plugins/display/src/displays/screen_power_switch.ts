@@ -17,6 +17,21 @@ export class ScreenPowerSwitch {
 
 	constructor(private readonly ddc: DdcMonitors) {}
 
+	/** Whether a monitor is under a black screen with its backlight lowered, to give back when it wakes. */
+	keepsBacklight(monitorId: string): boolean {
+		return this.savedBacklights.has(monitorId);
+	}
+
+	/** Backlight a monitor under a black screen gets back when it wakes, if it has one to give back. */
+	keptBacklight(monitorId: string): number | undefined {
+		return this.savedBacklights.get(monitorId);
+	}
+
+	/** Changes the backlight a monitor under a black screen gets back when it wakes. */
+	keepBacklight(monitorId: string, percent: number): void {
+		this.savedBacklights.set(monitorId, percent);
+	}
+
 	/** Monitors the plugin put in standby, as Windows last described them. */
 	get sleepingDisplays(): readonly DisplayInfo[] {
 		return [...this.sleeping.values()];
@@ -47,11 +62,7 @@ export class ScreenPowerSwitch {
 		}
 		system.showBlackScreen(display);
 		const backlight = monitor.monitorBrightness;
-		if (
-			backlight !== undefined &&
-			backlight > 0 &&
-			!monitor.ignoresMonitorBrightness
-		) {
+		if (backlight !== undefined && !monitor.ignoresMonitorBrightness) {
 			this.savedBacklights.set(display.id, backlight);
 			await this.ddc.writeBrightness(display.id, 0);
 		}

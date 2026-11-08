@@ -20,7 +20,7 @@ Many monitors leave Windows when they turn off, like an unplugged cable, so Wind
 - **Black screen** (default): a black window covers the monitor, and its backlight goes down to 0 when it takes a DDC/CI brightness. Windows keeps the monitor, so no window moves. An OLED panel turns its black pixels off; an LCD keeps a dim backlight. The mouse can still move over the black screen.
 - **Monitor standby**: the monitor really turns off over DDC/CI, and turns on again the same way. Monitors that leave Windows in standby make it move the windows.
 
-The black screens and the backlights they lowered are given back when the plugin turns the monitors on again. If the plugin restarts while a monitor is black, its black screen goes away and its backlight stays at 0: raise it with a brightness action.
+The black screens and the backlights they lowered are given back when the plugin turns the monitors on again. A DDC/CI brightness change on a monitor under a black screen keeps it dark: the monitor takes that brightness when it wakes. If the plugin restarts while a monitor is black, its black screen goes away and its backlight stays at 0: raise it with a brightness action.
 
 ## Brightness control
 

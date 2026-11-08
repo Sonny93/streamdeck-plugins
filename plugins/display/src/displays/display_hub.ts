@@ -69,12 +69,18 @@ export class DisplayHub {
 		return next;
 	}
 
+	/** Sets a brightness; a monitor under a black screen keeps it for when it wakes instead of lighting up. */
 	async setBrightness(
 		monitorId: string,
 		source: BrightnessSource,
 		percent: number
 	): Promise<void> {
 		this.requireDisplay(monitorId);
+		if (source === 'monitor' && this.power.keepsBacklight(monitorId)) {
+			this.power.keepBacklight(monitorId, clampPercent(percent));
+			this.publishCurrent();
+			return;
+		}
 		const writing = this.writerOf(monitorId, source).request(
 			clampPercent(percent)
 		);
@@ -182,6 +188,7 @@ export class DisplayHub {
 					reading: this.ddc.reading(display.id),
 					windowsBrightness: this.windowsBrightness.get(display.id),
 					hasBlackScreen: system.hasBlackScreen(display.id),
+					keptBacklight: this.power.keptBacklight(display.id),
 					pendingMonitorBrightness: this.writers.get(`${display.id}:monitor`)
 						?.pendingValue,
 					pendingWindowsBrightness: this.writers.get(`${display.id}:windows`)

@@ -29,6 +29,8 @@ export function buildMonitorSnapshot(
 		reading: DdcReading;
 		windowsBrightness: number | undefined;
 		hasBlackScreen: boolean;
+		/** Backlight a monitor under a black screen gets back when it wakes, shown as its brightness. */
+		keptBacklight: number | undefined;
 		pendingMonitorBrightness: number | undefined;
 		pendingWindowsBrightness: number | undefined;
 	}>
@@ -44,7 +46,10 @@ export function buildMonitorSnapshot(
 			isListed ? options.listedDisplays : [...options.listedDisplays, display]
 		),
 		isPrimary: display.isPrimary,
-		monitorBrightness: options.pendingMonitorBrightness ?? reading.brightness,
+		monitorBrightness:
+			options.pendingMonitorBrightness ??
+			options.keptBacklight ??
+			reading.brightness,
 		ignoresMonitorBrightness: ignoresDdcBrightness(display.id),
 		windowsBrightness:
 			options.pendingWindowsBrightness ?? options.windowsBrightness,
