@@ -54,6 +54,45 @@ describe('importProfile', () => {
 		);
 	});
 
+	it('should write a page manifest without the personal settings of the plugin actions', async () => {
+		const archiveFile = await writeArchive([
+			buildJsonEntry(MANIFEST_PATH, {
+				Name: 'Deck',
+				Controllers: [
+					{
+						Type: 'Keypad',
+						Actions: {
+							'0,0': {
+								UUID: 'com.sonny93.audio.default-output',
+								Settings: { device: 'endpoint-guid', label: 'Speakers' },
+							},
+						},
+					},
+				],
+			}),
+		]);
+
+		const directory = await importProfile({ archiveFile, profilesDirectory });
+
+		const written: unknown = JSON.parse(
+			await readFile(path.join(directory, MANIFEST_PATH), 'utf8')
+		);
+		expect(written).toEqual({
+			Name: 'Deck',
+			Controllers: [
+				{
+					Type: 'Keypad',
+					Actions: {
+						'0,0': {
+							UUID: 'com.sonny93.audio.default-output',
+							Settings: { label: 'Speakers' },
+						},
+					},
+				},
+			],
+		});
+	});
+
 	it('should replace the content the folder had', async () => {
 		const first = await writeArchive([
 			buildJsonEntry(MANIFEST_PATH, { Name: 'Deck' }),

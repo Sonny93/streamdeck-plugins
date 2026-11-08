@@ -10,6 +10,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ### Changed
 
+- The profile no longer ships personal settings: after installing it, pick the device, playlist or monitor again in the property inspector of the Play on device, Playlists, Default Output and HDR keys.
 - `install.ps1` installs only the plugins and icon packs that are missing or changed, leaves Stream Deck open when everything is up to date, and does not import the profile again when a profile with the same name exists. The new `-Force` switch installs every plugin and icon pack whatever its version.
 
 ## [1.0.0] - 2026-11-07
