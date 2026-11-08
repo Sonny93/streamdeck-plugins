@@ -2,6 +2,7 @@ import { mkdir, readFile, rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 
 import { assertSafeArchivePath } from './assert_safe_archive_path.ts';
+import { filterProfileDirectory } from './filter_profile_directory.ts';
 import { InvalidProfileError } from './invalid_profile_error.ts';
 import { prepareProfileFiles } from './prepare_profile_files.ts';
 import { readProfileName } from './read_profile_name.ts';
@@ -27,12 +28,13 @@ function resolveFolderName(
 
 /**
  * Replaces `<profilesDirectory>/<name>/` with the content of an exported `.streamDeckProfile` archive and returns that folder.
- * Every entry is validated and formatted before anything is written, then written to a temporary folder that replaces the old one, so a failed import keeps the old folder. The name defaults to the slug of the profile name.
+ * Every entry is validated and formatted before anything is written, then written to a temporary folder, filtered to the actions of `allowedPlugins`, that replaces the old one, so a failed import keeps the old folder. The name defaults to the slug of the profile name.
  */
 export async function importProfile(
 	options: Readonly<{
 		archiveFile: string;
 		profilesDirectory: string;
+		allowedPlugins: ReadonlySet<string>;
 		name?: string;
 	}>
 ): Promise<string> {
@@ -57,6 +59,10 @@ export async function importProfile(
 	try {
 		await mkdir(stagingDirectory, { recursive: true });
 		await writeProfileEntries({ files });
+		await filterProfileDirectory({
+			profileDirectory: stagingDirectory,
+			allowedPlugins: options.allowedPlugins,
+		});
 		await rm(directory, { recursive: true, force: true });
 		await rename(stagingDirectory, directory);
 	} finally {

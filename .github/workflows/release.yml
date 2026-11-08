@@ -115,24 +115,42 @@ jobs:
           EXTRACTED=$(mktemp -d)
           unzip -q "$BUNDLE" -d "$EXTRACTED"
           shopt -s nullglob
-          PACKAGES=(dist/*.streamDeckPlugin dist/*.streamDeckIconPack dist/*.streamDeckProfile)
+          PACKAGES=(dist/*.streamDeckPlugin dist/*.streamDeckIconPack dist/*.streamDeckProfile dist/variants/*.streamDeckProfile)
           for PACKAGE in "${PACKAGES[@]}"; do
-            NAME=$(basename "$PACKAGE")
-            case "$NAME" in
-              *.streamDeckPlugin) FOLDER=plugins ;;
-              *.streamDeckIconPack) FOLDER=icons ;;
-              *) FOLDER=profiles ;;
+            RELATIVE="${PACKAGE#dist/}"
+            case "$RELATIVE" in
+              *.streamDeckPlugin) BUNDLED="plugins/$RELATIVE" ;;
+              *.streamDeckIconPack) BUNDLED="icons/$RELATIVE" ;;
+              *) BUNDLED="profiles/$RELATIVE" ;;
             esac
-            if [[ ! -f "$EXTRACTED/$FOLDER/$NAME" ]]; then
-              echo "$BUNDLE has no $FOLDER/$NAME" >&2
+            if [[ ! -f "$EXTRACTED/$BUNDLED" ]]; then
+              echo "$BUNDLE has no $BUNDLED" >&2
               exit 1
             fi
-            if [[ "$(sha256sum < "$PACKAGE")" != "$(sha256sum < "$EXTRACTED/$FOLDER/$NAME")" ]]; then
-              echo "$FOLDER/$NAME differs from $PACKAGE" >&2
+            if [[ "$(sha256sum < "$PACKAGE")" != "$(sha256sum < "$EXTRACTED/$BUNDLED")" ]]; then
+              echo "$BUNDLED differs from $PACKAGE" >&2
               exit 1
             fi
           done
-          BUNDLED_COUNT=$(find "$EXTRACTED" -type f -not -name install.ps1 -not -name Setup.cmd | wc -l)
+          INDEX=profiles-index.json
+          if [[ ! -f "dist/$INDEX" || "$(sha256sum < "dist/$INDEX")" != "$(sha256sum < "$EXTRACTED/profiles/$INDEX")" ]]; then
+            echo "$BUNDLE has no profiles/$INDEX equal to dist/$INDEX" >&2
+            exit 1
+          fi
+          node -e '
+            const fs = require("fs");
+            const [root, bundled] = process.argv.slice(1);
+            const index = JSON.parse(fs.readFileSync(`${root}/profiles/${bundled}`, "utf8"));
+            const missing = index.profiles
+              .flatMap((profile) => profile.variants)
+              .map((variant) => variant.file)
+              .filter((file) => !fs.existsSync(`${root}/profiles/${file}`));
+            if (index.profiles.length === 0 || missing.length > 0) {
+              console.error(`The profiles index lists no profile or files the bundle lacks: ${missing.join(", ")}`);
+              process.exit(1);
+            }
+          ' "$EXTRACTED" "$INDEX"
+          BUNDLED_COUNT=$(find "$EXTRACTED" -type f -not -name install.ps1 -not -name Setup.cmd -not -name "$INDEX" | wc -l)
           if [[ "$BUNDLED_COUNT" -ne "${#PACKAGES[@]}" ]]; then
             echo "$BUNDLE holds $BUNDLED_COUNT packages, dist has ${#PACKAGES[@]}" >&2
             exit 1

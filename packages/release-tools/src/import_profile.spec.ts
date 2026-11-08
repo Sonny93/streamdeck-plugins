@@ -17,6 +17,9 @@ import { buildZip } from './zip/build_zip.ts';
 import type { ZipEntry } from './zip/zip_entry.ts';
 
 const MANIFEST_PATH = 'Profiles/AAA.sdProfile/manifest.json';
+const PAGE_PATH = 'Profiles/AAA.sdProfile/Profiles/PAGE/manifest.json';
+const OTHER_PAGE_PATH = 'Profiles/AAA.sdProfile/Profiles/OTHER/manifest.json';
+const ALLOWED_PLUGINS: ReadonlySet<string> = new Set(['com.sonny93.audio']);
 
 let workDirectory = '';
 let profilesDirectory = '';
@@ -34,6 +37,29 @@ function buildJsonEntry(name: string, content: unknown): ZipEntry {
 	return { name, data: Buffer.from(JSON.stringify(content)) };
 }
 
+function buildRootManifest(
+	options: Readonly<{ name: string; listedPages?: readonly string[] }>
+): unknown {
+	return {
+		Name: options.name,
+		Pages: {
+			Current: '00000000-0000-0000-0000-000000000000',
+			Default: 'page',
+			Pages: options.listedPages ?? [],
+		},
+	};
+}
+
+function buildProfileEntries(
+	options: Readonly<{ name: string; page?: unknown }>
+): ZipEntry[] {
+	return [
+		buildJsonEntry(MANIFEST_PATH, buildRootManifest({ name: options.name })),
+		buildJsonEntry(PAGE_PATH, options.page ?? { Controllers: [] }),
+		buildJsonEntry('package.json', { RequiredPlugins: [] }),
+	];
+}
+
 async function writeArchive(entries: readonly ZipEntry[]): Promise<string> {
 	const archiveFile = path.join(workDirectory, 'export.streamDeckProfile');
 	await writeFile(archiveFile, buildZip({ entries }));
@@ -42,73 +68,122 @@ async function writeArchive(entries: readonly ZipEntry[]): Promise<string> {
 
 describe('importProfile', () => {
 	it('should write the archive into a folder named after the profile, with JSON pretty-printed with tabs', async () => {
-		const archiveFile = await writeArchive([
-			buildJsonEntry(MANIFEST_PATH, { Name: 'Spotify Deck' }),
-		]);
+		const archiveFile = await writeArchive(
+			buildProfileEntries({ name: 'Spotify Deck' })
+		);
 
-		const directory = await importProfile({ archiveFile, profilesDirectory });
+		const directory = await importProfile({
+			archiveFile,
+			profilesDirectory,
+			allowedPlugins: ALLOWED_PLUGINS,
+		});
 
 		expect(path.basename(directory)).toBe('spotify-deck');
 		expect(await readFile(path.join(directory, MANIFEST_PATH), 'utf8')).toBe(
-			'{\n\t"Name": "Spotify Deck"\n}\n'
+			`${JSON.stringify(buildRootManifest({ name: 'Spotify Deck' }), null, '\t')}\n`
 		);
 	});
 
 	it('should write a page manifest without the personal settings of the plugin actions', async () => {
-		const archiveFile = await writeArchive([
-			buildJsonEntry(MANIFEST_PATH, {
-				Name: 'Deck',
-				Controllers: [
-					{
-						Type: 'Keypad',
-						Actions: {
-							'0,0': {
-								UUID: 'com.sonny93.audio.default-output',
-								Settings: { device: 'endpoint-guid', label: 'Speakers' },
-							},
-						},
-					},
-				],
-			}),
-		]);
+		const action = {
+			Plugin: { UUID: 'com.sonny93.audio' },
+			UUID: 'com.sonny93.audio.default-output',
+			Settings: { device: 'endpoint-guid', label: 'Speakers' },
+		};
+		const archiveFile = await writeArchive(
+			buildProfileEntries({
+				name: 'Deck',
+				page: { Controllers: [{ Type: 'Keypad', Actions: { '0,0': action } }] },
+			})
+		);
 
-		const directory = await importProfile({ archiveFile, profilesDirectory });
+		const directory = await importProfile({
+			archiveFile,
+			profilesDirectory,
+			allowedPlugins: ALLOWED_PLUGINS,
+		});
 
 		const written: unknown = JSON.parse(
-			await readFile(path.join(directory, MANIFEST_PATH), 'utf8')
+			await readFile(path.join(directory, PAGE_PATH), 'utf8')
 		);
 		expect(written).toEqual({
-			Name: 'Deck',
 			Controllers: [
 				{
 					Type: 'Keypad',
-					Actions: {
-						'0,0': {
-							UUID: 'com.sonny93.audio.default-output',
-							Settings: { label: 'Speakers' },
-						},
-					},
+					Actions: { '0,0': { ...action, Settings: { label: 'Speakers' } } },
 				},
 			],
 		});
 	});
 
-	it('should replace the content the folder had', async () => {
-		const first = await writeArchive([
-			buildJsonEntry(MANIFEST_PATH, { Name: 'Deck' }),
-			{ name: 'old.txt', data: Buffer.from('old') },
-		]);
-		await importProfile({ archiveFile: first, profilesDirectory });
-		const second = await writeArchive([
-			buildJsonEntry(MANIFEST_PATH, { Name: 'Deck' }),
+	it('should drop the actions of a plugin that is not allowed, and the listed page and required plugin that go with them', async () => {
+		const beamngAction = {
+			Plugin: { UUID: 'com.sonny93.beamng' },
+			UUID: 'com.sonny93.beamng.free-camera',
+			Settings: {},
+		};
+		const archiveFile = await writeArchive([
+			buildJsonEntry(MANIFEST_PATH, {
+				...(buildRootManifest({ name: 'Deck' }) as object),
+				Pages: {
+					Current: '00000000-0000-0000-0000-000000000000',
+					Default: 'page',
+					Pages: ['other', 'third'],
+				},
+			}),
+			buildJsonEntry(PAGE_PATH, {
+				Controllers: [
+					{
+						Type: 'Keypad',
+						Actions: {
+							'0,0': {
+								Plugin: { UUID: 'com.sonny93.audio' },
+								UUID: 'com.sonny93.audio.mute',
+								Settings: {},
+							},
+						},
+					},
+				],
+			}),
+			buildJsonEntry(OTHER_PAGE_PATH, {
+				Controllers: [{ Type: 'Keypad', Actions: { '0,0': beamngAction } }],
+			}),
+			buildJsonEntry('Profiles/AAA.sdProfile/Profiles/THIRD/manifest.json', {
+				Controllers: [
+					{
+						Type: 'Keypad',
+						Actions: {
+							'0,0': {
+								Plugin: { UUID: 'com.sonny93.audio' },
+								UUID: 'com.sonny93.audio.mute',
+								Settings: {},
+							},
+						},
+					},
+				],
+			}),
+			buildJsonEntry('package.json', {
+				RequiredPlugins: ['com.sonny93.audio', 'com.sonny93.beamng'],
+			}),
 		]);
 
 		const directory = await importProfile({
-			archiveFile: second,
+			archiveFile,
 			profilesDirectory,
+			allowedPlugins: ALLOWED_PLUGINS,
 		});
 
-		expect(await readdir(directory)).toEqual(['Profiles']);
+		const root: unknown = JSON.parse(
+			await readFile(path.join(directory, MANIFEST_PATH), 'utf8')
+		);
+		const requirements: unknown = JSON.parse(
+			await readFile(path.join(directory, 'package.json'), 'utf8')
+		);
+		expect(root).toMatchObject({ Pages: { Pages: ['third'] } });
+		expect(requirements).toEqual({ RequiredPlugins: ['com.sonny93.audio'] });
+		await expect(
+			access(path.join(directory, OTHER_PAGE_PATH))
+		).rejects.toThrow();
 	});
 
 	it('should write nothing when an entry path is unsafe', async () => {
@@ -118,7 +193,11 @@ describe('importProfile', () => {
 		]);
 
 		await expect(
-			importProfile({ archiveFile, profilesDirectory })
+			importProfile({
+				archiveFile,
+				profilesDirectory,
+				allowedPlugins: ALLOWED_PLUGINS,
+			})
 		).rejects.toThrow(UnsafeArchivePathError);
 		await expect(readdir(profilesDirectory)).rejects.toThrow();
 	});
@@ -133,7 +212,11 @@ describe('importProfile', () => {
 		]);
 
 		await expect(
-			importProfile({ archiveFile, profilesDirectory })
+			importProfile({
+				archiveFile,
+				profilesDirectory,
+				allowedPlugins: ALLOWED_PLUGINS,
+			})
 		).rejects.toThrow();
 
 		await expect(

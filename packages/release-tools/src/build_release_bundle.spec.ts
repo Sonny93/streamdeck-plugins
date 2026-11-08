@@ -23,7 +23,7 @@ async function createFile(name: string, content: string): Promise<string> {
 }
 
 describe('buildReleaseBundle', () => {
-	it('should put each kind of package in its folder and the root files at the root, with the bytes of the files', async () => {
+	it('should put each kind of package in its folder, the variants under profiles/variants and the root files at the root, with the bytes of the files', async () => {
 		const bundleFile = path.join(workDirectory, 'bundle.zip');
 
 		await buildReleaseBundle({
@@ -36,6 +36,10 @@ describe('buildReleaseBundle', () => {
 			profileFiles: [
 				await createFile('spotify-deck.streamDeckProfile', 'profile'),
 			],
+			profileVariantFiles: [
+				await createFile('spotify-deck--audio.streamDeckProfile', 'variant'),
+			],
+			profilesIndexFile: await createFile('profiles-index.json', 'index'),
 			rootFiles: [
 				await createFile('install.ps1', 'script'),
 				await createFile('Setup.cmd', 'launcher'),
@@ -54,7 +58,9 @@ describe('buildReleaseBundle', () => {
 			['icons/com.sonny93.keys.streamDeckIconPack', 'pack'],
 			['install.ps1', 'script'],
 			['plugins/com.sonny93.audio.streamDeckPlugin', 'plugin'],
+			['profiles/profiles-index.json', 'index'],
 			['profiles/spotify-deck.streamDeckProfile', 'profile'],
+			['profiles/variants/spotify-deck--audio.streamDeckProfile', 'variant'],
 		]);
 	});
 });

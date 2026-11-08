@@ -7,6 +7,8 @@ export const ReleaseFormats = {
 	bundlePluginsFolder: 'plugins',
 	bundleIconsFolder: 'icons',
 	bundleProfilesFolder: 'profiles',
+	profileVariantsFolder: 'variants',
+	profilesIndexFile: 'profiles-index.json',
 	bundleNamePrefix: 'streamdeck-plugins-',
 	manifestFile: 'manifest.json',
 	pluginEntryFile: 'bin/plugin.js',

@@ -18,13 +18,15 @@ async function buildFileEntry(
 
 /**
  * Writes the zip that holds every release file, the same bytes as the individual files, with the install script and its launcher at its root:
- * plugins under `plugins/`, icon packs under `icons/` and profiles under `profiles/`. Returns the path of the zip.
+ * plugins under `plugins/`, icon packs under `icons/`, profiles under `profiles/` with their variants under `profiles/variants/` and the index of the variants beside them. Returns the path of the zip.
  */
 export async function buildReleaseBundle(
 	options: Readonly<{
 		pluginFiles: readonly string[];
 		iconPackFiles: readonly string[];
 		profileFiles: readonly string[];
+		profileVariantFiles: readonly string[];
+		profilesIndexFile: string;
 		rootFiles: readonly string[];
 		bundleFile: string;
 	}>
@@ -39,6 +41,16 @@ export async function buildReleaseBundle(
 		...options.profileFiles.map((file) =>
 			buildFileEntry({ folder: ReleaseFormats.bundleProfilesFolder, file })
 		),
+		...options.profileVariantFiles.map((file) =>
+			buildFileEntry({
+				folder: `${ReleaseFormats.bundleProfilesFolder}/${ReleaseFormats.profileVariantsFolder}`,
+				file,
+			})
+		),
+		buildFileEntry({
+			folder: ReleaseFormats.bundleProfilesFolder,
+			file: options.profilesIndexFile,
+		}),
 		...options.rootFiles.map((file) => buildFileEntry({ folder: '', file })),
 	]);
 	entries.sort((first, second) => compareCodeUnits(first.name, second.name));
