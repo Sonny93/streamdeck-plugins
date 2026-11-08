@@ -4,6 +4,11 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+### Added
+
+- `Setup.cmd` asks which plugins to install, and imports the profile without the keys and folders of the plugins you left out.
+- When the profile is already installed, `Setup.cmd` offers to replace it, and to back up the current one first in `%LOCALAPPDATA%\streamdeck-plugins\profile-backup` (otherwise it goes to the Recycle Bin).
+
 ### Changed
 
 - Icon pack and profile folder keys: labels use the Selawik Bold font, the same on every build, instead of a fallback font in the release builds.
@@ -11,6 +16,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 ### Fixed
 
 - The profile no longer asks for a BeamNG plugin that the release does not ship.
+- `Setup.cmd` waits up to 60 seconds for Stream Deck to close, instead of failing after 20 seconds on a slow close.
 
 ## [1.1.0] - 2026-11-08
 

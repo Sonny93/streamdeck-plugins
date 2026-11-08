@@ -1,36 +1,50 @@
 <#
 .SYNOPSIS
-Installs the Stream Deck plugins, the icon pack and, on request, the profile of a streamdeck-plugins release.
+Installs the Stream Deck plugins, the icon pack and, on request, the profiles of a streamdeck-plugins release.
 
 .DESCRIPTION
-Installs only the plugins and icon packs that are missing or whose version differs from the installed one.
+Considers only the plugins and icon packs that are missing or whose version differs from the installed one.
+For each such plugin it asks "Install <name> <version>? [Y/n]" (Enter installs it); declining a plugin leaves
+the installed one, if any, untouched. Icon packs are installed without a question.
 When something must be installed, closes Stream Deck, removes the dead development links a deleted checkout
 left in the Stream Deck folders, refuses live ones, then starts Stream Deck again and opens each package so
-that Stream Deck installs it. When everything is up to date, leaves Stream Deck alone.
+that Stream Deck installs it. When there is nothing to do, leaves Stream Deck alone.
 Extract the whole zip first, then run this script from the extracted folder.
 
 .PARAMETER WithProfile
-Also opens the profiles, unless a profile with the same name already exists. Each import adds a profile.
+Also imports the profiles, each in the variant that matches the plugins installed after this run (those just
+installed plus those already there). A profile whose plugins are all missing is skipped. When a profile with the
+same name and device model already exists, asks "Replace it? [y/N]" (Enter keeps it), then "Back up the current one first? [Y/n]".
+A backup moves the old profile folder to %LOCALAPPDATA%\streamdeck-plugins\profile-backup\<date-time>\; to
+restore it, close Stream Deck and move that folder back into the ProfilesV3 (or ProfilesV2) folder of
+%APPDATA%\Elgato\StreamDeck. Without a backup the old folder goes to the Recycle Bin (restorable from there while Stream Deck is closed). If a
+backup fails, the folders already backed up are put back. Several profiles with that name, or a
+profile folder holding a link, are never replaced. Zips without a profiles index import their main profile files.
 
 .PARAMETER Force
-Installs every plugin and icon pack whatever its installed version, for example to reinstall a prerelease
-that carries the same version as the previous one. It does not change the profile check.
+Considers every plugin and icon pack whatever its installed version, for example to reinstall a prerelease
+that carries the same version as the previous one. Plugins are still asked about. It does not change the
+profile handling.
 #>
 param([switch]$WithProfile, [switch]$Force)
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem
+Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem, Microsoft.VisualBasic
 
 $PackageNamePattern = '^com\.sonny93\.[a-z0-9-]+(\.[a-z0-9-]+)*$'
 $StreamDeckProcessName = 'StreamDeck'
-$StreamDeckExitTimeoutSeconds = 20
+$StreamDeckExitTimeoutSeconds = 60
 $PluginExitTimeoutSeconds = 20
 $StreamDeckStartTimeoutSeconds = 30
 $StreamDeckSettleSeconds = 5
 $PauseBetweenPackagesSeconds = 3
 $PollIntervalMilliseconds = 500
 $StreamDeckDataDirectory = Join-Path $env:APPDATA 'Elgato\StreamDeck'
+$ProfileBackupDirectory = Join-Path $env:LOCALAPPDATA 'streamdeck-plugins\profile-backup'
+$ProfilesIndexFileName = 'profiles-index.json'
+$ProfileExtension = '.streamDeckProfile'
+$BackupTimestampFormat = 'yyyyMMdd-HHmmss'
 $PluginManifestPattern = '^[^/]+\.sdPlugin/manifest\.json$'
 $IconPackManifestPattern = '^[^/]+\.sdIconPack/manifest\.json$'
 $ProfileManifestPattern = '^Profiles/[^/]+\.sdProfile/manifest\.json$'
@@ -43,13 +57,40 @@ function Assert-NotElevated {
     }
 }
 
+function ConvertTo-YesNoAnswer {
+    param([string]$Text, [bool]$DefaultAnswer)
+    $answer = $Text.Trim().ToLowerInvariant()
+    if ($answer -eq '') {
+        return $DefaultAnswer
+    }
+    if (@('y', 'yes', 'o', 'oui') -contains $answer) {
+        return $true
+    }
+    if (@('n', 'no', 'non') -contains $answer) {
+        return $false
+    }
+    return $null
+}
+
+function Read-YesNo {
+    param([string]$Question, [bool]$DefaultAnswer)
+    $hint = if ($DefaultAnswer) { '[Y/n]' } else { '[y/N]' }
+    while ($true) {
+        $answer = ConvertTo-YesNoAnswer -Text ([string](Read-Host "$Question $hint")) -DefaultAnswer $DefaultAnswer
+        if ($null -ne $answer) {
+            return $answer
+        }
+        Write-Host 'Please answer yes or no.'
+    }
+}
+
 function Get-PackageFiles {
-    param([string]$Folder, [string]$Extension)
+    param([string]$Folder, [string]$Extension, [switch]$Recurse)
     $folderPath = Join-Path $PSScriptRoot $Folder
     if (-not (Test-Path -LiteralPath $folderPath -PathType Container)) {
         return @()
     }
-    return @(Get-ChildItem -LiteralPath $folderPath -File -Filter "*$Extension" | Sort-Object Name)
+    return @(Get-ChildItem -LiteralPath $folderPath -File -Recurse:$Recurse -Filter "*$Extension" | Sort-Object FullName)
 }
 
 function Get-InstallState {
@@ -100,6 +141,41 @@ function Read-JsonField {
     }
 }
 
+function Read-JsonDeviceModel {
+    param([string]$Json)
+    try {
+        $device = (ConvertFrom-Json -InputObject $Json).PSObject.Properties['Device']
+        if ($null -eq $device -or $null -eq $device.Value) {
+            return $null
+        }
+        $model = $device.Value.PSObject.Properties['Model']
+        if ($null -eq $model -or $null -eq $model.Value) {
+            return $null
+        }
+        return [string]$model.Value
+    } catch {
+        return $null
+    }
+}
+
+function Read-PackageDeviceModel {
+    param([string]$ArchivePath)
+    try {
+        return Read-JsonDeviceModel -Json (Read-ZipEntryText -ArchivePath $ArchivePath -EntryPattern $ProfileManifestPattern)
+    } catch {
+        return $null
+    }
+}
+
+function Read-InstalledDeviceModel {
+    param([string]$ManifestPath)
+    try {
+        return Read-JsonDeviceModel -Json (Get-Content -LiteralPath $ManifestPath -Raw -Encoding UTF8)
+    } catch {
+        return $null
+    }
+}
+
 function Read-PackageManifestField {
     param([string]$ArchivePath, [string]$EntryPattern, [string]$Field)
     try {
@@ -135,18 +211,20 @@ function New-InstallTarget {
     $path = Join-Path (Join-Path $StreamDeckDataDirectory $InstallFolder) "$name$InstallExtension"
     $state = Get-InstallState -Path $path
     $packageVersion = Read-PackageManifestField -ArchivePath $Package.FullName -EntryPattern $ManifestPattern -Field 'Version'
+    $displayName = Read-PackageManifestField -ArchivePath $Package.FullName -EntryPattern $ManifestPattern -Field 'Name'
     $installedVersion = $null
     if ($state -eq 'Folder') {
         $installedVersion = Read-InstalledManifestField -ManifestPath (Join-Path $path 'manifest.json') -Field 'Version'
     }
     return [pscustomobject]@{
-        Name    = $name
-        Kind    = $Kind
-        Path    = $path
-        State   = $state
-        Package = $Package
-        Version = $packageVersion
-        Action  = Get-InstallAction -State $state -PackageVersion $packageVersion -InstalledVersion $installedVersion
+        Name        = $name
+        DisplayName = if ($displayName) { $displayName } else { $name }
+        Kind        = $Kind
+        Path        = $path
+        State       = $state
+        Package     = $Package
+        Version     = $packageVersion
+        Action      = Get-InstallAction -State $state -PackageVersion $packageVersion -InstalledVersion $installedVersion
     }
 }
 
@@ -184,13 +262,12 @@ function Stop-StreamDeck {
         return $null
     }
     $executablePath = $processes[0].Path
+    $processIds = @($processes | ForEach-Object { $_.Id })
     Write-Host 'Closing Stream Deck...'
-    foreach ($process in $processes) {
-        Stop-Process -Id $process.Id -Force
-        Wait-Process -Id $process.Id -Timeout $StreamDeckExitTimeoutSeconds -ErrorAction SilentlyContinue
-        if (Get-Process -Id $process.Id -ErrorAction SilentlyContinue) {
-            throw "Stream Deck did not close within $StreamDeckExitTimeoutSeconds seconds. Close it from the tray icon and run this script again."
-        }
+    Stop-Process -Id $processIds -Force -ErrorAction SilentlyContinue
+    Wait-Process -Id $processIds -Timeout $StreamDeckExitTimeoutSeconds -ErrorAction SilentlyContinue
+    if (Get-Process -Name $StreamDeckProcessName -ErrorAction SilentlyContinue) {
+        throw "Stream Deck is still running or restarted itself within $StreamDeckExitTimeoutSeconds seconds. Close it from the tray icon and run this script again."
     }
     return $executablePath
 }
@@ -263,38 +340,274 @@ function Get-ProfilesDirectory {
     return $null
 }
 
-function Get-InstalledProfileNames {
+function Get-InstalledProfiles {
     $directory = Get-ProfilesDirectory
     if (-not $directory) {
         return @()
     }
-    $names = @()
+    $profiles = @()
     try {
         foreach ($folder in @(Get-ChildItem -LiteralPath $directory -Directory -Filter '*.sdProfile')) {
             $name = Read-InstalledManifestField -ManifestPath (Join-Path $folder.FullName 'manifest.json') -Field 'Name'
             if ($name) {
-                $names += $name
+                $model = Read-InstalledDeviceModel -ManifestPath (Join-Path $folder.FullName 'manifest.json')
+                $profiles += [pscustomobject]@{ Name = $name; Model = $model; Path = $folder.FullName }
             }
         }
     } catch {
-        return @($names)
+        return @($profiles)
     }
-    return @($names)
+    return @($profiles)
 }
 
-function Get-ProfilesToImport {
-    param($ProfilePackages)
-    $installedNames = @(Get-InstalledProfileNames)
-    $toImport = @()
-    foreach ($package in $ProfilePackages) {
-        $name = Read-PackageManifestField -ArchivePath $package.FullName -EntryPattern $ProfileManifestPattern -Field 'Name'
-        if ($name -and ($installedNames -contains $name)) {
-            Write-Host "The profile '$name' already exists: delete it in Stream Deck to import it again."
+function ConvertTo-IndexVariant {
+    param($Variant)
+    $plugins = @($Variant.plugins | ForEach-Object { [string]$_ })
+    $file = [string]$Variant.file
+    if ($plugins.Count -eq 0 -or -not $file) {
+        throw 'Invalid variant in the profiles index.'
+    }
+    return [pscustomobject]@{ Plugins = $plugins; File = $file }
+}
+
+function Read-ProfilesIndex {
+    $indexPath = Join-Path (Join-Path $PSScriptRoot 'profiles') $ProfilesIndexFileName
+    if (-not (Test-Path -LiteralPath $indexPath -PathType Leaf)) {
+        return $null
+    }
+    try {
+        $index = Get-Content -LiteralPath $indexPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $entries = @()
+        foreach ($entry in @($index.profiles)) {
+            $variants = @($entry.variants | ForEach-Object { ConvertTo-IndexVariant -Variant $_ })
+            if (-not $entry.name -or $variants.Count -eq 0) {
+                throw 'Invalid profile in the profiles index.'
+            }
+            $entries += [pscustomobject]@{ Name = [string]$entry.name; Variants = $variants }
+        }
+        if ($entries.Count -eq 0) {
+            throw 'The profiles index is empty.'
+        }
+        return $entries
+    } catch {
+        Write-Host "The profiles index could not be read ($($_.Exception.Message)): importing the main profile files instead."
+        return $null
+    }
+}
+
+function Get-PresentVariantPlugins {
+    param($Variants, [string[]]$PresentPlugins)
+    return @($Variants | ForEach-Object { $_.Plugins } | Where-Object { $PresentPlugins -ccontains $_ } | Select-Object -Unique)
+}
+
+function Select-ProfileVariant {
+    param($Variants, [string[]]$PresentPlugins)
+    $wanted = @(Get-PresentVariantPlugins -Variants $Variants -PresentPlugins $PresentPlugins)
+    if ($wanted.Count -eq 0) {
+        return $null
+    }
+    foreach ($variant in $Variants) {
+        $plugins = @($variant.Plugins)
+        $matching = @($plugins | Where-Object { $wanted -ccontains $_ })
+        if ($plugins.Count -eq $wanted.Count -and $matching.Count -eq $plugins.Count) {
+            return $variant
+        }
+    }
+    return $null
+}
+
+function Resolve-ProfileVariantFile {
+    param([string]$RelativeFile)
+    $root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'profiles'))
+    if ([System.IO.Path]::IsPathRooted($RelativeFile) -or $RelativeFile -match '(^|[/\\])\.\.([/\\]|$)') {
+        return $null
+    }
+    $fullPath = [System.IO.Path]::GetFullPath((Join-Path $root $RelativeFile))
+    $isInsideRoot = $fullPath.StartsWith($root + [System.IO.Path]::DirectorySeparatorChar, [System.StringComparison]::OrdinalIgnoreCase)
+    if (-not $isInsideRoot -or -not $fullPath.EndsWith($ProfileExtension, [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $null
+    }
+    if (-not (Test-Path -LiteralPath $fullPath -PathType Leaf)) {
+        return $null
+    }
+    return Get-Item -LiteralPath $fullPath
+}
+
+function Get-IndexedProfileCandidates {
+    param($Entries, [string[]]$PresentPlugins)
+    $candidates = @()
+    foreach ($entry in $Entries) {
+        $present = @(Get-PresentVariantPlugins -Variants $entry.Variants -PresentPlugins $PresentPlugins)
+        if ($present.Count -eq 0) {
+            Write-Host "Skipped the profile '$($entry.Name)': none of its plugins is installed."
             continue
         }
-        $toImport += $package
+        $variant = Select-ProfileVariant -Variants $entry.Variants -PresentPlugins $PresentPlugins
+        if (-not $variant) {
+            Write-Host "Skipped the profile '$($entry.Name)': no variant matches the installed plugins ($($present -join ', '))."
+            continue
+        }
+        $package = Resolve-ProfileVariantFile -RelativeFile $variant.File
+        if (-not $package) {
+            Write-Host "Skipped the profile '$($entry.Name)': the file '$($variant.File)' is missing or outside the profiles folder."
+            continue
+        }
+        $candidates += [pscustomobject]@{ Name = $entry.Name; Model = (Read-PackageDeviceModel -ArchivePath $package.FullName); Package = $package }
     }
-    return $toImport
+    return $candidates
+}
+
+function Get-LegacyProfileCandidates {
+    $candidates = @()
+    foreach ($package in @(Get-PackageFiles -Folder 'profiles' -Extension $ProfileExtension)) {
+        $name = Read-PackageManifestField -ArchivePath $package.FullName -EntryPattern $ProfileManifestPattern -Field 'Name'
+        $candidates += [pscustomobject]@{ Name = $name; Model = (Read-PackageDeviceModel -ArchivePath $package.FullName); Package = $package }
+    }
+    return $candidates
+}
+
+function Get-ProfileCandidates {
+    param([string[]]$PresentPlugins)
+    $entries = Read-ProfilesIndex
+    if ($null -eq $entries) {
+        return @(Get-LegacyProfileCandidates)
+    }
+    return @(Get-IndexedProfileCandidates -Entries $entries -PresentPlugins $PresentPlugins)
+}
+
+function Find-ReparsePoint {
+    param([string]$Path)
+    $attributes = [System.IO.File]::GetAttributes($Path)
+    if ($attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+        return $Path
+    }
+    if (-not ($attributes -band [System.IO.FileAttributes]::Directory)) {
+        return $null
+    }
+    foreach ($child in [System.IO.Directory]::EnumerateFileSystemEntries($Path)) {
+        $found = Find-ReparsePoint -Path $child
+        if ($found) {
+            return $found
+        }
+    }
+    return $null
+}
+
+function Assert-NoReparsePoint {
+    param([string]$Path)
+    $found = Find-ReparsePoint -Path $Path
+    if ($found) {
+        throw "Cannot replace the profile folder $Path because $found is a link. Nothing was changed. Remove it in Stream Deck instead."
+    }
+}
+
+function Test-SameProfile {
+    param($Candidate, $Installed)
+    return $Candidate.Name -and $Installed.Name -eq $Candidate.Name -and ([string]$Installed.Model -ceq [string]$Candidate.Model)
+}
+
+function Get-ProfileReplacement {
+    param($Candidate, $InstalledProfiles)
+    $name = $Candidate.Name
+    $existing = @($InstalledProfiles | Where-Object { Test-SameProfile -Candidate $Candidate -Installed $_ })
+    $plan = [pscustomobject]@{ Name = $name; Package = $Candidate.Package; ExistingPath = $null; IsBackupWanted = $false }
+    if ($existing.Count -eq 0) {
+        return $plan
+    }
+    if ($existing.Count -gt 1) {
+        Write-Host "Skipped the profile '$name': several profiles have that name. Remove the extras in Stream Deck, then run this script again:"
+        $existing | ForEach-Object { Write-Host "  $($_.Path)" }
+        return $null
+    }
+    if (-not (Read-YesNo -Question "The profile '$name' is already installed ($($existing[0].Path)). Replace it?" -DefaultAnswer $false)) {
+        Write-Host "Kept the profile '$name' as it is."
+        return $null
+    }
+    Assert-NoReparsePoint -Path $existing[0].Path
+    $plan.ExistingPath = $existing[0].Path
+    $plan.IsBackupWanted = Read-YesNo -Question 'Back up the current one first?' -DefaultAnswer $true
+    return $plan
+}
+
+function Get-ProfilePlans {
+    param([string[]]$PresentPlugins)
+    $installedProfiles = @(Get-InstalledProfiles)
+    $plans = @()
+    foreach ($candidate in @(Get-ProfileCandidates -PresentPlugins $PresentPlugins)) {
+        $plan = Get-ProfileReplacement -Candidate $candidate -InstalledProfiles $installedProfiles
+        if ($plan) {
+            $plans += $plan
+        }
+    }
+    return $plans
+}
+
+function Move-ProfileToBackup {
+    param([string]$Path, [string]$BackupFolder)
+    $destination = Join-Path $BackupFolder (Split-Path -Leaf $Path)
+    [void][System.IO.Directory]::CreateDirectory($BackupFolder)
+    [System.IO.Directory]::Move($Path, $destination)
+    Write-Host "Backed up the profile to $destination"
+    return [pscustomobject]@{ Original = $Path; Backup = $destination }
+}
+
+function Restore-MovedProfiles {
+    param($MovedProfiles)
+    $notRestored = @()
+    foreach ($moved in @($MovedProfiles)) {
+        try {
+            [System.IO.Directory]::Move($moved.Backup, $moved.Original)
+        } catch {
+            $notRestored += $moved.Backup
+        }
+    }
+    return $notRestored
+}
+
+function Backup-ProfileFolders {
+    param($ProfilePlans, [string]$BackupFolder)
+    $moved = @()
+    foreach ($plan in @($ProfilePlans | Where-Object { $_.IsBackupWanted })) {
+        try {
+            $moved += Move-ProfileToBackup -Path $plan.ExistingPath -BackupFolder $BackupFolder
+        } catch {
+            $reason = $_.Exception.Message
+            $notRestored = @(Restore-MovedProfiles -MovedProfiles $moved)
+            if ($notRestored.Count -gt 0) {
+                throw "Could not back up $($plan.ExistingPath) ($reason). These backups could not be put back and stay where they are: $($notRestored -join ', ')."
+            }
+            throw "Could not back up $($plan.ExistingPath) ($reason). The profiles already backed up were put back: no profile was changed."
+        }
+    }
+}
+
+function Remove-ProfileToRecycleBin {
+    param([string]$Path)
+    [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteDirectory($Path, [Microsoft.VisualBasic.FileIO.UIOption]::OnlyErrorDialogs, [Microsoft.VisualBasic.FileIO.RecycleOption]::SendToRecycleBin)
+    Write-Host "Moved the profile folder $Path to the Recycle Bin"
+}
+
+function Assert-StreamDeckNotRunning {
+    if (Get-Process -Name $StreamDeckProcessName -ErrorAction SilentlyContinue) {
+        throw 'Stream Deck is running again. No profile was changed. Close it from the tray icon and run this script again.'
+    }
+}
+
+function Remove-ReplacedProfiles {
+    param($ProfilePlans)
+    $replaced = @($ProfilePlans | Where-Object { $_.ExistingPath })
+    foreach ($plan in $replaced) {
+        Assert-NoReparsePoint -Path $plan.ExistingPath
+    }
+    if ($replaced.Count -eq 0) {
+        return
+    }
+    Assert-StreamDeckNotRunning
+    $backupFolder = Join-Path $ProfileBackupDirectory (Get-Date -Format $BackupTimestampFormat)
+    Backup-ProfileFolders -ProfilePlans $replaced -BackupFolder $backupFolder
+    foreach ($plan in @($replaced | Where-Object { -not $_.IsBackupWanted })) {
+        Remove-ProfileToRecycleBin -Path $plan.ExistingPath
+    }
 }
 
 function Write-SkippedTargets {
@@ -304,12 +617,37 @@ function Write-SkippedTargets {
     }
 }
 
-function Clear-StreamDeckForInstall {
+function Select-TargetsToInstall {
     param($Targets)
+    $candidates = @($Targets)
+    if (-not $Force) {
+        Write-SkippedTargets -Targets $Targets
+        $candidates = @($Targets | Where-Object { $_.Action -eq 'Install' })
+    }
+    $selected = @()
+    foreach ($target in $candidates) {
+        $isWanted = $target.Kind -ne 'plugin' -or (Read-YesNo -Question "Install $($target.DisplayName) $($target.Version)?" -DefaultAnswer $true)
+        if ($isWanted) {
+            $selected += $target
+        }
+    }
+    return $selected
+}
+
+function Get-PresentPlugins {
+    param($Targets, $SelectedTargets)
+    $selectedNames = @($SelectedTargets | ForEach-Object { $_.Name })
+    $present = $Targets | Where-Object { $_.Kind -eq 'plugin' -and ($_.State -eq 'Folder' -or $selectedNames -ccontains $_.Name) }
+    return @($present | ForEach-Object { $_.Name })
+}
+
+function Clear-StreamDeckForInstall {
+    param($Targets, $ProfilePlans)
     $knownPath = Stop-StreamDeck
     try {
         Wait-PluginProcessesExit
         Remove-DeadLinks -Targets $Targets
+        Remove-ReplacedProfiles -ProfilePlans $ProfilePlans
     } finally {
         Start-StreamDeck -KnownPath $knownPath
     }
@@ -331,37 +669,35 @@ function Invoke-Install {
     }
     $pluginPackages = @(Get-PackageFiles -Folder 'plugins' -Extension '.streamDeckPlugin')
     $iconPackPackages = @(Get-PackageFiles -Folder 'icons' -Extension '.streamDeckIconPack')
-    $profilePackages = @(Get-PackageFiles -Folder 'profiles' -Extension '.streamDeckProfile')
-    @($pluginPackages) + @($iconPackPackages) + @($profilePackages) | Unblock-File
+    $profileFiles = @(Get-PackageFiles -Folder 'profiles' -Extension $ProfileExtension -Recurse)
+    @($pluginPackages) + @($iconPackPackages) + @($profileFiles) | Unblock-File
     if ($pluginPackages.Count -eq 0) {
         throw 'No .streamDeckPlugin file in the plugins folder.'
     }
     $targets = @(Get-InstallTargets -PluginPackages $pluginPackages -IconPackPackages $iconPackPackages)
     Assert-NoLiveLinks -Targets $targets
-    $targetsToInstall = @($targets)
-    if (-not $Force) {
-        Write-SkippedTargets -Targets $targets
-        $targetsToInstall = @($targets | Where-Object { $_.Action -eq 'Install' })
-    }
-    $profilesToImport = @()
+    $targetsToInstall = @(Select-TargetsToInstall -Targets $targets)
+    $profilePlans = @()
     if ($WithProfile) {
-        $profilesToImport = @(Get-ProfilesToImport -ProfilePackages $profilePackages)
+        $presentPlugins = @(Get-PresentPlugins -Targets $targets -SelectedTargets $targetsToInstall)
+        $profilePlans = @(Get-ProfilePlans -PresentPlugins $presentPlugins)
     }
-    if ($targetsToInstall.Count -eq 0 -and $profilesToImport.Count -eq 0) {
-        Write-Host 'Everything is up to date. Stream Deck was left as it is.'
+    if ($targetsToInstall.Count -eq 0 -and $profilePlans.Count -eq 0) {
+        Write-Host 'Nothing to install or import. Stream Deck was left as it is.'
         return
     }
 
-    if ($targetsToInstall.Count -gt 0) {
-        Clear-StreamDeckForInstall -Targets $targetsToInstall
+    $isStopNeeded = $targetsToInstall.Count -gt 0 -or @($profilePlans | Where-Object { $_.ExistingPath }).Count -gt 0
+    if ($isStopNeeded) {
+        Clear-StreamDeckForInstall -Targets $targetsToInstall -ProfilePlans $profilePlans
     } else {
         Start-StreamDeck -KnownPath $null
     }
     Wait-StreamDeckReady
 
-    Open-Packages -Packages (@($targetsToInstall | ForEach-Object { $_.Package }) + $profilesToImport)
+    Open-Packages -Packages (@($targetsToInstall | ForEach-Object { $_.Package }) + @($profilePlans | ForEach-Object { $_.Package }))
     Write-Host 'Done. Stream Deck may ask you to confirm each install: accept every prompt.'
-    if (-not $WithProfile -and $profilePackages.Count -gt 0) {
+    if (-not $WithProfile -and $profileFiles.Count -gt 0) {
         Write-Host 'The profile was not opened. Run this script again with -WithProfile to import it.'
     }
 }
