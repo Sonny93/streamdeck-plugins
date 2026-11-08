@@ -4,6 +4,8 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-08
+
 ### Added
 
 - Icon pack: a Display folder icon in the sky blue of Display Deck, with the label on top, at the bottom or without it.
