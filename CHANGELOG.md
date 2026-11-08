@@ -16,7 +16,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 ### Fixed
 
 - The profile no longer asks for a BeamNG plugin that the release does not ship.
-- `Setup.cmd` waits up to 60 seconds for Stream Deck to close, instead of failing after 20 seconds on a slow close.
+- `Setup.cmd` waits up to 60 seconds for Stream Deck to close and closes it again when it restarts itself, instead of failing on the first run; when it still fails, the error lists the Stream Deck processes left.
 
 ## [1.1.0] - 2026-11-08
 

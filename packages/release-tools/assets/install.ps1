@@ -35,6 +35,8 @@ Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.FileSystem, 
 $PackageNamePattern = '^com\.sonny93\.[a-z0-9-]+(\.[a-z0-9-]+)*$'
 $StreamDeckProcessName = 'StreamDeck'
 $StreamDeckExitTimeoutSeconds = 60
+$StreamDeckRelaunchKillLimit = 3
+$StreamDeckAbsentPollsRequired = 2
 $PluginExitTimeoutSeconds = 20
 $StreamDeckStartTimeoutSeconds = 30
 $StreamDeckSettleSeconds = 5
@@ -256,19 +258,83 @@ function Assert-NoLiveLinks {
     throw ("These are live development links, installing over them could write into your checkout. Nothing was changed.`n" + ($lines -join "`n"))
 }
 
+function Get-StreamDeckProcesses {
+    return @(Get-Process -Name $StreamDeckProcessName -ErrorAction SilentlyContinue)
+}
+
+function Get-ProcessStartTime {
+    param($Process)
+    try {
+        return $Process.StartTime
+    } catch {
+        return $null
+    }
+}
+
+function Stop-ProcessList {
+    param($Processes)
+    $processIds = @($Processes | ForEach-Object { $_.Id })
+    if ($processIds.Count -eq 0) {
+        return
+    }
+    Stop-Process -Id $processIds -Force -ErrorAction SilentlyContinue
+}
+
+function Get-RelaunchedProcesses {
+    param($Processes, [datetime]$KillTime)
+    return @($Processes | Where-Object {
+        $startTime = Get-ProcessStartTime -Process $_
+        $null -ne $startTime -and $startTime -gt $KillTime
+    })
+}
+
+function Format-RemainingProcesses {
+    param($Processes)
+    $lines = foreach ($process in @($Processes)) {
+        $startTime = Get-ProcessStartTime -Process $process
+        $started = if ($null -eq $startTime) { 'start time unknown' } else { "started $($startTime.ToString('HH:mm:ss'))" }
+        "PID $($process.Id) $started"
+    }
+    return ($lines -join ', ')
+}
+
+function Wait-StreamDeckExit {
+    param([datetime]$KillTime)
+    $deadline = (Get-Date).AddSeconds($StreamDeckExitTimeoutSeconds)
+    $absentPolls = 0
+    $killsLeft = $StreamDeckRelaunchKillLimit
+    $isRelaunchAnnounced = $false
+    while ((Get-Date) -lt $deadline) {
+        $remaining = @(Get-StreamDeckProcesses)
+        $absentPolls = if ($remaining.Count -eq 0) { $absentPolls + 1 } else { 0 }
+        if ($absentPolls -ge $StreamDeckAbsentPollsRequired) {
+            return
+        }
+        $relaunched = @(Get-RelaunchedProcesses -Processes $remaining -KillTime $KillTime)
+        if ($relaunched.Count -gt 0 -and $killsLeft -gt 0) {
+            if (-not $isRelaunchAnnounced) {
+                Write-Host 'Stream Deck restarted itself, closing it again...'
+                $isRelaunchAnnounced = $true
+            }
+            Stop-ProcessList -Processes $relaunched
+            $killsLeft--
+        }
+        Start-Sleep -Milliseconds $PollIntervalMilliseconds
+    }
+    $details = Format-RemainingProcesses -Processes (Get-StreamDeckProcesses)
+    throw "Stream Deck is still running or restarted itself within $StreamDeckExitTimeoutSeconds seconds (remaining: $details). Close it from the tray icon and run this script again."
+}
+
 function Stop-StreamDeck {
-    $processes = @(Get-Process -Name $StreamDeckProcessName -ErrorAction SilentlyContinue)
+    $processes = @(Get-StreamDeckProcesses)
     if ($processes.Count -eq 0) {
         return $null
     }
     $executablePath = $processes[0].Path
-    $processIds = @($processes | ForEach-Object { $_.Id })
     Write-Host 'Closing Stream Deck...'
-    Stop-Process -Id $processIds -Force -ErrorAction SilentlyContinue
-    Wait-Process -Id $processIds -Timeout $StreamDeckExitTimeoutSeconds -ErrorAction SilentlyContinue
-    if (Get-Process -Name $StreamDeckProcessName -ErrorAction SilentlyContinue) {
-        throw "Stream Deck is still running or restarted itself within $StreamDeckExitTimeoutSeconds seconds. Close it from the tray icon and run this script again."
-    }
+    $killTime = Get-Date
+    Stop-ProcessList -Processes $processes
+    Wait-StreamDeckExit -KillTime $killTime
     return $executablePath
 }
 
