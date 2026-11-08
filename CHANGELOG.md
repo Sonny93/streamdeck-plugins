@@ -4,6 +4,8 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-08
+
 ### Added
 
 - `Setup.cmd` asks which plugins to install, and imports the profile without the keys and folders of the plugins you left out.
