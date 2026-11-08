@@ -1,5 +1,6 @@
 import { audioFolderGlyph } from './audio_folder_glyph.ts';
 import { backGlyph } from './back_glyph.ts';
+import { displayFolderGlyph } from './display_folder_glyph.ts';
 import { folderGlyph } from './folder_glyph.ts';
 import { IconPalette } from './icon_palette.ts';
 import type { PackIcon } from './pack_icon.ts';
@@ -22,6 +23,14 @@ export const PackIcons: readonly PackIcon[] = [
 		glyph: spotifyFolderGlyph,
 		color: IconPalette.spotify,
 		label: 'Spotify',
+	},
+	{
+		id: 'display-folder',
+		name: 'Display folder',
+		tags: ['folder', 'display', 'monitor'],
+		glyph: displayFolderGlyph,
+		color: IconPalette.display,
+		label: 'Display',
 	},
 	{
 		id: 'macros-folder',

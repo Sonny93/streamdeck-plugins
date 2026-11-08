@@ -6,6 +6,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ### Added
 
+- Icon pack: a Display folder icon in the sky blue of Display Deck, with the label on top, at the bottom or without it.
 - `Setup.cmd` at the root of the release zip: double-click it to install the plugins, the icon pack and the profile, without opening PowerShell.
 
 ### Changed

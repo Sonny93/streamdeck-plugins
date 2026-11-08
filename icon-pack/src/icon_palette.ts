@@ -3,6 +3,7 @@ export const IconPalette = {
 	background: '#121212',
 	audio: '#FFB020',
 	spotify: '#1DB954',
+	display: '#4FC3F7',
 	neutral: '#FFFFFF',
 	navigation: '#B3B3B3',
 } as const;
