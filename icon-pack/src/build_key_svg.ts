@@ -1,10 +1,10 @@
 import { IconPalette } from './icon_palette.ts';
 import type { KeyLabel } from './key_label.ts';
+import { LABEL_FONT_FAMILY } from './label_font_family.ts';
 
 const KEY_SIZE = 144;
 const GLYPH_BOX = 24;
 const LABEL_FONT_SIZE = 26;
-const LABEL_FONT_FAMILY = 'Segoe UI, Arial, sans-serif';
 
 /** A key without label: the icon fills the key like the images of the plugin manifests. */
 const UNLABELED_LAYOUT = { glyphScale: 4, glyphTop: 24 } as const;

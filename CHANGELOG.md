@@ -4,6 +4,10 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+### Changed
+
+- Icon pack and profile folder keys: labels use the Selawik Bold font, the same on every build, instead of a fallback font in the release builds.
+
 ## [1.1.0] - 2026-11-08
 
 ### Added
