@@ -1,11 +1,12 @@
+import { buildStripText } from 'deck-kit/strip/build_strip_text';
+
 import type { ClimateView } from '../../climate/climate_view';
 import type { EnergyConsumption } from '../../daikin/unit_types';
 import { formatKilowattHours } from '../shared/format_kilowatt_hours';
-import { buildStripMessageSvg } from '../strip/build_strip_message_svg';
-import { buildStripText } from '../strip/build_strip_text';
+import { buildClimateMessageSvg } from '../strip/build_climate_message_svg';
 import { resolveStripTone } from '../strip/resolve_strip_tone';
 import { StripPalette } from '../strip/strip_palette';
-import { wrapStripSvg } from '../strip/wrap_strip_svg';
+import { wrapClimateStripSvg } from '../strip/wrap_climate_strip_svg';
 
 const LEFT_COLUMN = 12;
 const RIGHT_COLUMN = 112;
@@ -90,12 +91,12 @@ function buildColumn(
  */
 export function buildEnergyDialSvg(view: ClimateView, column = 0): string {
 	if (view.status !== 'ready' || view.state === undefined) {
-		return buildStripMessageSvg(
+		return buildClimateMessageSvg(
 			view.status === 'ready' ? 'loading' : view.status,
 			column
 		);
 	}
-	return wrapStripSvg({
+	return wrapClimateStripSvg({
 		tone: resolveStripTone(view),
 		column,
 		content: `${buildColumn(view, TODAY, LEFT_COLUMN, LEFT_UNIT_EDGE)}${buildColumn(view, LAST_SEVEN_DAYS, RIGHT_COLUMN, RIGHT_UNIT_EDGE)}`,

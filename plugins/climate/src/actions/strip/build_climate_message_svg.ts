@@ -1,7 +1,8 @@
+import { buildStripMessageSvg } from 'deck-kit/strip/build_strip_message_svg';
+
 import type { ClimateStatus } from '../../climate/climate_status';
-import { buildStripText } from './build_strip_text';
 import { StripPalette } from './strip_palette';
-import { wrapStripSvg } from './wrap_strip_svg';
+import { StripTones } from './strip_tones';
 
 const MESSAGES: Readonly<Record<Exclude<ClimateStatus, 'ready'>, string>> = {
 	unconfigured: 'Adresse à définir',
@@ -10,20 +11,14 @@ const MESSAGES: Readonly<Record<Exclude<ClimateStatus, 'ready'>, string>> = {
 };
 
 /** The strip shown while the unit is not ready: a message on the neutral background. */
-export function buildStripMessageSvg(
+export function buildClimateMessageSvg(
 	status: Exclude<ClimateStatus, 'ready'>,
 	column = 0
 ): string {
-	return wrapStripSvg({
-		tone: 'neutral',
+	return buildStripMessageSvg({
+		message: MESSAGES[status],
+		color: StripPalette.primary,
+		tone: StripTones.neutral,
 		column,
-		content: buildStripText({
-			text: MESSAGES[status],
-			x: 100,
-			y: 58,
-			fontSize: 22,
-			color: StripPalette.primary,
-			anchor: 'middle',
-		}),
 	});
 }

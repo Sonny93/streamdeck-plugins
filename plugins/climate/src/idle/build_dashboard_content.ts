@@ -1,11 +1,12 @@
+import { buildStripText } from 'deck-kit/strip/build_strip_text';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+
 import { FanRateNames } from '../actions/shared/fan_rate_names';
 import { formatCompactTemperature } from '../actions/shared/format_compact_temperature';
 import { formatKilowattHours } from '../actions/shared/format_kilowatt_hours';
 import { SpecialModeNames } from '../actions/shared/special_mode_names';
 import { UnitModeNames } from '../actions/shared/unit_mode_names';
-import { buildStripText } from '../actions/strip/build_strip_text';
 import { StripPalette } from '../actions/strip/strip_palette';
-import { StripPanel } from '../actions/strip/strip_panel';
 import type { ClimateView } from '../climate/climate_view';
 import type { UnitState } from '../daikin/unit_types';
 

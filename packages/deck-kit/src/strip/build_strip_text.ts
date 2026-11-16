@@ -1,4 +1,4 @@
-import { escapeXml } from 'deck-kit/text/escape_xml';
+import { escapeXml } from '../text/escape_xml';
 
 const FONT_FAMILY = 'Segoe UI, Arial, sans-serif';
 

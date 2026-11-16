@@ -1,3 +1,5 @@
+import { measureStripTexts } from 'deck-kit/strip/measure_strip_texts';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
 import { describe, expect, it } from 'vitest';
 
 import { buildClimateViewForTest } from '../../climate/build_climate_view_for_test';
@@ -5,8 +7,6 @@ import { buildClimateDialSvg } from '../dial/build_climate_dial_svg';
 import { buildEnergyDialSvg } from '../energy/build_energy_dial_svg';
 import { buildFanDialSvg } from '../fan_dial/build_fan_dial_svg';
 import { buildInfoDialSvg } from '../info/build_info_dial_svg';
-import { measureStripTexts } from './measure_strip_texts';
-import { StripPanel } from './strip_panel';
 
 const BIG_ENERGY = {
 	heat: { todayKilowattHours: 12.5, lastSevenDaysKilowattHours: 88.8 },

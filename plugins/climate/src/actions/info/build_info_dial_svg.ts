@@ -1,11 +1,12 @@
+import { buildStripText } from 'deck-kit/strip/build_strip_text';
+
 import type { ClimateView } from '../../climate/climate_view';
 import { formatTemperature } from '../shared/format_temperature';
 import { SpecialModeNames } from '../shared/special_mode_names';
-import { buildStripMessageSvg } from '../strip/build_strip_message_svg';
-import { buildStripText } from '../strip/build_strip_text';
+import { buildClimateMessageSvg } from '../strip/build_climate_message_svg';
 import { resolveStripTone } from '../strip/resolve_strip_tone';
 import { StripPalette } from '../strip/strip_palette';
-import { wrapStripSvg } from '../strip/wrap_strip_svg';
+import { wrapClimateStripSvg } from '../strip/wrap_climate_strip_svg';
 
 const MARGIN = 12;
 const OUTDOOR_CAPTION = 'Extérieur';
@@ -27,7 +28,7 @@ function describeCompressor(
  */
 export function buildInfoDialSvg(view: ClimateView, column = 0): string {
 	if (view.status !== 'ready' || view.state === undefined) {
-		return buildStripMessageSvg(
+		return buildClimateMessageSvg(
 			view.status === 'ready' ? 'loading' : view.status,
 			column
 		);
@@ -76,7 +77,7 @@ export function buildInfoDialSvg(view: ClimateView, column = 0): string {
 					}),
 				]),
 	];
-	return wrapStripSvg({
+	return wrapClimateStripSvg({
 		tone: resolveStripTone(view),
 		column,
 		content: lines.join(''),

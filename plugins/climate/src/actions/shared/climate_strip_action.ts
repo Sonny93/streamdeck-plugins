@@ -6,13 +6,13 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import type { IdlePanel } from 'deck-kit/strip/idle_panel';
+import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
 import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 
 import type { ClimateHub } from '../../climate/climate_hub';
 import type { ClimateView } from '../../climate/climate_view';
-import type { IdleDashboard } from '../../idle/idle_dashboard';
 import type { UnitAddressPanel } from '../../unit_address/unit_address_panel';
-import { resolveStripColumn } from '../strip/resolve_strip_column';
 import { ClimateAction } from './climate_action';
 import type { ClimateActionHandle } from './climate_action_handle';
 import type { ClimateActionSettings } from './climate_action_settings';
@@ -33,7 +33,7 @@ export abstract class ClimateStripAction<
 	constructor(
 		hub: ClimateHub,
 		addressPanel: UnitAddressPanel,
-		protected readonly idle: IdleDashboard
+		protected readonly idle: IdlePanel
 	) {
 		super(hub, addressPanel);
 		idle.onHidden(() => {

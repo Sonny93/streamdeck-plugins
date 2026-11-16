@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildClimateViewForTest } from '../climate/build_climate_view_for_test';
 import type { ClimateView } from '../climate/climate_view';
 import { createFakeScheduler } from '../climate/create_fake_scheduler';
-import { IdleDashboard } from './idle_dashboard';
+import { createIdleDashboard } from './create_idle_dashboard';
 
 const DELAY = 5000;
 
@@ -25,7 +25,7 @@ function createIdle(initialView: ClimateView = buildClimateViewForTest()) {
 		},
 	};
 	const onError = vi.fn();
-	const idle = new IdleDashboard({ inactivity, hub, onError });
+	const idle = createIdleDashboard({ inactivity, hub, onError });
 	const setFeedback = vi.fn((_feedback: Readonly<Record<string, string>>) =>
 		Promise.resolve()
 	);

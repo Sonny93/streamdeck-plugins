@@ -1,6 +1,5 @@
+import type { StripBackgroundTone } from './strip_background_tone';
 import { StripPanel } from './strip_panel';
-import type { StripTone } from './strip_tone';
-import { StripTones } from './strip_tones';
 
 const CHANNEL_COUNT = 3;
 
@@ -8,12 +7,12 @@ function readChannel(color: string, index: number): number {
 	return Number.parseInt(color.slice(1 + index * 2, 3 + index * 2), 16);
 }
 
-/** The color of the gradient of a tone at a point of the whole 800 by 100 panel, as `#RRGGBB`. The decorative circles are left out: they only darken. */
+/** The color of the gradient of a tone at a point of the whole 800 by 100 panel, as `#RRGGBB`. The decorative circles are left out. */
 export function sampleStripBackground(
-	tone: StripTone,
+	tone: StripBackgroundTone,
 	point: Readonly<{ x: number; y: number }>
 ): string {
-	const { from, to } = StripTones[tone];
+	const { from, to } = tone;
 	const lengthSquared = StripPanel.width ** 2 + StripPanel.height ** 2;
 	const progress = Math.min(
 		Math.max(
