@@ -5,5 +5,5 @@ export type PackIcon = Readonly<{
 	tags: readonly string[];
 	glyph: (color: string) => string;
 	color: string;
-	label: string;
+	label: Readonly<{ en: string; fr: string }>;
 }>;

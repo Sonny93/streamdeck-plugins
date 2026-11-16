@@ -16,7 +16,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'audio'],
 		glyph: audioFolderGlyph,
 		color: IconPalette.audio,
-		label: 'Audio',
+		label: { en: 'Audio', fr: 'Audio' },
 	},
 	{
 		id: 'spotify-folder',
@@ -24,7 +24,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'spotify', 'music'],
 		glyph: spotifyFolderGlyph,
 		color: IconPalette.spotify,
-		label: 'Spotify',
+		label: { en: 'Spotify', fr: 'Spotify' },
 	},
 	{
 		id: 'display-folder',
@@ -32,7 +32,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'display', 'monitor'],
 		glyph: displayFolderGlyph,
 		color: IconPalette.display,
-		label: 'Display',
+		label: { en: 'Display', fr: 'Affichage' },
 	},
 	{
 		id: 'climate-folder',
@@ -40,7 +40,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'climate', 'air conditioning'],
 		glyph: climateFolderGlyph,
 		color: IconPalette.climate,
-		label: 'Climat',
+		label: { en: 'Climate', fr: 'Climat' },
 	},
 	{
 		id: 'climate-modes-folder',
@@ -48,7 +48,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'climate', 'air conditioning', 'modes'],
 		glyph: climateModesFolderGlyph,
 		color: IconPalette.climate,
-		label: 'Modes',
+		label: { en: 'Modes', fr: 'Modes' },
 	},
 	{
 		id: 'macros-folder',
@@ -56,7 +56,7 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['folder', 'macros'],
 		glyph: (color) => folderGlyph(color),
 		color: IconPalette.neutral,
-		label: 'Macros',
+		label: { en: 'Macros', fr: 'Macros' },
 	},
 	{
 		id: 'back',
@@ -64,6 +64,6 @@ export const PackIcons: readonly PackIcon[] = [
 		tags: ['back', 'navigation'],
 		glyph: backGlyph,
 		color: IconPalette.navigation,
-		label: 'Retour',
+		label: { en: 'Back', fr: 'Retour' },
 	},
 ];
