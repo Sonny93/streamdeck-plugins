@@ -1,32 +1,37 @@
 <!doctype html>
-<html>
-	<head lang="fr">
+<html lang="en">
+	<head>
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	</head>
 	<body>
 		<sdpi-item label="Mode">
 			<sdpi-select setting="mode">
-				<option value="">Garder le mode actuel</option>
-				<option value="cool">Froid</option>
-				<option value="heat">Chaud</option>
+				<option value="" data-fr="Garder le mode actuel">
+					Keep the current mode
+				</option>
+				<option value="cool" data-fr="Froid">Cool</option>
+				<option value="heat" data-fr="Chaud">Heat</option>
 				<option value="auto">Auto</option>
-				<option value="dry">Déshumidification</option>
-				<option value="fan">Ventilation</option>
+				<option value="dry" data-fr="Déshumidification">Dry</option>
+				<option value="fan" data-fr="Ventilation">Fan</option>
 			</sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Consigne (°C)">
+		<sdpi-item label="Temperature (°C)" data-fr-label="Consigne (°C)">
 			<sdpi-textfield
 				setting="temperature"
 				pattern="\d{2}([.,]5)?"
-				placeholder="Garder la consigne actuelle"
+				placeholder="Keep the current one"
+				data-fr-placeholder="Garder la consigne actuelle"
 			></sdpi-textfield>
 		</sdpi-item>
-		<sdpi-item label="Ventilation">
+		<sdpi-item label="Fan rate" data-fr-label="Ventilation">
 			<sdpi-select setting="fanRate">
-				<option value="">Garder la vitesse actuelle</option>
+				<option value="" data-fr="Garder la vitesse actuelle">
+					Keep the current rate
+				</option>
 				<option value="auto">Auto</option>
-				<option value="silent">Silence</option>
+				<option value="silent" data-fr="Silence">Silent</option>
 				<option value="1">1</option>
 				<option value="2">2</option>
 				<option value="3">3</option>
@@ -36,53 +41,74 @@
 		</sdpi-item>
 		<sdpi-item label="">
 			<details>
-				<summary>À propos des préréglages</summary>
-				<p>
-					Avec un mode, la touche allume la climatisation dans ce mode. Sans
-					mode, elle règle seulement la consigne et la ventilation dans le mode
-					actuel et ne touche pas à la marche. Les modes déshumidification et
-					ventilation n'ont pas de consigne, et la consigne doit convenir au
-					mode : de 18 à 32 en froid, de 10 à 30 en chaud, de 18 à 30 en auto,
-					par pas de 0,5. Un préréglage inapplicable s'affiche comme
-					indisponible.
+				<summary data-fr="À propos des préréglages">About presets</summary>
+				<p
+					data-fr="Avec un mode, la touche allume la climatisation dans ce mode. Sans mode, elle règle seulement la consigne et la ventilation dans le mode actuel et ne touche pas à la marche. Les modes déshumidification et ventilation n&#x27;ont pas de consigne, et la consigne doit convenir au mode : de 18 à 32 en froid, de 10 à 30 en chaud, de 18 à 30 en auto, par pas de 0,5. Un préréglage inapplicable s&#x27;affiche comme indisponible."
+				>
+					With a mode, the key turns the unit on in that mode. Without one, it
+					only sets the temperature and the fan rate in the current mode and
+					leaves the power as it is. Dry and Fan have no temperature, and the
+					temperature must fit the mode: 18 to 32 in Cool, 10 to 30 in Heat, 18
+					to 30 in Auto, in steps of 0.5. A preset that cannot be applied shows
+					as unavailable.
 				</p>
 			</details>
 		</sdpi-item>
-		<sdpi-item label="Libellé">
+		<sdpi-item label="Label" data-fr-label="Libellé">
 			<sdpi-textfield
 				setting="label"
-				placeholder="Mode et consigne"
+				placeholder="Mode and temperature"
+				data-fr-placeholder="Mode et consigne"
 			></sdpi-textfield>
 		</sdpi-item>
-		<sdpi-item label="Position du libellé">
+		<sdpi-item label="Label position" data-fr-label="Position du libellé">
 			<sdpi-select setting="labelPosition" default="top">
-				<option value="top">Haut</option>
-				<option value="bottom">Bas</option>
+				<option value="top" data-fr="Haut">Top</option>
+				<option value="bottom" data-fr="Bas">Bottom</option>
 			</sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Adresse de la climatisation">
+		<sdpi-item
+			label="Air conditioner address"
+			data-fr-label="Adresse de la climatisation"
+		>
 			<sdpi-textfield
 				id="unit-address"
-				placeholder="Adresse sur votre réseau"
+				placeholder="Address on your network"
+				data-fr-placeholder="Adresse sur votre réseau"
 			></sdpi-textfield>
 		</sdpi-item>
 		<sdpi-item label="">
-			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+			<sdpi-button id="save-address" data-fr="Enregistrer l'adresse">
+				Save address
+			</sdpi-button>
 		</sdpi-item>
 		<sdpi-item label="">
 			<p id="address-status" role="status"></p>
 		</sdpi-item>
 		<sdpi-item label="">
 			<details>
-				<summary>À propos de l'adresse</summary>
-				<p>
-					Adresse de l'unité sur votre réseau local, partagée par toutes les
-					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
-					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
-					votre box (réservation DHCP) pour qu'elle ne change pas.
+				<summary data-fr="À propos de l&#x27;adresse">
+					About the address
+				</summary>
+				<p
+					data-fr="Adresse de l&#x27;unité sur votre réseau local, partagée par toutes les actions du plugin et conservée sur cet ordinateur uniquement. Elle est vérifiée avant d&#x27;être enregistrée. Réservez-lui une adresse fixe dans votre box (réservation DHCP) pour qu&#x27;elle ne change pas."
+				>
+					The address of the unit on your local network, shared by every action
+					of the plugin and kept on this computer only. It is checked before it
+					is saved. Give the unit a fixed address in your router (DHCP
+					reservation) so it does not change.
 				</p>
 			</details>
 		</sdpi-item>
-		<script src="unit_address.js"></script>
+		<sdpi-item label="Language / Langue">
+			<sdpi-select id="language-select">
+				<option value="system" data-fr="Système (par défaut)">
+					System (default)
+				</option>
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+			</sdpi-select>
+		</sdpi-item>
+		<script src="inspector.js"></script>
 	</body>
 </html>

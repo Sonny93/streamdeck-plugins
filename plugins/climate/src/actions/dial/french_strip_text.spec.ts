@@ -19,7 +19,7 @@ describe('the French texts of the Climate strip', () => {
 		});
 
 		const decoded = decodeDataUrl(
-			toSvgDataUrl(buildClimateDialSvg(view, undefined, 1))
+			toSvgDataUrl(buildClimateDialSvg(view, 'fr', undefined, 1))
 		);
 
 		expect(decoded).toContain('>PIÈCE<');
@@ -29,7 +29,7 @@ describe('the French texts of the Climate strip', () => {
 
 	it('should keep the accented draft caption through the data URL', () => {
 		const decoded = decodeDataUrl(
-			toSvgDataUrl(buildClimateDialSvg(buildClimateViewForTest(), 22.5))
+			toSvgDataUrl(buildClimateDialSvg(buildClimateViewForTest(), 'fr', 22.5))
 		);
 
 		expect(decoded).toContain('>À VALIDER<');
@@ -37,7 +37,10 @@ describe('the French texts of the Climate strip', () => {
 
 	it('should escape the apostrophe of a French text so the picture stays valid XML', () => {
 		expect(
-			buildClimateDialSvg(buildClimateViewForTest({ status: 'unconfigured' }))
+			buildClimateDialSvg(
+				buildClimateViewForTest({ status: 'unconfigured' }),
+				'fr'
+			)
 		).not.toContain("l'");
 	});
 });

@@ -9,7 +9,8 @@ import { readPresetConfig } from './read_preset_config';
 function describeWith(settings: unknown, state: Partial<UnitState> = {}) {
 	return describePresetKey(
 		buildClimateViewForTest({ state }),
-		readPresetConfig(settings)
+		readPresetConfig(settings),
+		'fr'
 	);
 }
 
@@ -81,9 +82,49 @@ describe('describePresetKey', () => {
 	it('should be unavailable when the unit is not ready', () => {
 		const description = describePresetKey(
 			buildClimateViewForTest({ status: 'unreachable' }),
-			readPresetConfig({ mode: 'cool' })
+			readPresetConfig({ mode: 'cool' }),
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.unavailable);
 	});
+});
+
+describe('describePresetKey labels', () => {
+	it.each([
+		[{ mode: 'cool', temperature: '22' }, 'fr', 'Froid 22 °C'],
+		[{ mode: 'cool', temperature: '22' }, 'en', 'Cool 22 °C'],
+		[{ mode: 'heat', temperature: '22,5' }, 'fr', 'Chaud 22,5 °C'],
+		[{ mode: 'heat', temperature: '22.5' }, 'en', 'Heat 22.5 °C'],
+		[{ mode: 'dry' }, 'fr', 'Déshu.'],
+		[{ mode: 'dry' }, 'en', 'Dry'],
+		[{ fanRate: '3' }, 'fr', 'Ventil. 3'],
+		[{ fanRate: '3' }, 'en', 'Fan 3'],
+		[{ fanRate: 'silent' }, 'fr', 'Ventil. Silence'],
+		[{ fanRate: 'silent' }, 'en', 'Fan Silent'],
+	] as const)(
+		'should label a preset %j in %s as %s when no label is typed',
+		(settings, language, expected) => {
+			const description = describePresetKey(
+				buildClimateViewForTest(),
+				readPresetConfig(settings),
+				language
+			);
+
+			expect(description.label?.text).toBe(expected);
+		}
+	);
+
+	it.each(['fr', 'en'] as const)(
+		'should keep the typed label in %s',
+		(language) => {
+			const description = describePresetKey(
+				buildClimateViewForTest(),
+				readPresetConfig({ mode: 'cool', label: 'Night' }),
+				language
+			);
+
+			expect(description.label?.text).toBe('Night');
+		}
+	);
 });

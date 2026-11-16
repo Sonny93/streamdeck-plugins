@@ -1,0 +1,48 @@
+{
+	"Name": "Climate Deck",
+	"Description": "Pilotez une climatisation Daikin depuis le Stream Deck, sur votre réseau local : marche / arrêt, consigne, préréglages, ventilation, modes spéciaux, infos et consommation.",
+	"com.sonny93.climate.dial": {
+		"Name": "Climat",
+		"Tooltip": "Choisit la consigne de la climatisation avec le cadran et la valide d'une pression. Affiche la température de la pièce.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Choisir la consigne",
+				"Push": "Valider (maintenir pour annuler)"
+			}
+		}
+	},
+	"com.sonny93.climate.fan-dial": {
+		"Name": "Ventilation",
+		"Tooltip": "Change la vitesse de ventilation en tournant le cadran, et active ou coupe le balayage d'une pression.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Changer la vitesse de ventilation",
+				"Push": "Activer / couper le balayage"
+			}
+		}
+	},
+	"com.sonny93.climate.info": {
+		"Name": "Info",
+		"Tooltip": "Affiche la température extérieure, l'état du compresseur et les modes spéciaux actifs."
+	},
+	"com.sonny93.climate.energy": {
+		"Name": "Énergie",
+		"Tooltip": "Affiche l'énergie consommée par la climatisation aujourd'hui et sur 7 jours."
+	},
+	"com.sonny93.climate.power": {
+		"Name": "Marche / arrêt",
+		"Tooltip": "Allume ou éteint la climatisation, s'allume quand elle fonctionne et affiche la température de la pièce."
+	},
+	"com.sonny93.climate.preset": {
+		"Name": "Préréglage",
+		"Tooltip": "Règle la climatisation sur un mode, une consigne et une vitesse de ventilation, et s'allume tant qu'elle y correspond."
+	},
+	"com.sonny93.climate.fan": {
+		"Name": "Ventilateur",
+		"Tooltip": "Passe à la vitesse de ventilation suivante à chaque pression, ou active et coupe le balayage."
+	},
+	"com.sonny93.climate.special-mode": {
+		"Name": "Mode spécial",
+		"Tooltip": "Active ou coupe le mode puissant ou éco de la climatisation, et s'allume tant qu'il est actif."
+	}
+}

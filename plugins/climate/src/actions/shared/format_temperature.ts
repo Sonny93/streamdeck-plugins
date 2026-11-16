@@ -1,18 +1,23 @@
+import { formatDecimal } from 'deck-kit/i18n/format_decimal';
+import type { Language } from 'deck-kit/i18n/language';
+
 const NO_TEMPERATURE = '–';
 const DEGREE_UNIT = '°C';
+const HALF_DEGREE_DIGITS = 1;
 
-function formatNumber(temperature: number): string {
+function formatNumber(temperature: number, language: Language): string {
 	return Number.isInteger(temperature)
 		? String(temperature)
-		: temperature.toFixed(1).replace('.', ',');
+		: formatDecimal(temperature, HALF_DEGREE_DIGITS, language);
 }
 
-/** Formats a temperature for a key or the strip, in French: whole degrees without decimals, half degrees with a comma, `23,5 °C`, a dash when there is none. */
+/** Formats a temperature for a key or the strip: whole degrees without decimals, half degrees with the decimal separator of the language, `23,5 °C` or `23.5 °C`, a dash when there is none. */
 export function formatTemperature(
-	temperature: number | null | undefined
+	temperature: number | null | undefined,
+	language: Language
 ): string {
 	if (temperature === null || temperature === undefined) {
 		return NO_TEMPERATURE;
 	}
-	return `${formatNumber(temperature)} ${DEGREE_UNIT}`;
+	return `${formatNumber(temperature, language)} ${DEGREE_UNIT}`;
 }

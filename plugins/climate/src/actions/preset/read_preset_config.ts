@@ -1,7 +1,5 @@
-import { readKeyLabel } from 'deck-kit/keys/read_key_label';
-
 import { isTemperatureAllowed } from '../shared/is_temperature_allowed';
-import { describePresetLabel } from './describe_preset_label';
+import { readKeyLabelPreferences } from '../shared/read_key_label_preferences';
 import type { PresetConfig } from './preset_config';
 import { presetSettingsSchema } from './preset_settings_schema';
 
@@ -32,11 +30,11 @@ export function readPresetConfig(rawSettings: unknown): PresetConfig {
 	) {
 		return INVALID;
 	}
-	const label = readKeyLabel(
-		rawSettings,
-		describePresetLabel({ mode, targetTemperature, fanRate })
-	);
-	return label === undefined
-		? INVALID
-		: { kind: 'valid', mode, targetTemperature, fanRate, label };
+	return {
+		kind: 'valid',
+		mode,
+		targetTemperature,
+		fanRate,
+		label: readKeyLabelPreferences(rawSettings),
+	};
 }

@@ -1,13 +1,14 @@
+import type { Language } from 'deck-kit/i18n/language';
+
 import type { ClimateView } from '../../climate/climate_view';
+import { climateMessages } from '../../i18n/climate_messages';
 import { fanGlyph } from '../keys/fan_glyph';
 import type { KeyDescription } from '../keys/key_description';
 import { KeyState } from '../keys/key_state';
 import { swingGlyph } from '../keys/swing_glyph';
-import { FanRateNames } from '../shared/fan_rate_names';
+import { getFanRateName } from '../shared/fan_rate_name';
 import { readReadyState } from '../shared/read_ready_state';
 import type { FanConfig } from './fan_config';
-
-const SWING_LABEL = 'Balayage';
 
 /**
  * A "Fan" key. The rate key shows the displayed fan rate and is lit while the unit is on;
@@ -15,7 +16,8 @@ const SWING_LABEL = 'Balayage';
  */
 export function describeFanKey(
 	view: ClimateView,
-	config: FanConfig
+	config: FanConfig,
+	language: Language
 ): KeyDescription {
 	const state = readReadyState(view);
 	const glyph = config.control === 'swing' ? swingGlyph : fanGlyph;
@@ -26,12 +28,15 @@ export function describeFanKey(
 		return {
 			state: state.fanDirection === 'fixed' ? KeyState.off : KeyState.on,
 			glyph,
-			label: { text: SWING_LABEL, position: 'top' },
+			label: {
+				text: climateMessages.text('swingOn', language),
+				position: 'top',
+			},
 		};
 	}
 	return {
 		state: state.isPowered ? KeyState.on : KeyState.off,
 		glyph,
-		label: { text: FanRateNames[state.fanRate], position: 'top' },
+		label: { text: getFanRateName(state.fanRate, language), position: 'top' },
 	};
 }

@@ -5,12 +5,14 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import type { Scheduler } from 'deck-kit/async/scheduler';
+import type { Language } from 'deck-kit/i18n/language';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 import type { IdlePanel } from 'deck-kit/strip/idle_panel';
 
 import type { ClimateHub } from '../../climate/climate_hub';
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
-import type { UnitAddressPanel } from '../../unit_address/unit_address_panel';
+import type { InspectorPanel } from '../../inspector/inspector_panel';
 import type { ClimateActionSettings } from '../shared/climate_action_settings';
 import { ClimateStripAction } from '../shared/climate_strip_action';
 import { buildClimateDialSvg } from './build_climate_dial_svg';
@@ -31,11 +33,12 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 
 	constructor(
 		hub: ClimateHub,
-		addressPanel: UnitAddressPanel,
+		inspectorPanel: InspectorPanel,
+		languageStore: LanguageStore,
 		idle: IdlePanel,
 		schedule: Scheduler
 	) {
-		super(hub, addressPanel, idle);
+		super(hub, inspectorPanel, languageStore, idle);
 		this.drafts = new DialDrafts({
 			schedule,
 			holdMilliseconds: DialTiming.holdMilliseconds,
@@ -106,12 +109,13 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 		actionId: string,
 		view: ClimateView,
 		_config: DialConfig,
-		column: number
+		column: number,
+		language: Language
 	): string {
 		const draft =
 			view.state === undefined
 				? undefined
 				: this.drafts.read(actionId, view.state.mode);
-		return buildClimateDialSvg(view, draft, column);
+		return buildClimateDialSvg(view, language, draft, column);
 	}
 }

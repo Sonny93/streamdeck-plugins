@@ -1,4 +1,5 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
@@ -41,8 +42,9 @@ export class FanKeyAction extends ClimateKeyAction<FanConfig> {
 
 	protected override describeKey(
 		view: ClimateView,
-		config: FanConfig
+		config: FanConfig,
+		language: Language
 	): KeyDescription {
-		return describeFanKey(view, config);
+		return describeFanKey(view, config, language);
 	}
 }

@@ -1,45 +1,57 @@
+import type { Language } from 'deck-kit/i18n/language';
 import { buildStripText } from 'deck-kit/strip/build_strip_text';
 
 import type { ClimateView } from '../../climate/climate_view';
+import { climateMessages } from '../../i18n/climate_messages';
 import { formatTemperature } from '../shared/format_temperature';
-import { SpecialModeNames } from '../shared/special_mode_names';
+import { getSpecialModeName } from '../shared/special_mode_name';
 import { buildClimateMessageSvg } from '../strip/build_climate_message_svg';
 import { resolveStripTone } from '../strip/resolve_strip_tone';
 import { StripPalette } from '../strip/strip_palette';
 import { wrapClimateStripSvg } from '../strip/wrap_climate_strip_svg';
 
 const MARGIN = 12;
-const OUTDOOR_CAPTION = 'Extérieur';
-const COMPRESSOR_RUNNING = 'Compresseur actif';
-const COMPRESSOR_IDLE = "Compresseur à l'arrêt";
 
 function describeCompressor(
-	frequency: number | null | undefined
+	frequency: number | null | undefined,
+	language: Language
 ): string | undefined {
 	if (frequency === null || frequency === undefined) {
 		return undefined;
 	}
-	return frequency > 0 ? COMPRESSOR_RUNNING : COMPRESSOR_IDLE;
+	return climateMessages.text(
+		frequency > 0 ? 'compressorRunning' : 'compressorIdle',
+		language
+	);
 }
 
 /**
  * Draws the strip of an "Info" dial over its slice (`column`) of the background: the outdoor temperature large and labelled,
  * whether the compressor runs, and the special modes that are active, if any. While the unit is not ready it shows a message instead.
+ * Texts are in `language`.
  */
-export function buildInfoDialSvg(view: ClimateView, column = 0): string {
+export function buildInfoDialSvg(
+	view: ClimateView,
+	language: Language,
+	column = 0
+): string {
 	if (view.status !== 'ready' || view.state === undefined) {
 		return buildClimateMessageSvg(
 			view.status === 'ready' ? 'loading' : view.status,
+			language,
 			column
 		);
 	}
-	const compressor = describeCompressor(view.sensors?.compressorFrequency);
+	const compressor = describeCompressor(
+		view.sensors?.compressorFrequency,
+		language
+	);
 	const specialModes = view.state.specialModes
-		.map((mode) => SpecialModeNames[mode])
+		.map((mode) => getSpecialModeName(mode, language))
 		.join(', ');
 	const lines = [
 		buildStripText({
-			text: OUTDOOR_CAPTION,
+			text: climateMessages.text('outdoorCaption', language),
 			x: MARGIN,
 			y: 20,
 			fontSize: 13,
@@ -47,7 +59,7 @@ export function buildInfoDialSvg(view: ClimateView, column = 0): string {
 			isBold: true,
 		}),
 		buildStripText({
-			text: formatTemperature(view.sensors?.outdoorTemperature),
+			text: formatTemperature(view.sensors?.outdoorTemperature, language),
 			x: MARGIN,
 			y: 60,
 			fontSize: 40,

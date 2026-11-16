@@ -10,7 +10,10 @@ const ENERGY = {
 
 describe('buildEnergyDialSvg', () => {
 	it('should draw the total of today and of the last 7 days when the energy is known', () => {
-		const svg = buildEnergyDialSvg(buildClimateViewForTest({ energy: ENERGY }));
+		const svg = buildEnergyDialSvg(
+			buildClimateViewForTest({ energy: ENERGY }),
+			'fr'
+		);
 
 		expect(svg).toContain('>0,8<');
 		expect(svg).toContain('>3,7<');
@@ -19,7 +22,10 @@ describe('buildEnergyDialSvg', () => {
 	});
 
 	it('should draw the heat and cool split of each period', () => {
-		const svg = buildEnergyDialSvg(buildClimateViewForTest({ energy: ENERGY }));
+		const svg = buildEnergyDialSvg(
+			buildClimateViewForTest({ energy: ENERGY }),
+			'fr'
+		);
 
 		expect(svg).toContain('>chaud 0,5<');
 		expect(svg).toContain('>froid 0,3<');
@@ -28,7 +34,7 @@ describe('buildEnergyDialSvg', () => {
 	});
 
 	it('should draw dashes while there is no energy value', () => {
-		const svg = buildEnergyDialSvg(buildClimateViewForTest());
+		const svg = buildEnergyDialSvg(buildClimateViewForTest(), 'fr');
 
 		expect(svg).toContain('>chaud –<');
 		expect(svg).toContain('>froid –<');
@@ -43,7 +49,8 @@ describe('buildEnergyDialSvg', () => {
 		'should draw a message when the status is %s',
 		(status, message) => {
 			const svg = buildEnergyDialSvg(
-				buildClimateViewForTest({ status, energy: ENERGY })
+				buildClimateViewForTest({ status, energy: ENERGY }),
+				'fr'
 			);
 
 			expect(svg).toContain(`>${message}<`);

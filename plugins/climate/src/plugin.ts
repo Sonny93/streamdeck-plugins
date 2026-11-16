@@ -1,6 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { LanguageStore } from 'deck-kit/i18n/language_store';
+import { readSystemLocale } from 'deck-kit/i18n/read_system_locale';
 import { IdleTiming } from 'deck-kit/strip/idle_timing';
 
 import { ClimateDialAction } from './actions/dial/climate_dial_action';
@@ -16,8 +18,9 @@ import { ClimateTiming } from './climate/climate_timing';
 import { createLocalHttpDriver } from './daikin/local/create_local_http_driver';
 import type { UnitDriver } from './daikin/unit_driver';
 import { createIdleDashboard } from './idle/create_idle_dashboard';
+import { InspectorPanel } from './inspector/inspector_panel';
+import { streamDeckGlobalSettings } from './settings/stream_deck_global_settings';
 import { saveUnitAddress } from './unit_address/save_unit_address';
-import { UnitAddressPanel } from './unit_address/unit_address_panel';
 import { UnitAddressStore } from './unit_address/unit_address_store';
 
 function createDriver(host: string): UnitDriver {
@@ -37,6 +40,17 @@ const climateHub = new ClimateHub({
 		streamDeck.logger.warn('Cannot reach the air conditioner', error),
 });
 
+const languageStore = new LanguageStore({
+	settings: streamDeckGlobalSettings,
+	readSystemLocale: () =>
+		readSystemLocale({
+			environment: process.env,
+			readIntlLocale: () => Intl.DateTimeFormat().resolvedOptions().locale,
+		}),
+	onError: (error) =>
+		streamDeck.logger.warn('Cannot draw again after a language change', error),
+});
+
 const idleDashboard = createIdleDashboard({
 	inactivity: new InactivityMonitor({
 		delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
@@ -44,13 +58,15 @@ const idleDashboard = createIdleDashboard({
 	}),
 	schedule: scheduleTimeout,
 	hub: climateHub,
+	languageStore,
 	onError: (error) =>
 		streamDeck.logger.warn('Cannot draw the idle dashboard', error),
 });
 
 const unitAddressStore = new UnitAddressStore();
 
-const addressPanel = new UnitAddressPanel({
+const inspectorPanel = new InspectorPanel({
+	languageStore,
 	readHost: () => climateHub.address,
 	saveAddress: (address) =>
 		saveUnitAddress(address, {
@@ -67,28 +83,33 @@ const addressPanel = new UnitAddressPanel({
 streamDeck.actions.registerAction(
 	new ClimateDialAction(
 		climateHub,
-		addressPanel,
+		inspectorPanel,
+		languageStore,
 		idleDashboard,
 		scheduleTimeout
 	)
 );
 streamDeck.actions.registerAction(
-	new InfoDialAction(climateHub, addressPanel, idleDashboard)
+	new InfoDialAction(climateHub, inspectorPanel, languageStore, idleDashboard)
 );
 streamDeck.actions.registerAction(
-	new EnergyDialAction(climateHub, addressPanel, idleDashboard)
+	new EnergyDialAction(climateHub, inspectorPanel, languageStore, idleDashboard)
 );
 streamDeck.actions.registerAction(
-	new SpecialModeKeyAction(climateHub, addressPanel)
+	new SpecialModeKeyAction(climateHub, inspectorPanel, languageStore)
 );
 streamDeck.actions.registerAction(
-	new FanDialAction(climateHub, addressPanel, idleDashboard)
+	new FanDialAction(climateHub, inspectorPanel, languageStore, idleDashboard)
 );
-streamDeck.actions.registerAction(new PowerKeyAction(climateHub, addressPanel));
 streamDeck.actions.registerAction(
-	new PresetKeyAction(climateHub, addressPanel)
+	new PowerKeyAction(climateHub, inspectorPanel, languageStore)
 );
-streamDeck.actions.registerAction(new FanKeyAction(climateHub, addressPanel));
+streamDeck.actions.registerAction(
+	new PresetKeyAction(climateHub, inspectorPanel, languageStore)
+);
+streamDeck.actions.registerAction(
+	new FanKeyAction(climateHub, inspectorPanel, languageStore)
+);
 
 void streamDeck.connect();
 void unitAddressStore
@@ -98,4 +119,9 @@ void unitAddressStore
 	})
 	.catch((error: unknown) =>
 		streamDeck.logger.error('Cannot load the unit address', error)
+	);
+void languageStore
+	.load()
+	.catch((error: unknown) =>
+		streamDeck.logger.error('Cannot load the language', error)
 	);

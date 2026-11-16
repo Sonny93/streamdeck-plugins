@@ -10,7 +10,8 @@ describe('buildClimateDialSvg', () => {
 		const svg = buildClimateDialSvg(
 			buildClimateViewForTest({
 				state: { mode: 'heat', targetTemperature: 22.5 },
-			})
+			}),
+			'fr'
 		);
 
 		expect(svg).toContain('>23°<');
@@ -23,7 +24,8 @@ describe('buildClimateDialSvg', () => {
 
 	it('should draw the background of the mode of the unit', () => {
 		const svg = buildClimateDialSvg(
-			buildClimateViewForTest({ state: { mode: 'heat' } })
+			buildClimateViewForTest({ state: { mode: 'heat' } }),
+			'fr'
 		);
 
 		expect(svg).toContain(StripTones.heat.from);
@@ -31,7 +33,8 @@ describe('buildClimateDialSvg', () => {
 
 	it('should dim the picture over the neutral background when the unit is off', () => {
 		const svg = buildClimateDialSvg(
-			buildClimateViewForTest({ state: { isPowered: false } })
+			buildClimateViewForTest({ state: { isPowered: false } }),
+			'fr'
 		);
 
 		expect(svg).toContain('<g opacity="0.7">');
@@ -42,7 +45,8 @@ describe('buildClimateDialSvg', () => {
 		const svg = buildClimateDialSvg(
 			buildClimateViewForTest({
 				state: { mode: 'dry', targetTemperature: null },
-			})
+			}),
+			'fr'
 		);
 
 		expect(svg).toContain('>–<');
@@ -51,12 +55,12 @@ describe('buildClimateDialSvg', () => {
 
 	it('should draw dashes for the sensors when they are unknown', () => {
 		expect(
-			buildClimateDialSvg(buildClimateViewForTest({ sensors: null }))
+			buildClimateDialSvg(buildClimateViewForTest({ sensors: null }), 'fr')
 		).toContain('>Ext. –<');
 	});
 
 	it('should show the draft in the accent color under "À VALIDER" and keep the current target small when a draft exists', () => {
-		const svg = buildClimateDialSvg(buildClimateViewForTest(), 23.5);
+		const svg = buildClimateDialSvg(buildClimateViewForTest(), 'fr', 23.5);
 
 		expect(svg).toContain(
 			`fill="${StripPalette.accent}" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="bold" text-anchor="end">23,5°<`
@@ -67,7 +71,7 @@ describe('buildClimateDialSvg', () => {
 	});
 
 	it('should not show the draft caption when there is no draft', () => {
-		const svg = buildClimateDialSvg(buildClimateViewForTest());
+		const svg = buildClimateDialSvg(buildClimateViewForTest(), 'fr');
 
 		expect(svg).not.toContain('À VALIDER');
 		expect(svg).not.toContain('Actuel ');
@@ -80,7 +84,11 @@ describe('buildClimateDialSvg', () => {
 	] as const)(
 		'should draw a message instead of the temperatures when the status is %s',
 		(status, message) => {
-			const svg = buildClimateDialSvg(buildClimateViewForTest({ status }), 25);
+			const svg = buildClimateDialSvg(
+				buildClimateViewForTest({ status }),
+				'fr',
+				25
+			);
 
 			expect(svg).toContain(`>${message}<`);
 			expect(svg).not.toContain('PIÈCE');
@@ -88,7 +96,7 @@ describe('buildClimateDialSvg', () => {
 	);
 
 	it('should be a 200 by 100 picture the size of the strip layout', () => {
-		expect(buildClimateDialSvg(buildClimateViewForTest())).toContain(
+		expect(buildClimateDialSvg(buildClimateViewForTest(), 'fr')).toContain(
 			'width="200" height="100"'
 		);
 	});

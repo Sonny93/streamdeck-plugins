@@ -1,4 +1,5 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import type { ClimateView } from '../../climate/climate_view';
 import type { KeyDescription } from '../keys/key_description';
@@ -35,8 +36,9 @@ export class SpecialModeKeyAction extends ClimateKeyAction<SpecialModeConfig> {
 
 	protected override describeKey(
 		view: ClimateView,
-		config: SpecialModeConfig
+		config: SpecialModeConfig,
+		language: Language
 	): KeyDescription {
-		return describeSpecialModeKey(view, config);
+		return describeSpecialModeKey(view, config, language);
 	}
 }

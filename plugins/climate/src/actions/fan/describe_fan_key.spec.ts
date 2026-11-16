@@ -8,7 +8,8 @@ describe('describeFanKey', () => {
 	it('should show the displayed fan rate and be lit when the unit is on', () => {
 		const description = describeFanKey(
 			buildClimateViewForTest({ state: { fanRate: 3 } }),
-			{ control: 'rate' }
+			{ control: 'rate' },
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.on);
@@ -20,7 +21,8 @@ describe('describeFanKey', () => {
 			buildClimateViewForTest({
 				state: { isPowered: false, fanRate: 'silent' },
 			}),
-			{ control: 'rate' }
+			{ control: 'rate' },
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.off);
@@ -36,7 +38,8 @@ describe('describeFanKey', () => {
 		(fanDirection, expected) => {
 			const description = describeFanKey(
 				buildClimateViewForTest({ state: { fanDirection } }),
-				{ control: 'swing' }
+				{ control: 'swing' },
+				'fr'
 			);
 
 			expect(description.state).toBe(expected);
@@ -49,11 +52,38 @@ describe('describeFanKey', () => {
 		(control) => {
 			const description = describeFanKey(
 				buildClimateViewForTest({ status: 'loading' }),
-				{ control }
+				{ control },
+				'fr'
 			);
 
 			expect(description.state).toBe(KeyState.unavailable);
 			expect(description.label).toBeUndefined();
 		}
 	);
+});
+
+describe('describeFanKey in English', () => {
+	it.each([
+		['auto', 'Auto'],
+		['silent', 'Silent'],
+		[4, '4'],
+	] as const)('should name the fan rate %s as %s', (fanRate, expected) => {
+		const description = describeFanKey(
+			buildClimateViewForTest({ state: { fanRate } }),
+			{ control: 'rate' },
+			'en'
+		);
+
+		expect(description.label?.text).toBe(expected);
+	});
+
+	it('should label the swing key Swing', () => {
+		const description = describeFanKey(
+			buildClimateViewForTest(),
+			{ control: 'swing' },
+			'en'
+		);
+
+		expect(description.label?.text).toBe('Swing');
+	});
 });

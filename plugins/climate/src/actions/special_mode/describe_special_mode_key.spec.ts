@@ -11,7 +11,8 @@ describe('describeSpecialModeKey', () => {
 	it('should be lit and show its label when the unit is on with the mode active', () => {
 		const description = describeSpecialModeKey(
 			buildClimateViewForTest({ state: { specialModes: ['powerful'] } }),
-			POWERFUL
+			POWERFUL,
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.on);
@@ -21,7 +22,8 @@ describe('describeSpecialModeKey', () => {
 	it('should be off when the unit is on and the mode is not active', () => {
 		const description = describeSpecialModeKey(
 			buildClimateViewForTest({ state: { specialModes: ['econo'] } }),
-			POWERFUL
+			POWERFUL,
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.off);
@@ -32,7 +34,8 @@ describe('describeSpecialModeKey', () => {
 			buildClimateViewForTest({
 				state: { isPowered: false, specialModes: ['powerful'] },
 			}),
-			POWERFUL
+			POWERFUL,
+			'fr'
 		);
 
 		expect(description.state).toBe(KeyState.off);
@@ -43,11 +46,45 @@ describe('describeSpecialModeKey', () => {
 		(status) => {
 			const description = describeSpecialModeKey(
 				buildClimateViewForTest({ status }),
-				POWERFUL
+				POWERFUL,
+				'fr'
 			);
 
 			expect(description.state).toBe(KeyState.unavailable);
 			expect(description.label).toBeUndefined();
+		}
+	);
+});
+
+describe('describeSpecialModeKey labels', () => {
+	it.each([
+		['powerful', 'fr', 'Puissant'],
+		['powerful', 'en', 'Powerful'],
+		['econo', 'fr', 'Éco'],
+		['econo', 'en', 'Econo'],
+	] as const)(
+		'should label the %s key in %s as %s when no label is typed',
+		(mode, language, expected) => {
+			const description = describeSpecialModeKey(
+				buildClimateViewForTest(),
+				readSpecialModeConfig({ mode }),
+				language
+			);
+
+			expect(description.label).toEqual({ text: expected, position: 'top' });
+		}
+	);
+
+	it.each(['fr', 'en'] as const)(
+		'should keep the typed label and its position in %s',
+		(language) => {
+			const description = describeSpecialModeKey(
+				buildClimateViewForTest(),
+				readSpecialModeConfig({ label: 'Save', labelPosition: 'bottom' }),
+				language
+			);
+
+			expect(description.label).toEqual({ text: 'Save', position: 'bottom' });
 		}
 	);
 });
