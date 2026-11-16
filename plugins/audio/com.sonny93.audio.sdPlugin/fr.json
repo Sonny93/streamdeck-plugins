@@ -1,0 +1,35 @@
+{
+	"Name": "Audio Deck",
+	"Description": "Pilotez l'audio du PC depuis le Stream Deck : face avant du Volt 1 d'Universal Audio, sortie par défaut, coupure du son et volume des périphériques.",
+	"com.sonny93.audio.volt-monitor": {
+		"Name": "Volt 1 Monitor",
+		"Tooltip": "Active ou coupe le bouton MONITOR du Volt 1, et indique s'il est actif."
+	},
+	"com.sonny93.audio.volt-vintage": {
+		"Name": "Volt 1 Vintage",
+		"Tooltip": "Active ou coupe le bouton VINTAGE du Volt 1, et indique s'il est actif."
+	},
+	"com.sonny93.audio.default-output": {
+		"Name": "Sortie par défaut",
+		"Tooltip": "Fait de la sortie choisie la sortie par défaut du système, pour les médias et les communications, et s'allume tant qu'elle l'est."
+	},
+	"com.sonny93.audio.mute": {
+		"Name": "Muet",
+		"Tooltip": "Coupe ou rétablit le son d'un périphérique, l'entrée par défaut sauf choix contraire, et indique s'il est coupé."
+	},
+	"com.sonny93.audio.restart-elgato-audio": {
+		"Name": "Redémarrer l'audio Elgato",
+		"Tooltip": "Redémarre le serveur audio Elgato : l'arrête, attend qu'il reparte, et affiche une coche une fois revenu."
+	},
+	"com.sonny93.audio.volume": {
+		"Name": "Volume du périphérique",
+		"Tooltip": "Change le volume d'un périphérique, la sortie par défaut sauf choix contraire.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Changer le volume",
+				"Push": "Couper / rétablir le son",
+				"Touch": "Couper / rétablir le son"
+			}
+		}
+	}
+}

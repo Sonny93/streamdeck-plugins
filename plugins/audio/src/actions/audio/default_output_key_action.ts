@@ -17,12 +17,15 @@ export class DefaultOutputKeyAction extends AudioDeviceKeyAction {
 
 	protected override readonly fallbackTarget: AudioTarget | undefined =
 		undefined;
-	protected override readonly defaultLabel: string | undefined = undefined;
 	protected override readonly choices: AudioDeviceChoices = {
 		event: 'listOutputDevices',
 		flows: ['output'],
 		offersDefaults: false,
 	};
+
+	protected override defaultLabel(): string | undefined {
+		return undefined;
+	}
 
 	override async onKeyDown(
 		ev: KeyDownEvent<AudioDeviceSettings>

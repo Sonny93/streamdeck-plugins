@@ -1,10 +1,16 @@
 import { streamDeck } from '@elgato/streamdeck';
+import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { LanguageStore } from 'deck-kit/i18n/language_store';
+import { readSystemLocale } from 'deck-kit/i18n/read_system_locale';
+import { IdlePanel } from 'deck-kit/strip/idle_panel';
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
 
 import { DefaultOutputKeyAction } from './actions/audio/default_output_key_action';
 import { MuteKeyAction } from './actions/audio/mute_key_action';
 import { VolumeDialAction } from './actions/audio/volume_dial_action';
 import { RestartElgatoAudioKeyAction } from './actions/elgato/restart_elgato_audio_key_action';
+import { createAudioPanelFeed } from './actions/strip/create_audio_panel_feed';
 import { VoltMonitorKeyAction } from './actions/volt/volt_monitor_key_action';
 import { VoltVintageKeyAction } from './actions/volt/volt_vintage_key_action';
 import { AudioHub } from './audio/audio_hub';
@@ -12,6 +18,7 @@ import { AudioTiming } from './audio/audio_timing';
 import { ElgatoAudioRestarter } from './elgato/elgato_audio_restarter';
 import { ElgatoAudioTiming } from './elgato/elgato_audio_timing';
 import { loadPlatformAdapters } from './platform/load_platform_adapters';
+import { streamDeckGlobalSettings } from './settings/stream_deck_global_settings';
 import { VoltHub } from './volt/volt_hub';
 import { VoltTiming } from './volt/volt_timing';
 
@@ -28,8 +35,23 @@ const voltHub = new VoltHub({
 	onError: (error) => streamDeck.logger.debug('Volt 1 unavailable', error),
 });
 
-streamDeck.actions.registerAction(new VoltMonitorKeyAction(voltHub));
-streamDeck.actions.registerAction(new VoltVintageKeyAction(voltHub));
+const languageStore = new LanguageStore({
+	settings: streamDeckGlobalSettings,
+	readSystemLocale: () =>
+		readSystemLocale({
+			environment: process.env,
+			readIntlLocale: () => Intl.DateTimeFormat().resolvedOptions().locale,
+		}),
+	onError: (error) =>
+		streamDeck.logger.warn('Cannot draw again after a language change', error),
+});
+
+streamDeck.actions.registerAction(
+	new VoltMonitorKeyAction(voltHub, languageStore)
+);
+streamDeck.actions.registerAction(
+	new VoltVintageKeyAction(voltHub, languageStore)
+);
 
 const audioHub = new AudioHub({
 	loadCoreAudio: platform.audio.loadCoreAudio,
@@ -42,9 +64,24 @@ const audioHub = new AudioHub({
 		streamDeck.logger.warn('Cannot read the audio devices', error),
 });
 
-streamDeck.actions.registerAction(new DefaultOutputKeyAction(audioHub));
-streamDeck.actions.registerAction(new MuteKeyAction(audioHub));
-streamDeck.actions.registerAction(new VolumeDialAction(audioHub));
+const idlePanel = new IdlePanel({
+	inactivity: new InactivityMonitor({
+		delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
+		schedule: scheduleTimeout,
+	}),
+	schedule: scheduleTimeout,
+	...createAudioPanelFeed({ audioHub, voltHub, languageStore }),
+	onError: (error) =>
+		streamDeck.logger.warn('Cannot draw the idle panel', error),
+});
+
+streamDeck.actions.registerAction(
+	new DefaultOutputKeyAction(audioHub, languageStore)
+);
+streamDeck.actions.registerAction(new MuteKeyAction(audioHub, languageStore));
+streamDeck.actions.registerAction(
+	new VolumeDialAction(audioHub, languageStore, idlePanel)
+);
 
 streamDeck.actions.registerAction(
 	new RestartElgatoAudioKeyAction(
@@ -53,10 +90,16 @@ streamDeck.actions.registerAction(
 			schedule: scheduleTimeout,
 			pollIntervalMilliseconds: ElgatoAudioTiming.pollIntervalMilliseconds,
 			restartTimeoutMilliseconds: ElgatoAudioTiming.restartTimeoutMilliseconds,
-		})
+		}),
+		languageStore
 	)
 );
 
 voltHub.start();
 
 void streamDeck.connect();
+void languageStore
+	.load()
+	.catch((error: unknown) =>
+		streamDeck.logger.error('Cannot load the language', error)
+	);
