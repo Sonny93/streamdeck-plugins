@@ -1,7 +1,7 @@
+import { createFakeScheduler } from 'deck-kit/async/create_fake_scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
 import { buildUnitStateForTest } from '../../climate/build_unit_state_for_test';
-import { createFakeScheduler } from '../../climate/create_fake_scheduler';
 import { DialDrafts } from './dial_drafts';
 
 const HOLD = 600;

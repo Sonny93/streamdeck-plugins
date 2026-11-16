@@ -1,14 +1,11 @@
 /**
- * Geometry and style of the "now playing" screen, in pixels of the whole touch strip (four 200 px dial segments side by side).
+ * Geometry and style of the "now playing" screen, in pixels of the whole touch strip (`StripPanel`: four 200 px dial segments side by side).
  * Each dial draws the 200 px slice of its column. Texts are shortened to their `maxWidth`, measured with estimated Arial widths. Outside this screen, the dials draw their slice of the same cover backdrop, dimmer (`dialBackdropOpacity`), behind their own content.
  * With lyrics, the strip is split: the track (`splitTitle`, `splitArtists`, clipped before `infoClipRight`) on the left half,
  * the lyrics centered on the right half, wrapped to `textWidth` (estimated Arial widths); the progress bar and the times stay across the whole strip.
  * A change of lyric line slides the old lines up and the new ones in from below by `transitionShift`, fading them.
  */
 export const NowPlayingMetrics = {
-	stripWidth: 800,
-	stripHeight: 100,
-	segmentWidth: 200,
 	background: '#000000',
 	backdropOpacity: 0.35,
 	dialBackdropOpacity: 0.25,

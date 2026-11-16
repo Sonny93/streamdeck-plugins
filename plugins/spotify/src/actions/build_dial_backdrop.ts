@@ -1,3 +1,5 @@
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+
 import { buildBackdropImage } from './build_backdrop_image';
 import type { DialBackdrop } from './dial_backdrop';
 import { NowPlayingMetrics } from './now_playing_metrics';
@@ -10,10 +12,10 @@ export function buildDialBackdrop(backdrop: DialBackdrop | undefined): string {
 	if (backdrop === undefined) {
 		return '';
 	}
-	const { segmentWidth, dialBackdropOpacity } = NowPlayingMetrics;
+	const { dialBackdropOpacity } = NowPlayingMetrics;
 	return buildBackdropImage({
 		coverDataUrl: backdrop.coverDataUrl,
-		left: -backdrop.column * segmentWidth,
+		left: -backdrop.column * StripPanel.slotWidth,
 		opacity: dialBackdropOpacity,
 	});
 }

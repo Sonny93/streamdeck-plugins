@@ -128,7 +128,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onDialRotate(
 		ev: DialRotateEvent<PlaylistsDialSettings>
 	): Promise<void> {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('other')) {
 			return;
 		}
 		if (this.catalog.playlists.length === 0) {
@@ -141,7 +141,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onDialDown(
 		ev: DialDownEvent<PlaylistsDialSettings>
 	): Promise<void> {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('press')) {
 			return;
 		}
 		const playlist = this.settledPlaylist(ev.action.id);
@@ -155,7 +155,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	override async onTouchTap(
 		ev: TouchTapEvent<PlaylistsDialSettings>
 	): Promise<void> {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('other')) {
 			return;
 		}
 		const isAdded = await addPlayingTrackToPlaylist({

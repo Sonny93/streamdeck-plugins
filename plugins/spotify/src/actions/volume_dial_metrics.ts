@@ -1,7 +1,9 @@
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+
 /** Geometry and style of a "Volume" dial drawn on its touch strip segment, in strip pixels. */
 export const VolumeDialMetrics = {
-	stripWidth: 200,
-	stripHeight: 100,
+	stripWidth: StripPanel.slotWidth,
+	stripHeight: StripPanel.height,
 	background: '#000000',
 	fontFamily: 'Arial, Helvetica, sans-serif',
 	left: 12,

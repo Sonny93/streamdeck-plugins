@@ -1,3 +1,4 @@
+import { createFakeScheduler } from 'deck-kit/async/create_fake_scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
 import { UnitUnreachableError } from '../daikin/errors/unit_unreachable_error';
@@ -6,7 +7,6 @@ import { buildUnitSnapshotForTest } from './build_unit_snapshot_for_test';
 import { buildUnitStateForTest } from './build_unit_state_for_test';
 import { ClimateHub } from './climate_hub';
 import { ClimateUnitUnavailableError } from './climate_unit_unavailable_error';
-import { createFakeScheduler } from './create_fake_scheduler';
 import { createFakeUnitDriver } from './create_fake_unit_driver';
 
 const TEST_HOST = '127.0.0.1';

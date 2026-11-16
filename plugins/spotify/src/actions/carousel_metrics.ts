@@ -1,7 +1,9 @@
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+
 /** Geometry and style of the carousel drawn on the touch strip of the "Playlists" dial, in strip pixels. */
 export const CarouselMetrics = {
-	stripWidth: 200,
-	stripHeight: 100,
+	stripWidth: StripPanel.slotWidth,
+	stripHeight: StripPanel.height,
 	slotSpacing: 58,
 	coverCenterY: 40,
 	centerCoverSize: 64,

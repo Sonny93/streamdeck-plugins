@@ -1,12 +1,12 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
 
 import { LikeAction } from './actions/like_action';
 import { LikeTargetStore } from './actions/like_target_store';
 import { NextTrackAction } from './actions/next_track_action';
 import { NowPlayingScreen } from './actions/now_playing_screen';
-import { NowPlayingTiming } from './actions/now_playing_timing';
 import { OpenSearchAction } from './actions/open_search_action';
 import { PlayOnDeviceAction } from './actions/play_on_device_action';
 import { PlayPauseAction } from './actions/play_pause_action';
@@ -31,7 +31,7 @@ const playerStateHub = new PlayerStateHub();
 const likeTargetStore = new LikeTargetStore();
 const uiStateHub = new UiStateHub();
 const inactivity = new InactivityMonitor({
-	delayMilliseconds: NowPlayingTiming.inactivityDelayMilliseconds,
+	delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
 	schedule: scheduleTimeout,
 });
 const nowPlaying = new NowPlayingScreen({

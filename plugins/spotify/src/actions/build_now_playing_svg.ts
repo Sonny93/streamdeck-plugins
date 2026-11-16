@@ -1,3 +1,4 @@
+import { StripPanel } from 'deck-kit/strip/strip_panel';
 import { escapeXml } from 'deck-kit/text/escape_xml';
 import { estimateTextWidth } from 'deck-kit/text/estimate_text_width';
 import { fitText } from 'deck-kit/text/fit_text';
@@ -51,8 +52,11 @@ function buildBackdrop(coverDataUrl: string | undefined): string {
 }
 
 function isCoverInSlice(sliceLeft: number): boolean {
-	const { cover, segmentWidth } = NowPlayingMetrics;
-	return sliceLeft < cover.x + cover.size && sliceLeft + segmentWidth > cover.x;
+	const { cover } = NowPlayingMetrics;
+	return (
+		sliceLeft < cover.x + cover.size &&
+		sliceLeft + StripPanel.slotWidth > cover.x
+	);
 }
 
 function buildCover(coverDataUrl: string | undefined): string {
@@ -137,17 +141,14 @@ function buildProgressBar(frame: NowPlayingFrame): string {
 }
 
 function buildClip(id: string, left: number, right: number): string {
-	return `<defs><clipPath id="${id}"><rect x="${left}" y="0" width="${right - left}" height="${NowPlayingMetrics.stripHeight}"/></clipPath></defs>`;
+	return `<defs><clipPath id="${id}"><rect x="${left}" y="0" width="${right - left}" height="${StripPanel.height}"/></clipPath></defs>`;
 }
 
 function isSliceOverlapping(
 	sliceLeft: number,
 	area: Readonly<{ left: number; right: number }>
 ): boolean {
-	return (
-		sliceLeft < area.right &&
-		sliceLeft + NowPlayingMetrics.segmentWidth > area.left
-	);
+	return sliceLeft < area.right && sliceLeft + StripPanel.slotWidth > area.left;
 }
 
 function buildTrackInfo(frame: NowPlayingFrame, sliceLeft: number): string {
@@ -290,12 +291,12 @@ export function buildNowPlayingSvg(
 	options: Readonly<{ frame: NowPlayingFrame; sliceLeft: number }>
 ): string {
 	const { frame, sliceLeft } = options;
-	const { stripWidth, stripHeight, segmentWidth, background } =
-		NowPlayingMetrics;
+	const { background } = NowPlayingMetrics;
+	const { width, height, slotWidth } = StripPanel;
 	const showsCover = isCoverInSlice(sliceLeft);
 	return [
-		`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${segmentWidth}" height="${stripHeight}" viewBox="${sliceLeft} 0 ${segmentWidth} ${stripHeight}">`,
-		`<rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>`,
+		`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${slotWidth}" height="${height}" viewBox="${sliceLeft} 0 ${slotWidth} ${height}">`,
+		`<rect width="${width}" height="${height}" fill="${background}"/>`,
 		buildBackdrop(frame.coverDataUrl),
 		showsCover ? buildCover(frame.coverDataUrl) : '',
 		showsCover && frame.isPaused ? buildPauseBadge() : '',

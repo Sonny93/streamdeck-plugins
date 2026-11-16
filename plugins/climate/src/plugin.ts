@@ -1,6 +1,7 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
 
 import { ClimateDialAction } from './actions/dial/climate_dial_action';
 import { EnergyDialAction } from './actions/energy/energy_dial_action';
@@ -38,9 +39,10 @@ const climateHub = new ClimateHub({
 
 const idleDashboard = createIdleDashboard({
 	inactivity: new InactivityMonitor({
-		delayMilliseconds: ClimateTiming.inactivityDelayMilliseconds,
+		delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
 		schedule: scheduleTimeout,
 	}),
+	schedule: scheduleTimeout,
 	hub: climateHub,
 	onError: (error) =>
 		streamDeck.logger.warn('Cannot draw the idle dashboard', error),

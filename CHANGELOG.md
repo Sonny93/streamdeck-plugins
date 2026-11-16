@@ -20,6 +20,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 ### Changed
 
 - The "Picked app" setting of the Spotify volume dial shows only when its target is "Picked app".
+- The idle screens of the dials (Spotify's "now playing" and the Climate Deck dashboard) follow one set of rules: the delay restarts when a page opens, so a folder no longer opens on the idle screen, and a gesture started on the idle screen only brings the dials back, however long it lasts, until they are left alone for 0.3 s.
 - The Spotify "now playing" screen shows after 5 seconds without touching the dials, instead of 15.
 - The released profile no longer carries the author's app and device settings: the volume dial falls back to the Spotify target, and the default-output and play-on-device keys lose their "Casque", "Enceintes" and "PC" labels.
 - Audio changes run one at a time: quick turns of the volume dial add up instead of overwriting each other, and quick presses on Mute no longer cancel each other.

@@ -1,4 +1,5 @@
 import type { Scheduler } from 'deck-kit/async/scheduler';
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
 import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -314,6 +315,57 @@ describe('NowPlayingScreen', () => {
 		expect(ticks[0]?.cancelled).toBe(true);
 	});
 
+	it('should swallow every event of a gesture that goes on until the dials were left alone for the quiet period', () => {
+		const { screen, dial, setInactive, ticks } = buildScreen();
+		screen.attach(dial);
+		setInactive(true);
+
+		const first = screen.wake();
+		const second = screen.wake();
+		const quiet = ticks.findLast(
+			(tick) =>
+				tick.delay === IdleTiming.wakeQuietMilliseconds && !tick.cancelled
+		);
+		quiet?.callback();
+
+		expect([first, second, screen.wake()]).toEqual([true, true, false]);
+	});
+
+	it('should swallow the push up of a swallowed push down after the quiet period', () => {
+		const { screen, dial, setInactive, ticks } = buildScreen();
+		screen.attach(dial);
+		setInactive(true);
+		const down = screen.wake('press');
+		ticks
+			.findLast(
+				(tick) =>
+					tick.delay === IdleTiming.wakeQuietMilliseconds && !tick.cancelled
+			)
+			?.callback();
+
+		expect([down, screen.wake('release')]).toEqual([true, true]);
+	});
+
+	it('should not show when its first dial appears long after the last activity', () => {
+		const { screen, dial, setInactive } = buildScreen();
+		setInactive(true);
+
+		screen.attach(dial);
+
+		expect(screen.isShowing).toBe(false);
+		expect(dial.setFeedback).not.toHaveBeenCalled();
+	});
+
+	it('should show once the delay passed on the page the dial appeared on', () => {
+		const { screen, dial, setInactive } = buildScreen();
+		setInactive(true);
+		screen.attach(dial);
+
+		setInactive(true);
+
+		expect(screen.isShowing).toBe(true);
+	});
+
 	it('should report that it was not showing when woken while hidden', () => {
 		const { screen, dial } = buildScreen();
 		screen.attach(dial);
@@ -476,7 +528,11 @@ describe('NowPlayingScreen', () => {
 
 			screen.wake();
 
-			expect(ticks.every((tick) => tick.cancelled)).toBe(true);
+			expect(
+				ticks
+					.filter((tick) => tick.delay !== IdleTiming.wakeQuietMilliseconds)
+					.every((tick) => tick.cancelled)
+			).toBe(true);
 		});
 
 		it('should report lyrics that cannot be fetched and draw without them', async () => {

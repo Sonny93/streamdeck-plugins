@@ -1,4 +1,5 @@
 import type { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
+import type { Scheduler } from 'deck-kit/async/scheduler';
 import { IdlePanel } from 'deck-kit/strip/idle_panel';
 
 import type { ClimateHub } from '../climate/climate_hub';
@@ -14,6 +15,7 @@ export function createIdleDashboard(
 			InactivityMonitor,
 			'isInactive' | 'subscribe' | 'recordActivity'
 		>;
+		schedule: Scheduler;
 		hub: Pick<ClimateHub, 'view' | 'subscribe'>;
 		onError: (error: unknown) => void;
 	}>
@@ -21,6 +23,7 @@ export function createIdleDashboard(
 	const { hub } = options;
 	return new IdlePanel({
 		inactivity: options.inactivity,
+		schedule: options.schedule,
 		isAvailable: () => hub.view.status === 'ready',
 		subscribe: (listener) => hub.subscribe(listener),
 		buildSlice: (column) => buildDashboardSvg(hub.view, column),

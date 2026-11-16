@@ -4,7 +4,6 @@ export const ClimateTiming = {
 	maximumPollIntervalMilliseconds: 60_000,
 	energyIntervalMilliseconds: 600_000,
 	energyRetryMilliseconds: 60_000,
-	inactivityDelayMilliseconds: 5000,
 	immediateQuietMilliseconds: 0,
 	toggleQuietMilliseconds: 150,
 	temperatureQuietMilliseconds: 400,

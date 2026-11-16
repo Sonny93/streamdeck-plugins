@@ -1,9 +1,10 @@
+import { createFakeScheduler } from 'deck-kit/async/create_fake_scheduler';
 import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
 import { describe, expect, it, vi } from 'vitest';
 
 import { buildClimateViewForTest } from '../climate/build_climate_view_for_test';
 import type { ClimateView } from '../climate/climate_view';
-import { createFakeScheduler } from '../climate/create_fake_scheduler';
 import { createIdleDashboard } from './create_idle_dashboard';
 
 const DELAY = 5000;
@@ -25,7 +26,12 @@ function createIdle(initialView: ClimateView = buildClimateViewForTest()) {
 		},
 	};
 	const onError = vi.fn();
-	const idle = createIdleDashboard({ inactivity, hub, onError });
+	const idle = createIdleDashboard({
+		inactivity,
+		schedule: scheduler.schedule,
+		hub,
+		onError,
+	});
 	const setFeedback = vi.fn((_feedback: Readonly<Record<string, string>>) =>
 		Promise.resolve()
 	);
@@ -103,16 +109,23 @@ describe('IdleDashboard', () => {
 		expect(onHidden).toHaveBeenCalledTimes(1);
 	});
 
-	it('should only wake the dials on the first interaction while showing', async () => {
+	it('should only wake the dials while the gesture that woke them goes on', async () => {
 		const { idle, scheduler } = createIdle();
 		const onHidden = vi.fn();
 		idle.onHidden(onHidden);
 		await scheduler.advance(DELAY);
 
 		const firstWasWakeOnly = idle.wake();
+		await scheduler.advance(IdleTiming.wakeQuietMilliseconds - 1);
 		const secondWasWakeOnly = idle.wake();
+		await scheduler.advance(IdleTiming.wakeQuietMilliseconds);
+		const thirdActs = !idle.wake();
 
-		expect([firstWasWakeOnly, secondWasWakeOnly]).toEqual([true, false]);
+		expect([firstWasWakeOnly, secondWasWakeOnly, thirdActs]).toEqual([
+			true,
+			true,
+			true,
+		]);
 		expect(idle.isShowing).toBe(false);
 		expect(onHidden).toHaveBeenCalledTimes(1);
 	});

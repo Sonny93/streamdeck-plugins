@@ -1,40 +1,31 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { createFakeScheduler } from '../async/create_fake_scheduler';
 import { InactivityMonitor } from '../async/inactivity_monitor';
-import type { Scheduler } from '../async/scheduler';
 import { IdlePanel } from './idle_panel';
+import { IdleTiming } from './idle_timing';
 
 const DELAY = 5000;
-
-function settle(): Promise<void> {
-	return new Promise((resolve) => {
-		setImmediate(resolve);
-	});
-}
 
 function createPanel(
 	overrides: Readonly<{
 		encodeSlice?: (svg: string) => Promise<string | undefined>;
 		feedbackKey?: string;
+		attachDial?: boolean;
 	}> = {}
 ) {
-	const pending: { callback: () => void; isCancelled: boolean }[] = [];
-	const schedule: Scheduler = (callback) => {
-		const entry = { callback, isCancelled: false };
-		pending.push(entry);
-		return () => {
-			entry.isCancelled = true;
-		};
-	};
+	const { attachDial = true, ...panelOverrides } = overrides;
+	const scheduler = createFakeScheduler();
 	const inactivity = new InactivityMonitor({
 		delayMilliseconds: DELAY,
-		schedule,
+		schedule: scheduler.schedule,
 	});
 	const state = { isAvailable: true, content: 'first' };
 	const contentListeners = new Set<() => void>();
 	const onError = vi.fn();
 	const panel = new IdlePanel({
 		inactivity,
+		schedule: scheduler.schedule,
 		isAvailable: () => state.isAvailable,
 		subscribe: (listener) => {
 			contentListeners.add(listener);
@@ -44,19 +35,16 @@ function createPanel(
 		},
 		buildSlice: (column) => `${state.content}:${column}`,
 		onError,
-		...overrides,
+		...panelOverrides,
 	});
 	const setFeedback = vi.fn((_feedback: Readonly<Record<string, string>>) =>
 		Promise.resolve()
 	);
-	panel.attach({ id: 'first', column: 0, setFeedback });
+	if (attachDial) {
+		panel.attach({ id: 'first', column: 0, setFeedback });
+	}
 	async function elapse(): Promise<void> {
-		for (const entry of pending.splice(0)) {
-			if (!entry.isCancelled) {
-				entry.callback();
-			}
-		}
-		await settle();
+		await scheduler.advance(DELAY);
 	}
 	async function changeContent(
 		content: string,
@@ -67,12 +55,13 @@ function createPanel(
 		for (const listener of contentListeners) {
 			listener();
 		}
-		await settle();
+		await scheduler.settle();
 	}
 	return {
 		panel,
 		setFeedback,
 		elapse,
+		scheduler,
 		changeContent,
 		contentListeners,
 		onError,
@@ -167,13 +156,74 @@ describe('IdlePanel', () => {
 		expect(onShown).toHaveBeenCalledTimes(1);
 	});
 
-	it('should only wake the dials on the first interaction while showing', async () => {
+	it('should swallow an event that wakes the panel, and the panel hides', async () => {
 		const { panel, elapse } = createPanel();
 		await elapse();
 
-		const results = [panel.wake(), panel.wake()];
+		expect(panel.wake()).toBe(true);
+		expect(panel.isShowing).toBe(false);
+	});
 
-		expect(results).toEqual([true, false]);
+	it('should swallow every event of a gesture that goes on, however long it lasts', async () => {
+		const { panel, scheduler, elapse } = createPanel();
+		await elapse();
+		const results = [panel.wake()];
+
+		for (let tick = 0; tick < 20; tick += 1) {
+			await scheduler.advance(IdleTiming.wakeQuietMilliseconds - 1);
+			results.push(panel.wake());
+		}
+
+		expect(results.every(Boolean)).toBe(true);
+	});
+
+	it('should let an event act once the dials were left alone for the quiet period', async () => {
+		const { panel, scheduler, elapse } = createPanel();
+		await elapse();
+		panel.wake();
+
+		await scheduler.advance(IdleTiming.wakeQuietMilliseconds);
+
+		expect(panel.wake()).toBe(false);
+	});
+
+	it('should swallow the push up of a swallowed push down even after the quiet period', async () => {
+		const { panel, scheduler, elapse } = createPanel();
+		await elapse();
+		const down = panel.wake('press');
+
+		await scheduler.advance(IdleTiming.wakeQuietMilliseconds * 5);
+
+		expect([down, panel.wake('release')]).toEqual([true, true]);
+	});
+
+	it('should draw the own content of a dial that appears long after the last activity, and show only after the full delay', async () => {
+		const { panel, setFeedback, scheduler } = createPanel({
+			attachDial: false,
+		});
+		await scheduler.advance(DELAY * 4);
+
+		panel.attach({ id: 'late', column: 0, setFeedback });
+		await scheduler.advance(DELAY - 1);
+		const isShowingBeforeDelay = panel.isShowing;
+		await scheduler.advance(1);
+
+		expect(isShowingBeforeDelay).toBe(false);
+		expect(panel.isShowing).toBe(true);
+		expect(setFeedback).toHaveBeenCalledTimes(1);
+	});
+
+	it('should restart the delay each time the page comes back with its first dial', async () => {
+		const { panel, setFeedback, scheduler } = createPanel({
+			attachDial: false,
+		});
+		panel.attach({ id: 'page', column: 0, setFeedback });
+		await scheduler.advance(DELAY - 1);
+		panel.detach('page');
+
+		panel.attach({ id: 'page', column: 0, setFeedback });
+		await scheduler.advance(DELAY - 1);
+
 		expect(panel.isShowing).toBe(false);
 	});
 

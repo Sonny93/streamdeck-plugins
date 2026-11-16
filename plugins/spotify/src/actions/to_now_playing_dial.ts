@@ -1,3 +1,5 @@
+import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
+
 import type { NowPlayingDial } from './now_playing_dial';
 
 type DialLike = Readonly<{
@@ -10,7 +12,7 @@ type DialLike = Readonly<{
 export function toNowPlayingDial(dial: DialLike): NowPlayingDial {
 	return {
 		id: dial.id,
-		column: dial.coordinates.column,
+		column: resolveStripColumn(dial.coordinates),
 		setFeedback: (feedback) => dial.setFeedback(feedback),
 	};
 }

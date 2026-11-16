@@ -1,4 +1,4 @@
-import type { Scheduler } from 'deck-kit/async/scheduler';
+import type { Scheduler } from './scheduler';
 
 type ScheduledTask = {
 	readonly callback: () => void;
