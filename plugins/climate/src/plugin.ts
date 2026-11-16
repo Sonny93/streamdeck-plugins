@@ -14,7 +14,7 @@ import { ClimateHub } from './climate/climate_hub';
 import { ClimateTiming } from './climate/climate_timing';
 import { createLocalHttpDriver } from './daikin/local/create_local_http_driver';
 import type { UnitDriver } from './daikin/unit_driver';
-import { IdleDashboard } from './idle/idle_dashboard';
+import { createIdleDashboard } from './idle/create_idle_dashboard';
 import { saveUnitAddress } from './unit_address/save_unit_address';
 import { UnitAddressPanel } from './unit_address/unit_address_panel';
 import { UnitAddressStore } from './unit_address/unit_address_store';
@@ -36,7 +36,7 @@ const climateHub = new ClimateHub({
 		streamDeck.logger.warn('Cannot reach the air conditioner', error),
 });
 
-const idleDashboard = new IdleDashboard({
+const idleDashboard = createIdleDashboard({
 	inactivity: new InactivityMonitor({
 		delayMilliseconds: ClimateTiming.inactivityDelayMilliseconds,
 		schedule: scheduleTimeout,

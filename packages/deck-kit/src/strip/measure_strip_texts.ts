@@ -1,4 +1,4 @@
-import { estimateTextWidth } from 'deck-kit/text/estimate_text_width';
+import { estimateTextWidth } from '../text/estimate_text_width';
 
 const TEXT_ELEMENT =
 	/<text x="([\d.]+)" y="([\d.]+)"[^>]* font-size="([\d.]+)"( font-weight="bold")?( text-anchor="(?:middle|end)")?>([^<]*)<\/text>/gu;

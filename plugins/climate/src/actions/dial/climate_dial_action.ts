@@ -5,11 +5,11 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import type { Scheduler } from 'deck-kit/async/scheduler';
+import type { IdlePanel } from 'deck-kit/strip/idle_panel';
 
 import type { ClimateHub } from '../../climate/climate_hub';
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
-import type { IdleDashboard } from '../../idle/idle_dashboard';
 import type { UnitAddressPanel } from '../../unit_address/unit_address_panel';
 import type { ClimateActionSettings } from '../shared/climate_action_settings';
 import { ClimateStripAction } from '../shared/climate_strip_action';
@@ -32,7 +32,7 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 	constructor(
 		hub: ClimateHub,
 		addressPanel: UnitAddressPanel,
-		idle: IdleDashboard,
+		idle: IdlePanel,
 		schedule: Scheduler
 	) {
 		super(hub, addressPanel, idle);

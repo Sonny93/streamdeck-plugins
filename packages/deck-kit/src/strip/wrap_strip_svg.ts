@@ -1,13 +1,13 @@
 import { buildStripBackground } from './build_strip_background';
-import type { StripTone } from './strip_tone';
+import type { StripBackgroundTone } from './strip_background_tone';
 
-/** The opacity of the content of a strip while the unit is off. */
+/** The opacity of the content of a strip that is dimmed, e.g. while what it shows is off. */
 export const DIMMED_OPACITY = 0.7;
 
 /** Puts the content of a strip over its slice (`column`, the first by default) of the background of a tone, dimmed when asked, as a 200 by 100 picture. */
 export function wrapStripSvg(
 	options: Readonly<{
-		tone: StripTone;
+		tone: StripBackgroundTone;
 		column?: number;
 		content: string;
 		isDimmed?: boolean;

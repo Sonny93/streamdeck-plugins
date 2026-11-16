@@ -1,10 +1,11 @@
+import { buildStripText } from 'deck-kit/strip/build_strip_text';
+
 import type { ClimateView } from '../../climate/climate_view';
 import { FanRateNames } from '../shared/fan_rate_names';
-import { buildStripMessageSvg } from '../strip/build_strip_message_svg';
-import { buildStripText } from '../strip/build_strip_text';
+import { buildClimateMessageSvg } from '../strip/build_climate_message_svg';
 import { resolveStripTone } from '../strip/resolve_strip_tone';
 import { StripPalette } from '../strip/strip_palette';
-import { wrapStripSvg } from '../strip/wrap_strip_svg';
+import { wrapClimateStripSvg } from '../strip/wrap_climate_strip_svg';
 
 const MARGIN = 12;
 const CAPTION = 'VENTILATION';
@@ -17,7 +18,7 @@ const FIXED = 'Volet fixe';
  */
 export function buildFanDialSvg(view: ClimateView, column = 0): string {
 	if (view.status !== 'ready' || view.state === undefined) {
-		return buildStripMessageSvg(
+		return buildClimateMessageSvg(
 			view.status === 'ready' ? 'loading' : view.status,
 			column
 		);
@@ -48,7 +49,7 @@ export function buildFanDialSvg(view: ClimateView, column = 0): string {
 			color: StripPalette.secondary,
 		}),
 	].join('');
-	return wrapStripSvg({
+	return wrapClimateStripSvg({
 		tone: resolveStripTone(view),
 		column,
 		content,

@@ -1,8 +1,9 @@
-import { buildStripMessageSvg } from '../actions/strip/build_strip_message_svg';
-import { resolveStripColumn } from '../actions/strip/resolve_strip_column';
+import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+
+import { buildClimateMessageSvg } from '../actions/strip/build_climate_message_svg';
 import { resolveStripTone } from '../actions/strip/resolve_strip_tone';
-import { StripPanel } from '../actions/strip/strip_panel';
-import { wrapStripSvg } from '../actions/strip/wrap_strip_svg';
+import { wrapClimateStripSvg } from '../actions/strip/wrap_climate_strip_svg';
 import type { ClimateView } from '../climate/climate_view';
 import { buildDashboardContent } from './build_dashboard_content';
 
@@ -13,13 +14,13 @@ import { buildDashboardContent } from './build_dashboard_content';
  */
 export function buildDashboardSvg(view: ClimateView, column = 0): string {
 	if (view.status !== 'ready' || view.state === undefined) {
-		return buildStripMessageSvg(
+		return buildClimateMessageSvg(
 			view.status === 'ready' ? 'loading' : view.status,
 			column
 		);
 	}
 	const offset = resolveStripColumn({ column }) * StripPanel.slotWidth;
-	return wrapStripSvg({
+	return wrapClimateStripSvg({
 		tone: resolveStripTone(view),
 		column,
 		content: `<g transform="translate(-${offset} 0)">${buildDashboardContent(view, view.state)}</g>`,

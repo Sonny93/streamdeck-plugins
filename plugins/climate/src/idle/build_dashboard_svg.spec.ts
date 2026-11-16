@@ -1,7 +1,7 @@
+import { measureStripTexts } from 'deck-kit/strip/measure_strip_texts';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
 import { describe, expect, it } from 'vitest';
 
-import { measureStripTexts } from '../actions/strip/measure_strip_texts';
-import { StripPanel } from '../actions/strip/strip_panel';
 import { StripTones } from '../actions/strip/strip_tones';
 import { buildClimateViewForTest } from '../climate/build_climate_view_for_test';
 import { buildDashboardContent } from './build_dashboard_content';
