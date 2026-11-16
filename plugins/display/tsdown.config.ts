@@ -1,3 +1,4 @@
+import { copyLanguageInspector } from 'deck-kit/inspector/copy_language_inspector';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -96,6 +97,16 @@ function copyKoffiPlugin(): Rolldown.Plugin {
 	};
 }
 
+/** Ships the browser script of the language select, which deck-kit owns, next to the bundle. */
+function copyLanguageInspectorPlugin(): Rolldown.Plugin {
+	return {
+		name: 'copy-language-inspector',
+		writeBundle() {
+			copyLanguageInspector(`${SD_PLUGIN_DIRECTORY}/bin`);
+		},
+	};
+}
+
 /** Marks the bundle folder as ES modules, so Node loads `plugin.js` as one. */
 function emitModulePackageFilePlugin(): Rolldown.Plugin {
 	return {
@@ -144,6 +155,10 @@ export default defineConfig(({ watch = false }) => {
 				]
 			: false,
 		onSuccess: isWatching ? 'pnpm run restart' : undefined,
-		plugins: [emitModulePackageFilePlugin(), copyKoffiPlugin()],
+		plugins: [
+			emitModulePackageFilePlugin(),
+			copyKoffiPlugin(),
+			copyLanguageInspectorPlugin(),
+		],
 	};
 });

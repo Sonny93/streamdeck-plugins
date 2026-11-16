@@ -1,0 +1,27 @@
+{
+	"Name": "Display Deck",
+	"Description": "Pilotez les écrans du PC depuis le Stream Deck : éteignez-les sans déplacer les fenêtres, réglez la luminosité par DDC/CI ou par le système, activez le HDR.",
+	"com.sonny93.display.power": {
+		"Name": "Marche / veille de l'écran",
+		"Tooltip": "Éteint les écrans et les rallume, l'écran principal sauf choix contraire. Un écran noir garde la disposition des fenêtres."
+	},
+	"com.sonny93.display.brightness-key": {
+		"Name": "Luminosité",
+		"Tooltip": "Fixe la luminosité des écrans à une valeur, ou la monte ou la baisse d'un pas, l'écran principal sauf choix contraire."
+	},
+	"com.sonny93.display.brightness": {
+		"Name": "Luminosité (cadran)",
+		"Tooltip": "Change la luminosité des écrans, l'écran principal sauf choix contraire.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Changer la luminosité",
+				"Push": "Aller à la luminosité prédéfinie",
+				"Touch": "Éteindre / rallumer l'écran"
+			}
+		}
+	},
+	"com.sonny93.display.hdr": {
+		"Name": "HDR",
+		"Tooltip": "Active ou coupe le HDR d'un écran, l'écran principal sauf choix contraire, et s'allume tant qu'il est actif."
+	}
+}

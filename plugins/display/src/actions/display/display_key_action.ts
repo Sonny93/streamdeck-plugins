@@ -3,6 +3,7 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 import { DrawnKeyImages } from 'deck-kit/keys/drawn_key_images';
 import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
 import { readKeyLabel } from 'deck-kit/keys/read_key_label';
@@ -19,6 +20,8 @@ import type { DisplayActionSettings } from './display_action_settings';
  */
 export abstract class DisplayKeyAction extends DisplayAction {
 	private readonly images = new DrawnKeyImages();
+	/** The raw settings of each visible key, to work its label out again when the language changes. */
+	private readonly rawSettings = new Map<string, unknown>();
 
 	override async onWillAppear(
 		ev: WillAppearEvent<DisplayActionSettings>
@@ -38,12 +41,14 @@ export abstract class DisplayKeyAction extends DisplayAction {
 		ev: WillDisappearEvent<DisplayActionSettings>
 	): void {
 		this.images.forget(ev.action.id);
+		this.rawSettings.delete(ev.action.id);
 		super.onWillDisappear(ev);
 	}
 
 	/** Label drawn while none is typed in the settings, `undefined` to keep the manifest images. */
 	protected abstract defaultLabel(
-		config: DisplayActionConfig
+		config: DisplayActionConfig,
+		language: Language
 	): string | undefined;
 
 	protected abstract resolveKeyState(
@@ -66,10 +71,23 @@ export abstract class DisplayKeyAction extends DisplayAction {
 		await this.images.draw(keyAction, this.appearanceOf(state));
 	}
 
+	protected override onLanguageChange(): void {
+		for (const [actionId, settings] of this.rawSettings) {
+			this.keepLabel(actionId, settings);
+		}
+	}
+
 	private keepLabel(actionId: string, settings: unknown): void {
+		this.rawSettings.set(actionId, settings);
 		this.images.setLabel(
 			actionId,
-			readKeyLabel(settings, this.defaultLabel(this.configOfSettings(settings)))
+			readKeyLabel(
+				settings,
+				this.defaultLabel(
+					this.configOfSettings(settings),
+					this.languageStore.current
+				)
+			)
 		);
 	}
 }

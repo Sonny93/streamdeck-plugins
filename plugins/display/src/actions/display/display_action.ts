@@ -5,6 +5,9 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
+import { LanguagePanel } from 'deck-kit/inspector/language_panel';
 import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { DisplayHub } from '../../displays/display_hub';
@@ -54,17 +57,25 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 				streamDeck.ui.sendToPropertyInspector(payload),
 		});
 
-	constructor(protected readonly hub: DisplayHub) {
+	private readonly languagePanel: LanguagePanel;
+
+	constructor(
+		protected readonly hub: DisplayHub,
+		protected readonly languageStore: LanguageStore
+	) {
 		super();
+		this.languagePanel = new LanguagePanel({
+			languageStore,
+			reply: (actionId, event, payload) =>
+				this.replies.reply({ actionId, event, payload }),
+		});
 	}
 
 	override async onWillAppear(
 		ev: WillAppearEvent<DisplayActionSettings>
 	): Promise<void> {
 		this.keepConfig(ev.action.id, ev.payload.settings);
-		this.unsubscribe ??= this.hub.subscribe(() => {
-			void this.renderVisibleActions();
-		});
+		this.unsubscribe ??= this.subscribeToChanges();
 		await this.renderSafely(ev.action);
 	}
 
@@ -88,6 +99,9 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 	}
 
 	override async onSendToPlugin(ev: DisplaySendToPluginEvent): Promise<void> {
+		if (await this.handleLanguageMessage(ev.action.id, ev.payload)) {
+			return;
+		}
 		if (!isDataSourceRequest(ev.payload, MONITORS_DATA_SOURCE)) {
 			return;
 		}
@@ -98,7 +112,29 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 		ev: PropertyInspectorDidAppearEvent<DisplayActionSettings>
 	): Promise<void> {
 		await this.replies.deliverPending(ev.action.id);
+		await this.announceLanguage(ev.action.id);
 		await this.answerMonitorList(ev.action);
+	}
+
+	/** Handles a language message of an inspector; tells whether it was one. It never throws. */
+	private async handleLanguageMessage(
+		actionId: string,
+		payload: unknown
+	): Promise<boolean> {
+		try {
+			return await this.languagePanel.handle(actionId, payload);
+		} catch (error) {
+			streamDeck.logger.error('Cannot answer the language select', error);
+			return true;
+		}
+	}
+
+	private async announceLanguage(actionId: string): Promise<void> {
+		try {
+			await this.languagePanel.announce(actionId);
+		} catch (error) {
+			streamDeck.logger.error('Cannot send the language', error);
+		}
 	}
 
 	private async answerMonitorList(
@@ -115,6 +151,7 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 				payload: {
 					event: MONITORS_DATA_SOURCE,
 					items: listMonitorChoices({
+						language: this.languageStore.current,
 						snapshot,
 						offersAll: this.offersAll,
 						pickedValue: settings.monitor,
@@ -163,14 +200,37 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 	protected abstract render(
 		action: DisplayActionHandle,
 		monitors: readonly MonitorSnapshot[],
-		config: DisplayActionConfig
+		config: DisplayActionConfig,
+		language: Language
 	): Promise<void>;
 
 	private keepConfig(actionId: string, settings: unknown): void {
 		this.configs.set(actionId, this.configOfSettings(settings));
 	}
 
-	private async renderVisibleActions(): Promise<void> {
+	/** Called when the language changes, before the visible actions are drawn again; an action that keeps texts of its own updates them here. */
+	protected onLanguageChange(): void {}
+
+	/** Follows the monitors and the language: any change draws the visible actions again. */
+	private subscribeToChanges(): () => void {
+		const stops = [
+			this.hub.subscribe(() => {
+				void this.redrawAll();
+			}),
+			this.languageStore.subscribe(() => {
+				this.onLanguageChange();
+				void this.redrawAll();
+			}),
+		];
+		return () => {
+			for (const stop of stops) {
+				stop();
+			}
+		};
+	}
+
+	/** Draws every visible action again; it never rejects. */
+	protected async redrawAll(): Promise<void> {
 		await Promise.all(
 			this.actions
 				.toArray()
@@ -184,7 +244,8 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 			await this.render(
 				action,
 				resolveTargetMonitors(this.hub.current, config.target),
-				config
+				config,
+				this.languageStore.current
 			);
 		} catch (error) {
 			streamDeck.logger.error('Cannot draw a display action', error);

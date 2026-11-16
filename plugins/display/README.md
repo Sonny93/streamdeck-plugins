@@ -10,8 +10,16 @@ Every action works on the main monitor unless another one is picked in its setti
 
 - **Screen Power**: turns monitors off, and on again on the next press. It lights up while its monitors are on.
 - **Brightness** (key): sets the brightness to a value, or moves it up or down by a step. A key that sets a value lights up while its monitors are at it.
-- **Brightness Dial**: rotate to change the brightness by the step of the settings, press the dial to go to the preset brightness, tap the screen to turn the monitors off or on.
+- **Brightness Dial**: rotate to change the brightness by the step of the settings, press the dial to go to the preset brightness, tap the screen to turn the monitors off or on. The strip shows the monitor name, its brightness with a bar, an HDR badge while HDR is on, and the word "Off" (with the picture dimmed) while the monitors are off, over a background shared with the other dials of the strip.
 - **HDR**: turns the HDR of a monitor on or off, like the "Use HDR" switch of the Windows display settings or the HDR toggle of the KDE display settings. It lights up while HDR is on, and dims when the monitor cannot show HDR.
+
+## Idle panel
+
+After 5 seconds without touching a dial, every Brightness Dial of the strip shows one panel across the whole touch strip: one slot per monitor, the main one first, with its name, brightness, HDR badge, and "Off" while it is in standby or under a black screen. A column without a dial of the plugin is left as it is. If the monitors cannot be read, the slots say "Unavailable" instead of showing an old value. The first touch on a dial only brings the dials back, and the gesture that woke them does nothing until the dials are left alone for a moment. The panel only uses what the plugin already reads: it adds no request to the monitors.
+
+## Language
+
+The plugin exists in English and French: the keys, the strips, the idle panel and the property inspectors. Every property inspector has a **Language / Langue** select with three choices: follow the system (the default), French, or English. The choice is kept in the global settings of the plugin and redraws every key and strip at once. Following the system reads the locale from the environment of the plugin (`LC_ALL`, then `LC_MESSAGES`, then `LANG`), then from the runtime when none is set; any locale that is not French gives English. The place in a monitor name, such as "(top)", stays in English. The names and tooltips of the actions in the Stream Deck app follow the language of that app (`fr.json` next to the manifest); OpenDeck shows them in English.
 
 ## Turn a monitor off without moving the windows
 

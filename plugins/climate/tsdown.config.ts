@@ -1,3 +1,4 @@
+import { copyLanguageInspector } from 'deck-kit/inspector/copy_language_inspector';
 import path from 'node:path';
 import url from 'node:url';
 import { defineConfig } from 'tsdown';
@@ -15,6 +16,16 @@ function emitModulePackageFilePlugin(): Rolldown.Plugin {
 				source: '{ "type": "module" }',
 				type: 'asset',
 			});
+		},
+	};
+}
+
+/** Ships the browser script of the language select, which deck-kit owns, next to the bundle. */
+function copyLanguageInspectorPlugin(): Rolldown.Plugin {
+	return {
+		name: 'copy-language-inspector',
+		writeBundle() {
+			copyLanguageInspector(`${SD_PLUGIN_DIRECTORY}/bin`);
 		},
 	};
 }
@@ -51,6 +62,6 @@ export default defineConfig(({ watch = false }) => {
 				]
 			: false,
 		onSuccess: isWatching ? 'pnpm run restart' : undefined,
-		plugins: [emitModulePackageFilePlugin()],
+		plugins: [emitModulePackageFilePlugin(), copyLanguageInspectorPlugin()],
 	};
 });

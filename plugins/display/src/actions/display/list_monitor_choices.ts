@@ -1,9 +1,10 @@
+import type { Language } from 'deck-kit/i18n/language';
+
 import type { DisplaySnapshot } from '../../displays/display_snapshot';
+import { displayMessages } from '../../i18n/display_messages';
 import { MonitorTargetValues } from './monitor_target_values';
 
 type Choice = Readonly<{ label: string; value: string }>;
-
-const UNPLUGGED_LABEL = 'Monitor not lit';
 
 /**
  * Lists the monitors an action can be set to, as sdpi-components `datasource` items.
@@ -11,15 +12,24 @@ const UNPLUGGED_LABEL = 'Monitor not lit';
  */
 export function listMonitorChoices(
 	options: Readonly<{
+		language: Language;
 		snapshot: DisplaySnapshot | undefined;
 		offersAll: boolean;
 		pickedValue: string | undefined;
 	}>
 ): Choice[] {
 	const choices: Choice[] = [
-		{ label: 'Main monitor', value: MonitorTargetValues.primary },
+		{
+			label: displayMessages.text('mainMonitor', options.language),
+			value: MonitorTargetValues.primary,
+		},
 		...(options.offersAll
-			? [{ label: 'All monitors', value: MonitorTargetValues.all }]
+			? [
+					{
+						label: displayMessages.text('allMonitors', options.language),
+						value: MonitorTargetValues.all,
+					},
+				]
 			: []),
 		...(options.snapshot?.monitors ?? []).map((monitor) => ({
 			label: monitor.name,
@@ -34,5 +44,11 @@ export function listMonitorChoices(
 	) {
 		return choices;
 	}
-	return [...choices, { label: UNPLUGGED_LABEL, value: pickedValue }];
+	return [
+		...choices,
+		{
+			label: displayMessages.text('monitorNotLit', options.language),
+			value: pickedValue,
+		},
+	];
 }

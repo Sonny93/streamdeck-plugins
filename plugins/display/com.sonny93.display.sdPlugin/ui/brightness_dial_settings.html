@@ -1,50 +1,57 @@
 <!doctype html>
-<html>
-	<head lang="en">
+<html lang="en">
+	<head>
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	</head>
 	<body>
-		<sdpi-item label="Monitor">
+		<sdpi-item label="Monitor" data-fr-label="Écran">
 			<sdpi-select
 				setting="monitor"
 				datasource="listMonitors"
 				default="primary"
 				hot-reload
 				loading="Looking for monitors..."
+				data-fr-loading="Recherche des écrans..."
 			></sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Step (%)">
+		<sdpi-item label="Step (%)" data-fr-label="Pas (%)">
 			<sdpi-textfield
 				setting="step"
 				pattern="\d{1,3}"
 				placeholder="5"
 			></sdpi-textfield>
 		</sdpi-item>
-		<sdpi-item label="Press goes to (%)">
+		<sdpi-item label="Press goes to (%)" data-fr-label="Appui : aller à (%)">
 			<sdpi-textfield
 				setting="preset"
 				pattern="\d{1,3}"
 				placeholder="50"
 			></sdpi-textfield>
 		</sdpi-item>
-		<sdpi-item label="Control">
+		<sdpi-item label="Control" data-fr-label="Réglage">
 			<sdpi-select setting="brightnessControl" default="auto">
 				<option value="auto">Auto</option>
-				<option value="monitor">Monitor (DDC/CI)</option>
-				<option value="windows">System</option>
+				<option value="monitor" data-fr="Écran (DDC/CI)">
+					Monitor (DDC/CI)
+				</option>
+				<option value="windows" data-fr="Système">System</option>
 			</sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Tap turns off with">
+		<sdpi-item label="Tap turns off with" data-fr-label="Toucher éteint avec">
 			<sdpi-select setting="offMode" default="blackScreen">
-				<option value="blackScreen">Black screen</option>
-				<option value="standby">Monitor standby (DDC/CI)</option>
+				<option value="blackScreen" data-fr="Écran noir">Black screen</option>
+				<option value="standby" data-fr="Veille de l&#x27;écran (DDC/CI)">
+					Monitor standby (DDC/CI)
+				</option>
 			</sdpi-select>
 		</sdpi-item>
 		<sdpi-item label="">
 			<details>
-				<summary>About the control</summary>
-				<p>
+				<summary data-fr="À propos du réglage">About the control</summary>
+				<p
+					data-fr="Écran change le rétroéclairage par DDC/CI. Système assombrit plutôt l&#x27;image : sous Windows de 50 à 100 % en SDR et par la luminosité du contenu SDR en HDR, sous Linux par l&#x27;assombrissement de KDE en SDR et la luminosité SDR en HDR. Auto utilise l&#x27;écran, sauf s&#x27;il n&#x27;a pas de DDC/CI ou s&#x27;il est connu pour l&#x27;ignorer, comme l&#x27;Odyssey G95SD."
+				>
 					Monitor changes the backlight over DDC/CI. System dims the picture
 					instead: on Windows from 50 to 100 % in SDR and through the SDR
 					content brightness in HDR, on Linux through the dimming of KDE in SDR
@@ -53,5 +60,15 @@
 				</p>
 			</details>
 		</sdpi-item>
+		<sdpi-item label="Language / Langue">
+			<sdpi-select id="language-select">
+				<option value="system" data-fr="Système (par défaut)">
+					System (default)
+				</option>
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+			</sdpi-select>
+		</sdpi-item>
+		<script src="../bin/language_inspector.js"></script>
 	</body>
 </html>
