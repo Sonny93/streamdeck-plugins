@@ -1,6 +1,7 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { SingletonAction } from '@elgato/streamdeck';
 import type { KeyDownEvent, WillAppearEvent } from '@elgato/streamdeck';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 
 import { addCurrentTrackToLikeTarget } from '../spotify/add_current_track_to_like_target';
 import { isTrackInLikeTarget } from '../spotify/is_track_in_like_target';
@@ -10,6 +11,7 @@ import { LikePresenceTracker } from './like_presence_tracker';
 import type { LikeTarget } from './like_target';
 import type { LikeTargetStore } from './like_target_store';
 import type { PlayerStateHub } from './player_state_hub';
+import { resolvePlaylistName } from './resolve_playlist_name';
 import { runSpotifyAction } from './run_spotify_action';
 import { setLikeKeyState } from './set_like_key_state';
 
@@ -34,7 +36,8 @@ export class LikeAction extends SingletonAction {
 
 	constructor(
 		private readonly playerStateHub: PlayerStateHub,
-		private readonly likeTargetStore: LikeTargetStore
+		private readonly likeTargetStore: LikeTargetStore,
+		private readonly languageStore: LanguageStore
 	) {
 		super();
 	}
@@ -48,6 +51,9 @@ export class LikeAction extends SingletonAction {
 			this.likeTargetStore.subscribe(() => {
 				void this.showTitle();
 				void this.refreshPresence();
+			}),
+			this.languageStore.subscribe(() => {
+				void this.showTitle();
 			}),
 		];
 		await Promise.all([
@@ -91,7 +97,12 @@ export class LikeAction extends SingletonAction {
 
 	private async setTitle(visibleAction: VisibleAction): Promise<void> {
 		if (visibleAction.isKey()) {
-			await visibleAction.setTitle(this.target().name);
+			await visibleAction.setTitle(
+				resolvePlaylistName({
+					playlist: this.target(),
+					language: this.languageStore.current,
+				})
+			);
 		}
 	}
 

@@ -1,11 +1,11 @@
+import { LanguageStore } from 'deck-kit/i18n/language_store';
+import type { GlobalSettingsPort } from 'deck-kit/settings/global_settings_port';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { LikeTarget } from './like_target';
 import { LikeTargetStore } from './like_target_store';
 
 const settingsMock = vi.hoisted(() => ({
-	getGlobalSettings: vi.fn(),
-	setGlobalSettings: vi.fn(),
 	onDidReceiveGlobalSettings: vi.fn(),
 }));
 
@@ -19,6 +19,19 @@ const TARGET: LikeTarget = {
 	kind: 'playlist',
 };
 
+function buildPort(stored: unknown = {}) {
+	let current: unknown = stored;
+	const write = vi.fn((settings: unknown) => {
+		current = settings;
+		return Promise.resolve();
+	});
+	const port: GlobalSettingsPort = {
+		read: () => Promise.resolve(current),
+		write,
+	};
+	return { port, write, readStored: () => current };
+}
+
 function captureSettingsListener(): (ev: { settings: unknown }) => void {
 	const listener = settingsMock.onDidReceiveGlobalSettings.mock.calls[0]?.[0];
 	if (typeof listener !== 'function') {
@@ -31,19 +44,16 @@ function captureSettingsListener(): (ev: { settings: unknown }) => void {
 
 describe('LikeTargetStore', () => {
 	beforeEach(() => {
-		settingsMock.getGlobalSettings.mockReset();
-		settingsMock.setGlobalSettings.mockReset();
 		settingsMock.onDidReceiveGlobalSettings.mockReset();
-		settingsMock.setGlobalSettings.mockResolvedValue(undefined);
 	});
 
 	it('should have no target before it is loaded', () => {
-		expect(new LikeTargetStore().current).toBeUndefined();
+		expect(new LikeTargetStore(buildPort().port).current).toBeUndefined();
 	});
 
 	it('should load the target from the global settings', async () => {
-		settingsMock.getGlobalSettings.mockResolvedValue({ likeTarget: TARGET });
-		const store = new LikeTargetStore();
+		const { port } = buildPort({ likeTarget: TARGET });
+		const store = new LikeTargetStore(port);
 
 		await store.load();
 
@@ -51,8 +61,8 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should have no target when the global settings are empty', async () => {
-		settingsMock.getGlobalSettings.mockResolvedValue({});
-		const store = new LikeTargetStore();
+		const { port } = buildPort({});
+		const store = new LikeTargetStore(port);
 
 		await store.load();
 
@@ -60,10 +70,10 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should have no target when the stored target is invalid', async () => {
-		settingsMock.getGlobalSettings.mockResolvedValue({
+		const { port } = buildPort({
 			likeTarget: { uri: 3, name: 'x', kind: 'album' },
 		});
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(port);
 
 		await store.load();
 
@@ -71,17 +81,40 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should write the target to the global settings when it is set', async () => {
-		const store = new LikeTargetStore();
+		const { port, readStored } = buildPort();
+		const store = new LikeTargetStore(port);
 
 		await store.set(TARGET);
 
-		expect(settingsMock.setGlobalSettings).toHaveBeenCalledWith({
-			likeTarget: TARGET,
+		expect(readStored()).toEqual({ likeTarget: TARGET });
+	});
+
+	it('should keep the language setting when the target is set', async () => {
+		const { port, readStored } = buildPort({ language: 'fr' });
+		const store = new LikeTargetStore(port);
+
+		await store.set(TARGET);
+
+		expect(readStored()).toEqual({ language: 'fr', likeTarget: TARGET });
+	});
+
+	it('should keep the target when the language is changed', async () => {
+		const { port, readStored } = buildPort({});
+		const store = new LikeTargetStore(port);
+		const languageStore = new LanguageStore({
+			settings: port,
+			readSystemLocale: () => 'en_US.UTF-8',
+			onError: vi.fn(),
 		});
+		await store.set(TARGET);
+
+		await languageStore.save('fr');
+
+		expect(readStored()).toEqual({ language: 'fr', likeTarget: TARGET });
 	});
 
 	it('should expose the target once it is set', async () => {
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(buildPort().port);
 
 		await store.set(TARGET);
 
@@ -89,15 +122,16 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should not change the target when writing the settings fails', async () => {
-		settingsMock.setGlobalSettings.mockRejectedValue(new Error('offline'));
-		const store = new LikeTargetStore();
+		const { port, write } = buildPort();
+		write.mockRejectedValueOnce(new Error('offline'));
+		const store = new LikeTargetStore(port);
 
 		await expect(store.set(TARGET)).rejects.toThrow('offline');
 		expect(store.current).toBeUndefined();
 	});
 
 	it('should notify the listeners when the target is set', async () => {
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(buildPort().port);
 		const listener = vi.fn();
 		store.subscribe(listener);
 
@@ -107,8 +141,8 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should notify the listeners when the settings are loaded', async () => {
-		settingsMock.getGlobalSettings.mockResolvedValue({ likeTarget: TARGET });
-		const store = new LikeTargetStore();
+		const { port } = buildPort({ likeTarget: TARGET });
+		const store = new LikeTargetStore(port);
 		const listener = vi.fn();
 		store.subscribe(listener);
 
@@ -118,7 +152,7 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should follow the global settings received from Stream Deck', () => {
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(buildPort().port);
 		const listener = vi.fn();
 		store.subscribe(listener);
 
@@ -128,7 +162,7 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should clear the target when Stream Deck sends invalid settings', async () => {
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(buildPort().port);
 		await store.set(TARGET);
 
 		captureSettingsListener()({ settings: { likeTarget: 'nope' } });
@@ -137,7 +171,7 @@ describe('LikeTargetStore', () => {
 	});
 
 	it('should not notify a listener that unsubscribed', async () => {
-		const store = new LikeTargetStore();
+		const store = new LikeTargetStore(buildPort().port);
 		const listener = vi.fn();
 		const unsubscribe = store.subscribe(listener);
 		unsubscribe();

@@ -1,39 +1,58 @@
 <!doctype html>
-<html>
-	<head lang="en">
+<html lang="en">
+	<head>
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	</head>
 	<body>
-		<sdpi-item label="Device">
+		<sdpi-item label="Device" data-fr-label="Appareil">
 			<sdpi-select
 				setting="deviceId"
 				datasource="listSpotifyDevices"
 				hot-reload
 				show-refresh
 				loading="Looking for devices..."
+				data-fr-loading="Recherche des appareils..."
 				placeholder="Pick a device"
+				data-fr-placeholder="Choisir un appareil"
 			></sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Label">
+		<sdpi-item label="Label" data-fr-label="Libellé">
 			<sdpi-textfield
 				setting="label"
 				placeholder="Name of the device"
+				data-fr-placeholder="Nom de l’appareil"
 			></sdpi-textfield>
 		</sdpi-item>
 		<sdpi-item label="">
 			<details>
-				<summary>About the device list</summary>
-				<p>
+				<summary data-fr="À propos de la liste des appareils">
+					About the device list
+				</summary>
+				<p
+					data-fr="La liste montre les appareils que Spotify voit en ce moment. S’il en manque un, ouvrez Spotify dessus, puis appuyez sur le bouton d’actualisation à côté de la liste : Spotify recherche de nouveau les appareils."
+				>
 					The list shows the devices Spotify sees right now. If one is missing,
 					open Spotify on it, then press the refresh button next to the list:
 					Spotify looks for devices again.
 				</p>
-				<p>
+				<p
+					data-fr="Le libellé prend la couleur de l’icône. Laissez le titre Stream Deck de la touche vide pour qu’il ne s’affiche pas par-dessus."
+				>
 					The label takes the color of the icon. Leave the Stream Deck title of
 					the key empty so it does not show on top of it.
 				</p>
 			</details>
 		</sdpi-item>
+		<sdpi-item label="Language / Langue">
+			<sdpi-select id="language-select">
+				<option value="system" data-fr="Système (par défaut)">
+					System (default)
+				</option>
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+			</sdpi-select>
+		</sdpi-item>
+		<script src="../bin/language_inspector.js"></script>
 	</body>
 </html>

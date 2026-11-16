@@ -1,3 +1,4 @@
+import type { Language } from 'deck-kit/i18n/language';
 import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -27,6 +28,7 @@ function buildRenderer(
 		containsUris?: readonly string[];
 		fetchResult?: boolean;
 		backdropCover?: string;
+		language?: Language;
 	}>
 ) {
 	const onCoversLoaded = vi.fn();
@@ -49,6 +51,7 @@ function buildRenderer(
 				options.containsUris?.includes(playlist.uri) ?? false,
 		},
 		readBackdropCover: () => options.backdropCover,
+		readLanguage: () => options.language ?? 'en',
 		onCoversLoaded,
 	});
 	const setFeedback = vi.fn(() => Promise.resolve());
@@ -178,6 +181,28 @@ describe('PlaylistsCarouselRenderer', () => {
 		const svg = readSvg(dial.setFeedback);
 		expect(svg).toContain('>Spotify closed</text>');
 		expect(svg).not.toContain('text-anchor="end"');
+	});
+
+	it('should say Spotify is closed in French', async () => {
+		const { renderer, dial } = buildRenderer({
+			playlists: [],
+			language: 'fr',
+		});
+
+		await renderer.render({ dial, position: 0 });
+
+		expect(readSvg(dial.setFeedback)).toContain('>Spotify fermé</text>');
+	});
+
+	it('should name Liked Songs in the language of the plugin', async () => {
+		const { renderer, dial } = buildRenderer({
+			playlists: [{ ...buildPlaylist('Liked Songs'), kind: 'liked-songs' }],
+			language: 'fr',
+		});
+
+		await renderer.render({ dial, position: 0 });
+
+		expect(readSvg(dial.setFeedback)).toContain('>Titres likés</text>');
 	});
 
 	it('should draw nothing while there is nothing to show', async () => {

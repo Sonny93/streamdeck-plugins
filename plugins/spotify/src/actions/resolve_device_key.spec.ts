@@ -17,14 +17,21 @@ function buildSettings(
 describe('resolveDeviceKey', () => {
 	it('should show the device name and kind', () => {
 		expect(
-			resolveDeviceKey({ settings: buildSettings(), activeDeviceId: undefined })
+			resolveDeviceKey({
+				settings: buildSettings(),
+				activeDeviceId: undefined,
+				language: 'en',
+			})
 		).toEqual({ kind: 'phone', label: 'Phone', isActive: false });
 	});
 
 	it('should be lit while the picked device plays', () => {
 		expect(
-			resolveDeviceKey({ settings: buildSettings(), activeDeviceId: 'phone' })
-				.isActive
+			resolveDeviceKey({
+				settings: buildSettings(),
+				activeDeviceId: 'phone',
+				language: 'en',
+			}).isActive
 		).toBe(true);
 	});
 
@@ -33,6 +40,7 @@ describe('resolveDeviceKey', () => {
 			resolveDeviceKey({
 				settings: buildSettings(),
 				activeDeviceId: 'local_device',
+				language: 'en',
 			}).isActive
 		).toBe(false);
 	});
@@ -42,6 +50,7 @@ describe('resolveDeviceKey', () => {
 			resolveDeviceKey({
 				settings: buildSettings({ label: '  PC  ' }),
 				activeDeviceId: undefined,
+				language: 'en',
 			}).label
 		).toBe('PC');
 	});
@@ -51,6 +60,7 @@ describe('resolveDeviceKey', () => {
 			resolveDeviceKey({
 				settings: buildSettings({ label: ' ' }),
 				activeDeviceId: undefined,
+				language: 'en',
 			}).label
 		).toBe('Phone');
 	});
@@ -60,13 +70,34 @@ describe('resolveDeviceKey', () => {
 			resolveDeviceKey({
 				settings: { deviceId: 'tv' },
 				activeDeviceId: undefined,
+				language: 'en',
 			})
 		).toEqual({ kind: 'speaker', label: 'Device', isActive: false });
 	});
 
 	it('should tell when no device is picked, and never be lit', () => {
 		expect(
-			resolveDeviceKey({ settings: { deviceId: '' }, activeDeviceId: '' })
+			resolveDeviceKey({
+				settings: { deviceId: '' },
+				activeDeviceId: '',
+				language: 'en',
+			})
 		).toEqual({ kind: 'speaker', label: 'No device', isActive: false });
 	});
+
+	it.each([
+		[{ deviceId: '' }, 'Sans appareil'],
+		[{ deviceId: 'tv' }, 'Appareil'],
+	] as const)(
+		'should write the fallback label of %j in French',
+		(settings, label) => {
+			expect(
+				resolveDeviceKey({
+					settings,
+					activeDeviceId: undefined,
+					language: 'fr',
+				}).label
+			).toBe(label);
+		}
+	);
 });

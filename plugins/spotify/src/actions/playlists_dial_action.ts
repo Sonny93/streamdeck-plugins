@@ -9,6 +9,7 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 
 import type { SpotifyHost } from '../platform/spotify_host';
 import { fetchCoverDataUrl } from '../spotify/fetch_cover_data_url';
@@ -58,9 +59,13 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		private readonly playerStateHub: PlayerStateHub,
 		private readonly likeTargetStore: LikeTargetStore,
 		private readonly nowPlaying: NowPlayingScreen,
-		host: SpotifyHost
+		host: SpotifyHost,
+		languageStore: LanguageStore
 	) {
 		super();
+		languageStore.subscribe(() => {
+			void this.renderSettledDials();
+		});
 		nowPlaying.onHidden(() => {
 			void this.renderSettledDials();
 		});
@@ -84,6 +89,7 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 			encodeFrame: host.encodeFrame,
 			presence: this.presence,
 			readBackdropCover: () => nowPlaying.backdropCover,
+			readLanguage: () => languageStore.current,
 			onCoversLoaded: () => {
 				void this.renderSettledDials();
 			},
