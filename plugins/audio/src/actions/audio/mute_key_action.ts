@@ -1,8 +1,10 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
 
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
 import type { AudioTarget } from '../../audio/audio_target';
+import { audioMessages } from '../../i18n/audio_messages';
 import { KeyPalette } from '../keys/key_palette';
 import { KeyState } from '../keys/key_state';
 import type { KeyStateValue } from '../keys/key_state_value';
@@ -33,12 +35,15 @@ export class MuteKeyAction extends AudioDeviceKeyAction {
 		kind: 'default',
 		flow: 'input',
 	};
-	protected override readonly defaultLabel: string | undefined = 'Micro';
 	protected override readonly choices: AudioDeviceChoices = {
 		event: 'listAudioDevices',
 		flows: ['input', 'output'],
 		offersDefaults: true,
 	};
+
+	protected override defaultLabel(language: Language): string {
+		return audioMessages.text('muteKeyLabel', language);
+	}
 
 	override async onKeyDown(
 		ev: KeyDownEvent<AudioDeviceSettings>

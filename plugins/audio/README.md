@@ -17,9 +17,19 @@ The Volt 1 has no public protocol. [`docs/volt1_hid_protocol.md`](docs/volt1_hid
 
 - **Default Output**: makes the picked output the system default (on Windows, for media and communications), and lights up while it is.
 - **Mute**: mutes or unmutes a device, the default input unless another one is picked.
-- **Device Volume** (dial): rotate to change the volume, press or tap the screen to mute. The default output unless another one is picked.
+- **Device Volume** (dial): rotate to change the volume, press or tap the screen to mute. The default output unless another one is picked. The strip shows the device name, its volume with a bar, and the word "Muted" (with the picture dimmed) while it is muted, over a background shared with the other dials of the strip.
 
 On Windows there is no public API to change the default device. Default Output uses the same undocumented interface as the Windows sound settings, so a Windows update could break it.
+
+## Idle panel
+
+After 5 seconds without touching a dial, every Device Volume dial of the strip shows one panel across the whole touch strip: the default output in the first slot and the default input in the second (name, volume with a bar, and "Muted" with the slot dimmed), the Volt 1 in the third (the Monitor, Vintage and 48V buttons with the word On or Off, or "Not connected" or "No report yet"), and the plain background in the fourth. A column without a dial of the plugin is left as it is. If the devices cannot be read, the first two slots say "Unavailable" instead of showing an old value. The first touch on a dial only brings the dials back, and the gesture that woke them does nothing until the dials are left alone for a moment.
+
+The panel only uses what the plugin already reads: it adds no request to the audio devices and none to the Volt 1, which is only listened to. "Volume" is the volume setting of the device, not a live level meter. The 48V state is shown and never changed. As with the keys, the Volt 1 shows "No report yet" until it sends its first report.
+
+## Language
+
+The plugin exists in English and French: the keys, the strips, the idle panel and the property inspectors. Every property inspector has a **Language / Langue** select with three choices: follow the system (the default), French, or English. The choice is kept in the global settings of the plugin and redraws every key and strip at once. Following the system reads the locale from the environment of the plugin (`LC_ALL`, then `LC_MESSAGES`, then `LANG`), then from the runtime when none is set; any locale that is not French gives English. Device names come from the system and are not translated. The names and tooltips of the actions in the Stream Deck app follow the language of that app (`fr.json` next to the manifest); OpenDeck shows them in English.
 
 ## Elgato audio
 

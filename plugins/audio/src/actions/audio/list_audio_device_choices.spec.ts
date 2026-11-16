@@ -16,6 +16,7 @@ describe('listAudioDeviceChoices', () => {
 	it('groups the defaults, the outputs and the inputs', async () => {
 		expect(
 			listAudioDeviceChoices({
+				language: 'en',
 				snapshot: await readSnapshot(),
 				choices: {
 					event: 'listAudioDevices',
@@ -45,6 +46,7 @@ describe('listAudioDeviceChoices', () => {
 
 	it('keeps listing the picked device while it is unplugged', async () => {
 		const choices = listAudioDeviceChoices({
+			language: 'en',
 			snapshot: await readSnapshot(),
 			choices: {
 				event: 'listOutputDevices',
@@ -56,5 +58,31 @@ describe('listAudioDeviceChoices', () => {
 
 		expect(choices[0]).toEqual({ label: 'Unplugged device', value: 'fiio' });
 		expect(choices).toHaveLength(2);
+	});
+
+	it('names the groups and the defaults in French', async () => {
+		const choices = listAudioDeviceChoices({
+			language: 'fr',
+			snapshot: await readSnapshot(),
+			choices: {
+				event: 'listAudioDevices',
+				flows: ['output', 'input'],
+				offersDefaults: true,
+			},
+			pickedValue: 'fiio',
+		});
+
+		expect(choices.map((choice) => choice.label)).toEqual([
+			'Périphérique débranché',
+			'Suivre le système',
+			'Sorties',
+			'Entrées',
+		]);
+		expect(choices[1]).toMatchObject({
+			children: [
+				{ label: 'Sortie par défaut' },
+				{ label: 'Entrée par défaut' },
+			],
+		});
 	});
 });
