@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { isProcessImageRunning } from '../windows/is_process_image_running';
-import { killProcessImage } from '../windows/kill_process_image';
+import { buildFakeSpotifyHost } from '../platform/build_fake_spotify_host';
 import { ensureSpotifyDebugPortOnStartup } from './ensure_spotify_debug_port_on_startup';
 import { ensureSpotifyRunning } from './ensure_spotify_running';
 import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
@@ -11,10 +10,7 @@ import { waitForSpotifyExit } from './wait_for_spotify_exit';
 vi.mock('./wait_for_spotify_exit');
 vi.mock('./ensure_spotify_running');
 vi.mock('./fetch_browser_web_socket_url');
-vi.mock('../windows/kill_process_image');
-vi.mock('../windows/is_process_image_running');
 
-const SPOTIFY_IMAGE_NAME = 'Spotify.exe';
 const WEB_SOCKET_URL = 'ws://127.0.0.1:9229/devtools/browser/abc';
 
 function closePort(): void {
@@ -24,14 +20,17 @@ function closePort(): void {
 }
 
 describe('ensureSpotifyDebugPortOnStartup', () => {
+	let host = buildFakeSpotifyHost();
+
 	beforeEach(() => {
 		vi.resetAllMocks();
+		host = buildFakeSpotifyHost();
 	});
 
 	it('should return already-open when the port answers', async () => {
 		vi.mocked(fetchBrowserWebSocketUrl).mockResolvedValue(WEB_SOCKET_URL);
 
-		await expect(ensureSpotifyDebugPortOnStartup()).resolves.toBe(
+		await expect(ensureSpotifyDebugPortOnStartup(host)).resolves.toBe(
 			'already-open'
 		);
 	});
@@ -39,68 +38,70 @@ describe('ensureSpotifyDebugPortOnStartup', () => {
 	it('should not kill Spotify when the port answers', async () => {
 		vi.mocked(fetchBrowserWebSocketUrl).mockResolvedValue(WEB_SOCKET_URL);
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
-		expect(killProcessImage).not.toHaveBeenCalled();
+		expect(host.killSpotify).not.toHaveBeenCalled();
 	});
 
 	it('should return spotify-not-running when the port is closed and no process runs', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(false);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(false);
 
-		await expect(ensureSpotifyDebugPortOnStartup()).resolves.toBe(
+		await expect(ensureSpotifyDebugPortOnStartup(host)).resolves.toBe(
 			'spotify-not-running'
 		);
 	});
 
 	it('should not kill Spotify when it is not running', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(false);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(false);
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
-		expect(killProcessImage).not.toHaveBeenCalled();
+		expect(host.killSpotify).not.toHaveBeenCalled();
 	});
 
 	it('should not launch Spotify when it is not running', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(false);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(false);
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
 		expect(ensureSpotifyRunning).not.toHaveBeenCalled();
 	});
 
 	it('should return restarted when the port is closed but Spotify runs', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(true);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(true);
 
-		await expect(ensureSpotifyDebugPortOnStartup()).resolves.toBe('restarted');
+		await expect(ensureSpotifyDebugPortOnStartup(host)).resolves.toBe(
+			'restarted'
+		);
 	});
 
-	it('should kill the Spotify image when the port is closed but Spotify runs', async () => {
+	it('should kill Spotify when the port is closed but Spotify runs', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(true);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(true);
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
-		expect(killProcessImage).toHaveBeenCalledWith(SPOTIFY_IMAGE_NAME);
+		expect(host.killSpotify).toHaveBeenCalledOnce();
 	});
 
 	it('should relaunch Spotify when the port is closed but Spotify runs', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(true);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(true);
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
 		expect(ensureSpotifyRunning).toHaveBeenCalledOnce();
 	});
 
 	it('should wait for the exit before relaunching Spotify', async () => {
 		closePort();
-		vi.mocked(isProcessImageRunning).mockResolvedValue(true);
+		vi.mocked(host.isSpotifyRunning).mockResolvedValue(true);
 		const calls: string[] = [];
-		vi.mocked(killProcessImage).mockImplementation(() => {
+		vi.mocked(host.killSpotify).mockImplementation(() => {
 			calls.push('kill');
 			return Promise.resolve();
 		});
@@ -116,7 +117,7 @@ describe('ensureSpotifyDebugPortOnStartup', () => {
 			});
 		});
 
-		await ensureSpotifyDebugPortOnStartup();
+		await ensureSpotifyDebugPortOnStartup(host);
 
 		expect(calls).toStrictEqual(['kill', 'wait', 'launch']);
 	});
@@ -125,14 +126,14 @@ describe('ensureSpotifyDebugPortOnStartup', () => {
 		const failure = new Error('unexpected payload');
 		vi.mocked(fetchBrowserWebSocketUrl).mockRejectedValue(failure);
 
-		await expect(ensureSpotifyDebugPortOnStartup()).rejects.toBe(failure);
+		await expect(ensureSpotifyDebugPortOnStartup(host)).rejects.toBe(failure);
 	});
 
 	it('should not check processes when the port check fails unexpectedly', async () => {
 		vi.mocked(fetchBrowserWebSocketUrl).mockRejectedValue(new Error('boom'));
 
-		await ensureSpotifyDebugPortOnStartup().catch(() => undefined);
+		await ensureSpotifyDebugPortOnStartup(host).catch(() => undefined);
 
-		expect(isProcessImageRunning).not.toHaveBeenCalled();
+		expect(host.isSpotifyRunning).not.toHaveBeenCalled();
 	});
 });

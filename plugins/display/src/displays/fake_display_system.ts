@@ -1,26 +1,32 @@
-import type { VcpReply } from '../windows/vcp_reply';
 import type { DdcMonitor } from './ddc_monitor';
 import type { DisplayInfo } from './display_info';
 import type { DisplaySystem } from './display_system';
+import type { VcpReply } from './vcp_reply';
 
 type FakeMonitor = {
 	display: DisplayInfo;
 	capabilities: string | undefined;
 	vcp: Map<number, number>;
-	windowsBrightness: number;
+	systemBrightness: number;
 	isListed: boolean;
 };
 
 const VCP_MAXIMUM = 100;
 const GAMMA_FLOOR = 50;
 
-/** In-memory monitors for tests: DDC/CI answers from a VCP table, Windows brightness stops at the gamma floor in SDR. */
+/** In-memory monitors for tests: DDC/CI answers from a VCP table, system brightness stops at the gamma floor in SDR. */
 export class FakeDisplaySystem implements DisplaySystem {
 	readonly vcpWrites: Array<
 		Readonly<{ monitorId: string; code: number; value: number }>
 	> = [];
 	private readonly monitors = new Map<string, FakeMonitor>();
 	private readonly blackScreens = new Set<string>();
+
+	constructor(readonly options: Readonly<{ canBlackScreen?: boolean }> = {}) {}
+
+	get canBlackScreen(): boolean {
+		return this.options.canBlackScreen ?? true;
+	}
 
 	plug(
 		display: DisplayInfo,
@@ -33,12 +39,12 @@ export class FakeDisplaySystem implements DisplaySystem {
 			display,
 			capabilities: options.capabilities,
 			vcp: new Map(options.vcp),
-			windowsBrightness: 100,
+			systemBrightness: 100,
 			isListed: true,
 		});
 	}
 
-	/** Makes Windows stop listing a monitor, as some do in standby, while it still answers over DDC/CI. */
+	/** Makes the system stop listing a monitor, as some do in standby, while it still answers over DDC/CI. */
 	hide(monitorId: string): void {
 		const monitor = this.monitors.get(monitorId);
 		if (monitor !== undefined) {
@@ -50,28 +56,33 @@ export class FakeDisplaySystem implements DisplaySystem {
 		return this.monitors.get(monitorId)?.vcp.get(code);
 	}
 
-	listDisplays(): readonly DisplayInfo[] {
-		return [...this.monitors.values()]
-			.filter((monitor) => monitor.isListed)
-			.map((monitor) => monitor.display);
+	listDisplays(): Promise<readonly DisplayInfo[]> {
+		return Promise.resolve(
+			[...this.monitors.values()]
+				.filter((monitor) => monitor.isListed)
+				.map((monitor) => monitor.display)
+		);
 	}
 
-	readWindowsBrightness(display: DisplayInfo): number | undefined {
-		return this.monitors.get(display.id)?.windowsBrightness;
+	readSystemBrightness(display: DisplayInfo): Promise<number | undefined> {
+		return Promise.resolve(this.monitors.get(display.id)?.systemBrightness);
 	}
 
-	writeWindowsBrightness(display: DisplayInfo, percent: number): number {
+	writeSystemBrightness(
+		display: DisplayInfo,
+		percent: number
+	): Promise<number> {
 		const applied = display.hdr.isEnabled
 			? percent
 			: Math.max(GAMMA_FLOOR, percent);
 		const monitor = this.monitors.get(display.id);
 		if (monitor !== undefined) {
-			monitor.windowsBrightness = applied;
+			monitor.systemBrightness = applied;
 		}
-		return applied;
+		return Promise.resolve(applied);
 	}
 
-	writeHdr(display: DisplayInfo, isEnabled: boolean): void {
+	writeHdr(display: DisplayInfo, isEnabled: boolean): Promise<void> {
 		const monitor = this.monitors.get(display.id);
 		if (monitor !== undefined) {
 			monitor.display = {
@@ -79,6 +90,7 @@ export class FakeDisplaySystem implements DisplaySystem {
 				hdr: { ...monitor.display.hdr, isEnabled },
 			};
 		}
+		return Promise.resolve();
 	}
 
 	openDdcMonitor(display: DisplayInfo): DdcMonitor | undefined {

@@ -63,6 +63,26 @@ The profile expects the `com.sonny93.beamng` plugin (BeamNG Deck, in another rep
 
 Run `Setup.cmd` or `install.ps1` from the new release: only the plugins and icon packs whose version changed are installed. Stream Deck updates plugins by itself only for the ones from its Marketplace, and these plugins are not on it.
 
+## Install on Linux
+
+Stream Deck has no Linux app: the plugins run under [OpenDeck](https://github.com/nekename/OpenDeck), which loads Stream Deck plugins. `Setup.cmd` and `install.ps1` are for Windows only.
+
+1. Install OpenDeck and Node.js 20 or later from your distribution (OpenDeck runs the plugins with the `node` on your `PATH`). Start OpenDeck from your desktop session.
+2. Extract the release zip.
+3. In OpenDeck, install each `.streamDeckPlugin` file of the `plugins` folder.
+
+The icon pack and the Stream Deck profile do not install in OpenDeck: lay the keys out in OpenDeck yourself.
+
+Each plugin relies on tools of the system. A missing tool makes the keys that need it show as unavailable, the others keep working:
+
+| Plugin       | Needs                                                                                         | Optional                                                             |
+| ------------ | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Audio Deck   | `pactl` (PipeWire with `pipewire-pulse`, or PulseAudio); a udev rule for the Volt 1           |                                                                      |
+| Display Deck | KDE Plasma 6 (`kscreen-doctor`) for brightness and HDR; `ddcutil` with i2c access for standby |                                                                      |
+| Spotify Deck | `pactl` for the volume of other apps                                                          | `kdotool` to raise the Spotify window and for the focused app target |
+
+What does not work on Linux, and the setup each plugin needs, is in its README: [Audio Deck](../plugins/audio/README.md), [Display Deck](../plugins/display/README.md), [Spotify Deck](../plugins/spotify/README.md).
+
 ## Install over a linked plugin
 
 A plugin linked for development with `streamdeck link` must be unlinked first, because installing over it can write into the repository folder. From the folder of that plugin:

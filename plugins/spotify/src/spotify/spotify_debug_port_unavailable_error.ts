@@ -11,7 +11,7 @@ export class SpotifyDebugPortUnavailableError extends Error {
 		super(
 			`Spotify did not open its DevTools port ${SpotifyEndpoint.debugPort} within ${options.timeoutMilliseconds} ms. ` +
 				'It is probably already running without --remote-debugging-port: close Spotify completely ' +
-				'(or disable its autostart) so the plugin can restart it with the debug flag.',
+				'(or disable its autostart, or add the flag to its startup options) so the plugin can restart it with the debug flag.',
 			{ cause: options.cause }
 		);
 	}

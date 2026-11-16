@@ -7,10 +7,13 @@ import { HdrKeyAction } from './actions/display/hdr_key_action';
 import { ScreenPowerKeyAction } from './actions/display/screen_power_key_action';
 import { DisplayHub } from './displays/display_hub';
 import { DisplayTiming } from './displays/display_timing';
-import { createDisplaySystemLoader } from './displays/load_display_system';
+import { createPlatformDisplaySystemLoader } from './platform/create_platform_display_system_loader';
 
 const displayHub = new DisplayHub({
-	loadDisplaySystem: createDisplaySystemLoader(scheduleTimeout),
+	loadDisplaySystem: createPlatformDisplaySystemLoader({
+		platform: process.platform,
+		schedule: scheduleTimeout,
+	}),
 	schedule: scheduleTimeout,
 	pollIntervalMilliseconds: DisplayTiming.pollIntervalMilliseconds,
 	onError: (error) => streamDeck.logger.warn('Cannot read the monitors', error),

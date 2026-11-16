@@ -10,9 +10,10 @@ export function buildMonitorSnapshotForTest(
 		isPrimary: false,
 		monitorBrightness: 60,
 		ignoresMonitorBrightness: false,
-		windowsBrightness: 100,
+		systemBrightness: 100,
 		power: 'on',
 		canStandby: true,
+		canBlackScreen: true,
 		hdr: { isSupported: false, isEnabled: false },
 		...overrides,
 	};

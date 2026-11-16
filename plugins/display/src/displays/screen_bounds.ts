@@ -1,4 +1,4 @@
-/** Where a screen sits on the Windows desktop, in physical pixels; the primary screen starts at 0,0. */
+/** Where a screen sits on the desktop, in desktop pixels. */
 export type ScreenBounds = Readonly<{
 	left: number;
 	top: number;

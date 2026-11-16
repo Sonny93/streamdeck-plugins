@@ -1,5 +1,5 @@
+import type { SpotifyHost } from '../platform/spotify_host';
 import { fetchBrowserWebSocketUrl } from './fetch_browser_web_socket_url';
-import { launchSpotify } from './launch_spotify';
 import { retryDuringColdStart } from './retry_during_cold_start';
 import { SpotifyDebugPortUnavailableError } from './spotify_debug_port_unavailable_error';
 import { SpotifyLaunchTiming } from './spotify_launch_timing';
@@ -14,7 +14,9 @@ function isNotReachable(error: unknown): boolean {
  * Returns Spotify's browser websocket, launching Spotify with the debug flag when its port is closed.
  * Fails with a typed error when the port never opens, e.g. Spotify already runs without the debug flag.
  */
-export async function ensureSpotifyRunning(): Promise<SpotifyRuntime> {
+export async function ensureSpotifyRunning(
+	host: SpotifyHost
+): Promise<SpotifyRuntime> {
 	try {
 		return {
 			browserWebSocketUrl: await fetchBrowserWebSocketUrl(),
@@ -25,7 +27,7 @@ export async function ensureSpotifyRunning(): Promise<SpotifyRuntime> {
 			throw error;
 		}
 	}
-	await launchSpotify();
+	await host.launchSpotify();
 	const browserWebSocketUrl = await retryDuringColdStart({
 		attempt: fetchBrowserWebSocketUrl,
 		isRetryable: isNotReachable,

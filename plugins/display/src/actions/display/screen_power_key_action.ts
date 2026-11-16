@@ -7,8 +7,10 @@ import { KeyState } from '../keys/key_state';
 import type { KeyStateValue } from '../keys/key_state_value';
 import { screenGlyph } from '../keys/screen_glyph';
 import { screenOffGlyph } from '../keys/screen_off_glyph';
+import type { DisplayActionConfig } from './display_action_config';
 import type { DisplayActionSettings } from './display_action_settings';
 import { DisplayKeyAction } from './display_key_action';
+import { resolveOffMode } from './resolve_off_mode';
 import { resolveScreenPowerKeyState } from './resolve_screen_power_key_state';
 
 const APPEARANCES: Readonly<Record<KeyStateValue, KeyAppearance>> = {
@@ -19,7 +21,7 @@ const APPEARANCES: Readonly<Record<KeyStateValue, KeyAppearance>> = {
 
 /**
  * Key that turns its monitors off and on again, the main one unless others are picked.
- * By default it covers them with a black screen, which keeps the Windows layout; it can put them in standby over DDC/CI instead.
+ * By default it covers them with a black screen, which keeps the window layout where the system allows one; it can put them in standby over DDC/CI instead.
  */
 export class ScreenPowerKeyAction extends DisplayKeyAction {
 	override readonly manifestId = 'com.sonny93.display.power';
@@ -32,7 +34,7 @@ export class ScreenPowerKeyAction extends DisplayKeyAction {
 		await this.runChange(ev.action, (monitors, config) =>
 			this.hub.toggleScreens(
 				monitors.map((monitor) => monitor.id),
-				config.offMode
+				resolveOffMode(config.offMode, monitors)
 			)
 		);
 	}
@@ -42,9 +44,10 @@ export class ScreenPowerKeyAction extends DisplayKeyAction {
 	}
 
 	protected override resolveKeyState(
-		monitors: readonly MonitorSnapshot[]
+		monitors: readonly MonitorSnapshot[],
+		config: DisplayActionConfig
 	): KeyStateValue {
-		return resolveScreenPowerKeyState(monitors);
+		return resolveScreenPowerKeyState(monitors, config);
 	}
 
 	protected override appearanceOf(state: KeyStateValue): KeyAppearance {

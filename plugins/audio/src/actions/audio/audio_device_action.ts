@@ -1,9 +1,11 @@
 import { streamDeck, SingletonAction } from '@elgato/streamdeck';
 import type {
 	DidReceiveSettingsEvent,
+	PropertyInspectorDidAppearEvent,
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { AudioHub } from '../../audio/audio_hub';
 import type { AudioSnapshot } from '../../audio/audio_snapshot';
@@ -14,10 +16,18 @@ import { isAudioDevicesRequest } from './is_audio_devices_request';
 import { listAudioDeviceChoices } from './list_audio_device_choices';
 import { readAudioTarget } from './read_audio_target';
 
+type PropertyInspectorPayload = Parameters<
+	typeof streamDeck.ui.sendToPropertyInspector
+>[0];
 type AudioDeviceActionHandle = WillAppearEvent<AudioDeviceSettings>['action'];
 type AudioSendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<AudioDeviceSettings>['onSendToPlugin']>
 >[0];
+
+type AudioDeviceSettingsReader = Readonly<{
+	id: string;
+	getSettings: () => Promise<AudioDeviceSettings>;
+}>;
 
 async function showAlert(action: AudioDeviceActionHandle): Promise<void> {
 	if (action.isKey() || action.isDial()) {
@@ -36,6 +46,12 @@ export abstract class AudioDeviceAction extends SingletonAction<AudioDeviceSetti
 	protected abstract readonly choices: AudioDeviceChoices;
 	private readonly targets = new Map<string, AudioTarget | undefined>();
 	private unsubscribe: (() => void) | undefined;
+	private readonly replies =
+		new PropertyInspectorReplies<PropertyInspectorPayload>({
+			readCurrentActionId: () => streamDeck.ui.action?.id,
+			sendToCurrent: (payload) =>
+				streamDeck.ui.sendToPropertyInspector(payload),
+		});
 
 	constructor(protected readonly hub: AudioHub) {
 		super();
@@ -56,6 +72,7 @@ export abstract class AudioDeviceAction extends SingletonAction<AudioDeviceSetti
 
 	override onWillDisappear(ev: WillDisappearEvent<AudioDeviceSettings>): void {
 		this.targets.delete(ev.action.id);
+		this.replies.forget(ev.action.id);
 		if (this.targets.size > 0) {
 			return;
 		}
@@ -77,15 +94,32 @@ export abstract class AudioDeviceAction extends SingletonAction<AudioDeviceSetti
 		if (!isAudioDevicesRequest(ev.payload, this.choices.event)) {
 			return;
 		}
+		await this.answerDeviceList(ev.action);
+	}
+
+	override async onPropertyInspectorDidAppear(
+		ev: PropertyInspectorDidAppearEvent<AudioDeviceSettings>
+	): Promise<void> {
+		await this.replies.deliverPending(ev.action.id);
+		await this.answerDeviceList(ev.action);
+	}
+
+	private async answerDeviceList(
+		action: AudioDeviceSettingsReader
+	): Promise<void> {
 		try {
-			const settings = await ev.action.getSettings();
-			await streamDeck.ui.sendToPropertyInspector({
+			const settings = await action.getSettings();
+			await this.replies.reply({
+				actionId: action.id,
 				event: this.choices.event,
-				items: listAudioDeviceChoices({
-					snapshot: await this.hub.refresh(),
-					choices: this.choices,
-					pickedValue: settings.device,
-				}),
+				payload: {
+					event: this.choices.event,
+					items: listAudioDeviceChoices({
+						snapshot: await this.hub.refresh(),
+						choices: this.choices,
+						pickedValue: settings.device,
+					}),
+				},
 			});
 		} catch (error) {
 			streamDeck.logger.error('Cannot list the audio devices', error);

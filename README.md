@@ -1,11 +1,11 @@
 # streamdeck-plugins
 
-Stream Deck plugins for a Windows PC, built for the Stream Deck +: Spotify control, PC audio control (Universal Audio Volt 1, Windows audio devices) and monitor control, plus an icon pack and a Stream Deck + profile, in one pnpm workspace.
+Stream Deck plugins for Windows and Linux, built for the Stream Deck +: Spotify control, PC audio control (Universal Audio Volt 1, system audio devices) and monitor control, plus an icon pack and a Stream Deck + profile, in one pnpm workspace.
 
 | Package                                   | What it does                                                        |
 | ----------------------------------------- | ------------------------------------------------------------------- |
 | [Spotify Deck](plugins/spotify/README.md) | The Spotify desktop app: playback, likes, playlists, lyrics, volume |
-| [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, Windows audio devices           |
+| [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, system audio devices            |
 | [Display Deck](plugins/display/README.md) | Monitors: turning them off, brightness, HDR                         |
 | [Sonny93 Keys](icon-pack/README.md)       | Icon pack for the native folder and Back keys                       |
 
@@ -13,13 +13,13 @@ A Stream Deck + profile lays the keys and dials of these plugins out over severa
 
 ## Requirements
 
-- Windows 10 or later, with Stream Deck 7.1 or later.
+- Windows 10 or later, with Stream Deck 7.1 or later, or Linux with [OpenDeck](https://github.com/nekename/OpenDeck) (see [Install on Linux](docs/install.md#install-on-linux)).
 - A Stream Deck + for the dial actions.
 - To build from source, [mise](https://mise.jdx.dev), which installs Node, pnpm and just from [`mise.toml`](mise.toml).
 
 ## Install
 
-Download `streamdeck-plugins-<version>.zip` from the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest), extract it entirely, then double-click `Setup.cmd` in the extracted folder. Windows may warn about an unknown publisher: choose More info, then Run anyway. Stream Deck may ask you to confirm each install.
+On Windows, download `streamdeck-plugins-<version>.zip` from the [latest release](https://github.com/Sonny93/streamdeck-plugins/releases/latest), extract it entirely, then double-click `Setup.cmd` in the extracted folder. Windows may warn about an unknown publisher: choose More info, then Run anyway. Stream Deck may ask you to confirm each install.
 
 `Setup.cmd` installs the plugins and the icon pack and imports the Stream Deck + profile. To install without the profile, run the script from a normal (not Administrator) PowerShell window in the extracted folder:
 
@@ -27,7 +27,7 @@ Download `streamdeck-plugins-<version>.zip` from the [latest release](https://gi
 powershell -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
-To update, run `Setup.cmd` or the script from the new release: only what changed is installed, and the profile is skipped when one with the same name exists. See [Install a release](docs/install.md) for the details and how to install a single file.
+To update, run `Setup.cmd` or the script from the new release: only what changed is installed, and the profile is skipped when one with the same name exists. See [Install a release](docs/install.md) for the details, how to install a single file, and how to install on Linux.
 
 ## Develop
 

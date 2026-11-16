@@ -1,3 +1,4 @@
+import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
@@ -33,6 +34,7 @@ function buildRenderer(
 		Promise.resolve(options.fetchResult ?? false)
 	);
 	const renderer = new PlaylistsCarouselRenderer({
+		encodeFrame: (svg) => Promise.resolve(toSvgDataUrl(svg)),
 		catalog: {
 			playlists: options.playlists,
 			hasContent: () => options.hasContent ?? true,

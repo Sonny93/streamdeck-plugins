@@ -1,5 +1,3 @@
-import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
-
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import { buildNowPlayingLyrics } from './build_now_playing_lyrics';
 import { buildNowPlayingSvg } from './build_now_playing_svg';
@@ -123,16 +121,17 @@ export class NowPlayingScreen {
 			return;
 		}
 		await Promise.all(
-			dials.map((dial) =>
-				dial.setFeedback({
-					[CANVAS_FEEDBACK_KEY]: toSvgDataUrl(
-						buildNowPlayingSvg({
-							frame,
-							sliceLeft: dial.column * NowPlayingMetrics.segmentWidth,
-						})
-					),
-				})
-			)
+			dials.map(async (dial) => {
+				const image = await this.options.encodeFrame(
+					buildNowPlayingSvg({
+						frame,
+						sliceLeft: dial.column * NowPlayingMetrics.segmentWidth,
+					})
+				);
+				if (image !== undefined) {
+					await dial.setFeedback({ [CANVAS_FEEDBACK_KEY]: image });
+				}
+			})
 		);
 	}
 

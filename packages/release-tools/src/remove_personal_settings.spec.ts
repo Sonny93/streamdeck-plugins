@@ -17,7 +17,6 @@ describe('removePersonalSettings', () => {
 					device: 'd',
 					monitor: 'm',
 					selectedUri: 'spotify:playlist:1',
-					label: 'Phone',
 					deviceKind: 'phone',
 				},
 			},
@@ -27,9 +26,51 @@ describe('removePersonalSettings', () => {
 			buildManifest({
 				'0,0': {
 					UUID: 'com.sonny93.spotify.play-on-device',
-					Settings: { label: 'Phone', deviceKind: 'phone' },
+					Settings: { deviceKind: 'phone' },
 				},
 			})
+		);
+	});
+
+	it('should drop the app image name and the target that goes with it', () => {
+		const manifest = buildManifest({
+			'0,0': {
+				UUID: 'com.sonny93.spotify.volume',
+				Settings: { appImageName: 'msedge.exe', target: 'app', step: 5 },
+			},
+		});
+
+		expect(removePersonalSettings({ manifest })).toEqual(
+			buildManifest({
+				'0,0': {
+					UUID: 'com.sonny93.spotify.volume',
+					Settings: { step: 5 },
+				},
+			})
+		);
+	});
+
+	it('should keep the target when there is no app image name', () => {
+		const manifest = buildManifest({
+			'0,0': {
+				UUID: 'com.sonny93.spotify.volume',
+				Settings: { target: 'spotify' },
+			},
+		});
+
+		expect(removePersonalSettings({ manifest })).toEqual(manifest);
+	});
+
+	it.each([
+		'com.sonny93.audio.default-output',
+		'com.sonny93.spotify.play-on-device',
+	])('should drop the label of %s', (uuid) => {
+		const manifest = buildManifest({
+			'0,0': { UUID: uuid, Settings: { label: 'Casque', other: 1 } },
+		});
+
+		expect(removePersonalSettings({ manifest })).toEqual(
+			buildManifest({ '0,0': { UUID: uuid, Settings: { other: 1 } } })
 		);
 	});
 

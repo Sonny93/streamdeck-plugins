@@ -22,7 +22,7 @@ export const windowsAudioMixer: AudioMixer = {
 		);
 		return updated > 0;
 	},
-	readForegroundImageName: async () => {
+	readForegroundApp: async () => {
 		const user32 = await loadUser32();
 		const window = user32.getForegroundWindow();
 		if (window === undefined) {
@@ -31,6 +31,8 @@ export const windowsAudioMixer: AudioMixer = {
 		const imagePath = (await loadCoreAudio()).readProcessImagePath(
 			user32.readProcessId(window)
 		);
-		return imagePath === undefined ? undefined : readImageName(imagePath);
+		return imagePath === undefined
+			? undefined
+			: { imageName: readImageName(imagePath) };
 	},
 };

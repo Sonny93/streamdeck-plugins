@@ -2,26 +2,46 @@ import type { AudioSnapshot } from './audio_snapshot';
 import type { AudioVolume } from './audio_volume';
 import type { CoreAudio } from './core_audio';
 
-/** Reads the active devices of both directions, the default ones and every volume. */
-export function readAudioSnapshot(coreAudio: CoreAudio): AudioSnapshot {
-	const devices = [
-		...coreAudio.listDevices('output'),
-		...coreAudio.listDevices('input'),
-	];
-	const volumes: Record<string, AudioVolume> = {};
-	for (const device of devices) {
-		try {
-			volumes[device.id] = coreAudio.readVolume(device.id);
-		} catch {
-			// A device that went away since the listing has no volume.
-		}
+type SnapshotSource = Pick<
+	CoreAudio,
+	'listDevices' | 'readDefaultDeviceId' | 'readVolume'
+>;
+
+async function readVolumeOrUndefined(
+	source: SnapshotSource,
+	deviceId: string
+): Promise<AudioVolume | undefined> {
+	try {
+		return await source.readVolume(deviceId);
+	} catch {
+		return undefined;
 	}
+}
+
+/** Reads the active devices of both directions, the default ones and every volume, one call at a time per device. */
+export async function readAudioSnapshot(
+	source: SnapshotSource
+): Promise<AudioSnapshot> {
+	const [outputs, inputs, defaultOutputId, defaultInputId] = await Promise.all([
+		source.listDevices('output'),
+		source.listDevices('input'),
+		source.readDefaultDeviceId('output'),
+		source.readDefaultDeviceId('input'),
+	]);
+	const devices = [...outputs, ...inputs];
+	const readVolumes = await Promise.all(
+		devices.map((device) => readVolumeOrUndefined(source, device.id))
+	);
+	const volumes: Record<string, AudioVolume> = {};
+	devices.forEach((device, index) => {
+		const volume = readVolumes[index];
+		if (volume !== undefined) {
+			volumes[device.id] = volume;
+		}
+	});
 	return {
 		devices,
-		defaultDeviceIds: {
-			output: coreAudio.readDefaultDeviceId('output'),
-			input: coreAudio.readDefaultDeviceId('input'),
-		},
+		defaultDeviceIds: { output: defaultOutputId, input: defaultInputId },
 		volumes,
 	};
 }

@@ -1,4 +1,4 @@
-import type { VcpReply } from '../windows/vcp_reply';
+import type { VcpReply } from './vcp_reply';
 
 /** A monitor opened for DDC/CI; its exchanges are slow and must not overlap. */
 export type DdcMonitor = Readonly<{

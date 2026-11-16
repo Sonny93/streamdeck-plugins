@@ -3,6 +3,11 @@
 	<head lang="en">
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+		<style>
+			[hidden] {
+				display: none !important;
+			}
+		</style>
 	</head>
 	<body>
 		<sdpi-item label="Controls">
@@ -12,7 +17,7 @@
 				<option value="app">Picked app</option>
 			</sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Picked app">
+		<sdpi-item id="picked-app" label="Picked app">
 			<sdpi-select
 				setting="appImageName"
 				datasource="listAudioApps"
@@ -21,7 +26,7 @@
 				placeholder="Pick an app playing sound"
 			></sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="">
+		<sdpi-item id="picked-app-help" label="">
 			<details>
 				<summary>Only used with "Picked app"</summary>
 				<p>
@@ -30,5 +35,33 @@
 				</p>
 			</details>
 		</sdpi-item>
+		<script>
+			const PICKED_APP_TARGET = 'app';
+			const DEFAULT_TARGET = 'spotify';
+			const pickedAppItems = document.querySelectorAll(
+				'#picked-app, #picked-app-help'
+			);
+
+			function showPickedApp(target) {
+				const isPicked = (target ?? DEFAULT_TARGET) === PICKED_APP_TARGET;
+				for (const item of pickedAppItems) {
+					item.hidden = !isPicked;
+				}
+			}
+
+			const targetSelect = document.querySelector(
+				'sdpi-select[setting="target"]'
+			);
+			targetSelect.addEventListener('change', () =>
+				showPickedApp(targetSelect.value)
+			);
+			SDPIComponents.streamDeckClient
+				.getSettings()
+				.then((event) => showPickedApp(event.payload.settings.target));
+			SDPIComponents.streamDeckClient.didReceiveSettings.subscribe((event) =>
+				showPickedApp(event.payload.settings.target)
+			);
+			showPickedApp(DEFAULT_TARGET);
+		</script>
 	</body>
 </html>

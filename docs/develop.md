@@ -24,6 +24,12 @@ mise x -- just restart
 
 For the icon pack, see its [README](../icon-pack/README.md).
 
+### Link a plugin to OpenDeck on Linux
+
+OpenDeck loads plugins from `~/.config/opendeck/plugins` and refuses to serve key images from outside that folder, so a symlink into the repository leaves the keys with a warning icon. `mise x -- pnpm watch` copies the built plugin folder there after each build, then reloads it with `opendeck --reload-plugin`. After a `pnpm build`, `mise x -- pnpm --filter <name>-deck run restart` does the same once.
+
+Remove an installed release copy of the plugin in OpenDeck first. The copy keeps the `logs` folder of the destination and replaces everything else, including a link left by an earlier setup.
+
 ## Rebuild on every change
 
 From a plugin folder:

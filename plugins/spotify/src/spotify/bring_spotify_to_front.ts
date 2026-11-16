@@ -1,4 +1,4 @@
-import { activateProcessWindow } from '../windows/activate_process_window';
+import type { SpotifyHost } from '../platform/spotify_host';
 import { readSpotifyBrowserProcessId } from './read_spotify_browser_process_id';
 import type { SpotifySession } from './spotify_session';
 
@@ -7,7 +7,8 @@ import type { SpotifySession } from './spotify_session';
  * CDP window state changes are not honored by Windows' foreground lock, so the native window is activated.
  */
 export async function bringSpotifyToFront(
-	session: SpotifySession
+	session: SpotifySession,
+	host: SpotifyHost
 ): Promise<void> {
-	await activateProcessWindow(await readSpotifyBrowserProcessId(session));
+	await host.activateWindow(await readSpotifyBrowserProcessId(session));
 }

@@ -17,7 +17,7 @@ describe('describeMonitorName', () => {
 		).toEqual(['Odyssey G95SD (main)', 'PL2530H (top)', 'PL2530H (right)']);
 	});
 
-	it('adds the GDI name when two monitors of a model share a place', () => {
+	it('adds the port name when two monitors of a model share a place', () => {
 		const farRight = buildDisplayInfo({
 			pnpId: 'IVM6133',
 			uid: 4359,

@@ -1,0 +1,18 @@
+Display 1
+   I2C bus:          /dev/i2c-12
+   DRM connector:    card2-DP-4
+   drm_connector_id: 1227
+   Monitor:          SAM:Odyssey G95SD:0000000000000
+
+Display 2
+   I2C bus:          /dev/i2c-13
+   DRM connector:    card2-DP-5
+   drm_connector_id: 1231
+   Monitor:          IVM:PL2530H:0000000000002
+
+Display 3
+   I2C bus:          /dev/i2c-14
+   DRM connector:    card2-DP-6
+   drm_connector_id: 1235
+   Monitor:          IVM:PL2530H:0000000000001
+

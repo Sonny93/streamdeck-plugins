@@ -1,5 +1,6 @@
 const PERSONAL_PLUGIN_PREFIX = 'com.sonny93.';
 const PERSONAL_SETTING_KEYS: ReadonlySet<string> = new Set([
+	'appImageName',
 	'device',
 	'deviceId',
 	'deviceName',
@@ -7,8 +8,31 @@ const PERSONAL_SETTING_KEYS: ReadonlySet<string> = new Set([
 	'selectedUri',
 ]);
 
+const APP_TARGET_KEY = 'target';
+const LABEL_KEY = 'label';
+const PERSONAL_LABEL_ACTION_UUIDS: ReadonlySet<string> = new Set([
+	'com.sonny93.audio.default-output',
+	'com.sonny93.spotify.play-on-device',
+]);
+
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function scrubSettings(
+	options: Readonly<{ actionUuid: string; settings: Record<string, unknown> }>
+): Record<string, unknown> {
+	const { actionUuid, settings } = options;
+	const removedKeys = new Set(PERSONAL_SETTING_KEYS);
+	if ('appImageName' in settings) {
+		removedKeys.add(APP_TARGET_KEY);
+	}
+	if (PERSONAL_LABEL_ACTION_UUIDS.has(actionUuid)) {
+		removedKeys.add(LABEL_KEY);
+	}
+	return Object.fromEntries(
+		Object.entries(settings).filter(([key]) => !removedKeys.has(key))
+	);
 }
 
 function scrubAction(action: unknown): unknown {
@@ -20,11 +44,10 @@ function scrubAction(action: unknown): unknown {
 	) {
 		return action;
 	}
-	const settings = Object.fromEntries(
-		Object.entries(action['Settings']).filter(
-			([key]) => !PERSONAL_SETTING_KEYS.has(key)
-		)
-	);
+	const settings = scrubSettings({
+		actionUuid: action['UUID'],
+		settings: action['Settings'],
+	});
 	return { ...action, Settings: settings };
 }
 
@@ -41,7 +64,7 @@ function scrubController(controller: unknown): unknown {
 	return { ...controller, Actions: actions };
 }
 
-/** Drops the device, playlist and monitor settings of this repo's actions from a parsed profile page manifest; any other JSON is returned as it is. */
+/** Drops the device, playlist, monitor and app settings of this repo's actions (and the target that goes with an app, and the label of the default-output and play-on-device keys) from a parsed profile page manifest; any other JSON is returned as it is. */
 export function removePersonalSettings(
 	options: Readonly<{ manifest: unknown }>
 ): unknown {

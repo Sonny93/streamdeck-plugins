@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import type { AudioApp } from '../audio/audio_app';
+import type { ForegroundApp } from '../audio/foreground_app';
 import { VolumeController } from './volume_controller';
 
 const SPOTIFY: AudioApp = {
@@ -20,14 +21,22 @@ function buildController(
 	options: Readonly<{
 		apps?: readonly AudioApp[];
 		foreground?: string;
+		foregroundApp?: ForegroundApp;
 	}> = {}
 ) {
 	const mixer = {
 		listApps: vi.fn(() => Promise.resolve([...(options.apps ?? [SPOTIFY])])),
 		updateApp: vi.fn(() => Promise.resolve(true)),
-		readForegroundImageName: vi.fn(() => Promise.resolve(options.foreground)),
+		readForegroundApp: vi.fn((_options?: unknown) =>
+			Promise.resolve(
+				options.foregroundApp ??
+					(options.foreground === undefined
+						? undefined
+						: { imageName: options.foreground })
+			)
+		),
 	};
-	return { controller: new VolumeController(mixer), mixer };
+	return { controller: new VolumeController(mixer, 'Spotify.exe'), mixer };
 }
 
 describe('VolumeController', () => {
@@ -134,5 +143,100 @@ describe('VolumeController', () => {
 			await controller.toggleMute({ kind: 'app', imageName: undefined })
 		).toBe(false);
 		expect(mixer.updateApp).not.toHaveBeenCalled();
+	});
+
+	it('should share one mixer listing between reads in flight', async () => {
+		const { controller, mixer } = buildController();
+
+		await Promise.all([
+			controller.read({ kind: 'spotify' }),
+			controller.read({ kind: 'spotify' }),
+		]);
+
+		expect(mixer.listApps).toHaveBeenCalledOnce();
+	});
+
+	it('should list again once the previous listing is done', async () => {
+		const { controller, mixer } = buildController();
+
+		await controller.read({ kind: 'spotify' });
+		await controller.read({ kind: 'spotify' });
+
+		expect(mixer.listApps).toHaveBeenCalledTimes(2);
+	});
+
+	it('should read the foreground app without the cache when changing a volume', async () => {
+		const { controller, mixer } = buildController({
+			apps: [DISCORD],
+			foreground: 'discord.exe',
+		});
+
+		await controller.adjust({ kind: 'focused' }, 1);
+
+		expect(mixer.readForegroundApp).toHaveBeenCalledWith({
+			isFresh: true,
+		});
+	});
+
+	it('should read the foreground app without the cache when toggling mute', async () => {
+		const { controller, mixer } = buildController({
+			apps: [DISCORD],
+			foreground: 'discord.exe',
+		});
+
+		await controller.toggleMute({ kind: 'focused' });
+
+		expect(mixer.readForegroundApp).toHaveBeenCalledWith({
+			isFresh: true,
+		});
+	});
+
+	it('should read the foreground app with the cache when drawing', async () => {
+		const { controller, mixer } = buildController({
+			foreground: 'discord.exe',
+		});
+
+		await controller.read({ kind: 'focused' });
+
+		expect(mixer.readForegroundApp).toHaveBeenCalledWith({});
+	});
+
+	it('should find the focused app by its process and name it after its audio stream', async () => {
+		const game: AudioApp = {
+			imageName: 'BeamNG.drive.x64',
+			displayName: 'BeamNG.drive',
+			volume: 0.4,
+			isMuted: false,
+			processIds: [49_021],
+		};
+		const { controller } = buildController({
+			apps: [SPOTIFY, game],
+			foregroundApp: { imageName: '===>>> BeamNGMa', processId: 49_021 },
+		});
+
+		expect(await controller.read({ kind: 'focused' })).toMatchObject({
+			name: 'BeamNG.drive',
+			volume: 0.4,
+		});
+	});
+
+	it('should change the volume of the audio app found by process, under its own image name', async () => {
+		const game: AudioApp = {
+			imageName: 'BeamNG.drive.x64',
+			displayName: 'BeamNG.drive',
+			volume: 0.4,
+			isMuted: false,
+			processIds: [49_021],
+		};
+		const { controller, mixer } = buildController({
+			apps: [game],
+			foregroundApp: { imageName: '===>>> BeamNGMa', processId: 49_021 },
+		});
+
+		await controller.toggleMute({ kind: 'focused' });
+
+		expect(mixer.updateApp).toHaveBeenCalledWith('BeamNG.drive.x64', {
+			isMuted: true,
+		});
 	});
 });

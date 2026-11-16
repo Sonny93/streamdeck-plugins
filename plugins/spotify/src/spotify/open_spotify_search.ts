@@ -1,3 +1,4 @@
+import type { SpotifyHost } from '../platform/spotify_host';
 import { bringSpotifyToFrontIfUnfocused } from './bring_spotify_to_front_if_unfocused';
 import { closeSpotifySearchModal } from './close_spotify_search_modal';
 import { focusSpotifySearchInput } from './focus_spotify_search_input';
@@ -14,14 +15,15 @@ import { SpotifyShortcuts } from './spotify_shortcuts';
  * After a cold start the input is awaited, since the shortcut handler may not be ready yet.
  */
 export async function openSpotifySearch(
-	session: SpotifySession
+	session: SpotifySession,
+	host: SpotifyHost
 ): Promise<void> {
 	const method = planSearchOpening(await readSpotifySearchState(session));
 	if (method === 'close-modal') {
 		await closeSpotifySearchModal(session);
 		return;
 	}
-	await bringSpotifyToFrontIfUnfocused(session);
+	await bringSpotifyToFrontIfUnfocused(session, host);
 	await sendSpotifyShortcut(session, SpotifyShortcuts.openSearch);
 	if (session.launchedByPlugin) {
 		await focusSpotifySearchInput(session);

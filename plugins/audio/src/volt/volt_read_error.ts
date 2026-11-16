@@ -3,7 +3,7 @@ export class VoltReadError extends Error {
 	readonly code = 'E_VOLT_READ_FAILED';
 	override readonly name = 'VoltReadError';
 
-	constructor() {
-		super('Cannot read from the Volt 1, it was probably unplugged.');
+	constructor(cause?: unknown) {
+		super('Cannot read from the Volt 1, it was probably unplugged.', { cause });
 	}
 }

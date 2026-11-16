@@ -10,6 +10,8 @@ import type {
 } from '@elgato/streamdeck';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
 
+import type { SpotifyHost } from '../platform/spotify_host';
+import { fetchCoverDataUrl } from '../spotify/fetch_cover_data_url';
 import { isTrackInLikeTarget } from '../spotify/is_track_in_like_target';
 import { playSpotifyPlaylist } from '../spotify/play_spotify_playlist';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
@@ -55,7 +57,8 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 	constructor(
 		private readonly playerStateHub: PlayerStateHub,
 		private readonly likeTargetStore: LikeTargetStore,
-		private readonly nowPlaying: NowPlayingScreen
+		private readonly nowPlaying: NowPlayingScreen,
+		host: SpotifyHost
 	) {
 		super();
 		nowPlaying.onHidden(() => {
@@ -73,7 +76,12 @@ export class PlaylistsDialAction extends SingletonAction<PlaylistsDialSettings> 
 		});
 		this.renderer = new PlaylistsCarouselRenderer({
 			catalog: this.catalog,
-			covers: new CoverLoader(new CoverCache()),
+			covers: new CoverLoader(
+				new CoverCache(async (url) =>
+					host.prepareCover(await fetchCoverDataUrl(url))
+				)
+			),
+			encodeFrame: host.encodeFrame,
 			presence: this.presence,
 			readBackdropCover: () => nowPlaying.backdropCover,
 			onCoversLoaded: () => {

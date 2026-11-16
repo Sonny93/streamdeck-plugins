@@ -21,7 +21,7 @@ function describePlace(bounds: ScreenBounds, primary: ScreenBounds): string {
 
 /**
  * Names a monitor by its model and its place next to the primary one, such as "PL2530H (top)",
- * so two monitors of the same model can be told apart; the GDI name is added when that is not enough.
+ * so two monitors of the same model can be told apart; the name of its port is added when that is not enough.
  */
 export function describeMonitorName(
 	display: DisplayInfo,
@@ -41,8 +41,6 @@ export function describeMonitorName(
 				other.model === display.model &&
 				placeOf(other) === place
 		);
-	const details = isAmbiguous
-		? [place, display.gdiName.replace(/^\\\\\.\\/u, '')]
-		: [place];
+	const details = isAmbiguous ? [place, display.portName] : [place];
 	return `${display.model} (${details.filter((part) => part !== '').join(', ')})`;
 }

@@ -11,6 +11,7 @@ import { changeMonitorsBrightness } from './change_monitors_brightness';
 import { DisplayAction } from './display_action';
 import type { DisplayActionConfig } from './display_action_config';
 import type { DisplayActionSettings } from './display_action_settings';
+import { resolveOffMode } from './resolve_off_mode';
 
 /**
  * Stream Deck+ dial for the brightness of its monitors, the main one unless others are picked.
@@ -57,7 +58,7 @@ export class BrightnessDialAction extends DisplayAction {
 		await this.runChange(ev.action, (monitors, config) =>
 			this.hub.toggleScreens(
 				monitors.map((monitor) => monitor.id),
-				config.offMode
+				resolveOffMode(config.offMode, monitors)
 			)
 		);
 	}

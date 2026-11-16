@@ -46,9 +46,7 @@
 						"Version": "0.1.0.0"
 					},
 					"Resources": null,
-					"Settings": {
-						"label": "Casque"
-					},
+					"Settings": {},
 					"State": 0,
 					"States": [{}, {}, {}],
 					"UUID": "com.sonny93.audio.default-output"
@@ -79,7 +77,6 @@
 					},
 					"Resources": null,
 					"Settings": {
-						"label": "Enceintes",
 						"labelPosition": "top"
 					},
 					"State": 1,

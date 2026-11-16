@@ -39,7 +39,7 @@
 			<sdpi-select setting="brightnessControl" default="auto">
 				<option value="auto">Auto</option>
 				<option value="monitor">Monitor (DDC/CI)</option>
-				<option value="windows">Windows</option>
+				<option value="windows">System</option>
 			</sdpi-select>
 		</sdpi-item>
 		<sdpi-item label="Label">
@@ -58,10 +58,11 @@
 			<details>
 				<summary>About the control</summary>
 				<p>
-					Monitor changes the backlight over DDC/CI. Windows dims the picture
-					instead: from 50 to 100 % in SDR, through the SDR content brightness
-					in HDR. Auto uses the monitor, unless it has no DDC/CI or is known to
-					ignore it, like the Odyssey G95SD.
+					Monitor changes the backlight over DDC/CI. System dims the picture
+					instead: on Windows from 50 to 100 % in SDR and through the SDR
+					content brightness in HDR, on Linux through the dimming of KDE in SDR
+					and the SDR brightness in HDR. Auto uses the monitor, unless it has no
+					DDC/CI or is known to ignore it, like the Odyssey G95SD.
 				</p>
 			</details>
 		</sdpi-item>

@@ -2,6 +2,12 @@ import { fetchCoverDataUrl } from '../spotify/fetch_cover_data_url';
 
 /** In-memory cache of cover images as data URLs, keyed by their URL; concurrent loads of one URL share one download. */
 export class CoverCache {
+	constructor(
+		private readonly fetchCover: (
+			url: string
+		) => Promise<string> = fetchCoverDataUrl
+	) {}
+
 	private readonly covers = new Map<string, string>();
 	private readonly pending = new Map<string, Promise<string>>();
 
@@ -15,7 +21,7 @@ export class CoverCache {
 		if (this.covers.has(url)) {
 			return;
 		}
-		const request = this.pending.get(url) ?? fetchCoverDataUrl(url);
+		const request = this.pending.get(url) ?? this.fetchCover(url);
 		this.pending.set(url, request);
 		try {
 			this.covers.set(url, await request);

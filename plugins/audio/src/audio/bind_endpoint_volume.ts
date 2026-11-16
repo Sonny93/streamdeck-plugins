@@ -3,9 +3,9 @@ import type { NativePointer } from 'deck-kit/windows/native_pointer';
 import { acquireOutPointer } from '../windows/acquire_out_pointer';
 import { checkHresult } from '../windows/check_hresult';
 import { useComObject } from '../windows/use_com_object';
-import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';
 import type { CoreAudioContext } from './core_audio_context';
+import type { SyncCoreAudio } from './sync_core_audio';
 
 const { slots } = CoreAudioConstants;
 const NO_EVENT_CONTEXT = null;
@@ -41,7 +41,7 @@ function useEndpointVolume<TResult>(
 /** Binds the reading and the change of the master volume and mute of a device. */
 export function bindEndpointVolume(
 	context: CoreAudioContext
-): Pick<CoreAudio, 'readVolume' | 'setVolume' | 'setMute'> {
+): Pick<SyncCoreAudio, 'readVolume' | 'setVolume' | 'setMute'> {
 	const { runtime, prototypes } = context;
 	return {
 		readVolume: (deviceId) =>

@@ -2,7 +2,7 @@ import { streamDeck } from '@elgato/streamdeck';
 import type { KeyDownEvent } from '@elgato/streamdeck';
 
 import { runSpotifyCommand } from '../spotify/run_spotify_command';
-import type { SpotifyCommand } from '../spotify/spotify_command';
+import type { SpotifyHostCommand } from '../spotify/spotify_host_command';
 
 type AlertableAction = Pick<KeyDownEvent['action'], 'manifestId' | 'showAlert'>;
 
@@ -12,7 +12,7 @@ type AlertableAction = Pick<KeyDownEvent['action'], 'manifestId' | 'showAlert'>;
  */
 export async function runSpotifyAction(
 	action: AlertableAction,
-	command: SpotifyCommand
+	command: SpotifyHostCommand
 ): Promise<boolean> {
 	try {
 		await runSpotifyCommand(command);

@@ -5,16 +5,20 @@ import type {
 	DialDownEvent,
 	DialRotateEvent,
 	DidReceiveSettingsEvent,
+	PropertyInspectorDidAppearEvent,
 	TouchTapEvent,
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
-import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
+import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { AudioMixer } from '../audio/audio_mixer';
+import type { FrameEncoder } from '../platform/frame_encoder';
+import type { SpotifyHost } from '../platform/spotify_host';
 import { AudioAppsDataSource } from './audio_apps_data_source';
 import { buildVolumeDialSvg } from './build_volume_dial_svg';
+import { BusyKeys } from './busy_keys';
 import { listAudioAppChoices } from './list_audio_app_choices';
 import type { NowPlayingScreen } from './now_playing_screen';
 import { ProgressTicker } from './progress_ticker';
@@ -26,15 +30,23 @@ import { VolumeController } from './volume_controller';
 import type { VolumeDialSettings } from './volume_dial_settings';
 import type { VolumeTarget } from './volume_target';
 
+type PropertyInspectorPayload = Parameters<
+	typeof streamDeck.ui.sendToPropertyInspector
+>[0];
 type VolumeDial = DialAction<VolumeDialSettings>;
 type VolumeSendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<VolumeDialSettings>['onSendToPlugin']>
 >[0];
 
+type VolumeSettingsReader = Readonly<{
+	id: string;
+	getSettings: () => Promise<VolumeDialSettings>;
+}>;
+
 const CANVAS_FEEDBACK_KEY = 'canvas';
 
 /**
- * Stream Deck+ dial that controls the volume of one app in the Windows mixer: Spotify, the app in the foreground, or an app picked in its settings.
+ * Stream Deck+ dial that controls the volume of one app in the OS mixer: Spotify, the app in the foreground, or an app picked in its settings.
  * Rotate to change the volume (unmuting the app), press the dial or tap the strip to mute or unmute it.
  * The strip shows the app, its volume and its mute state, re-read every second so outside changes and focus changes show up,
  * over the dial's slice of the playing track's cover.
@@ -44,17 +56,33 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	override readonly manifestId = 'com.sonny93.spotify.volume';
 
 	private readonly targets = new Map<string, VolumeTarget>();
-	private readonly lastImages = new Map<string, string>();
+	private readonly lastSvgs = new Map<string, string>();
 	private readonly queues = new Map<string, Promise<void>>();
+	private readonly renders = new BusyKeys();
 	private readonly controller: VolumeController;
 	private readonly ticker: ProgressTicker;
 
+	private readonly replies =
+		new PropertyInspectorReplies<PropertyInspectorPayload>({
+			readCurrentActionId: () => streamDeck.ui.action?.id,
+			sendToCurrent: (payload) =>
+				streamDeck.ui.sendToPropertyInspector(payload),
+		});
+
+	private readonly mixer: AudioMixer;
+	private readonly encodeFrame: FrameEncoder;
+
 	constructor(
-		private readonly mixer: AudioMixer,
+		host: SpotifyHost,
 		private readonly nowPlaying: NowPlayingScreen
 	) {
 		super();
-		this.controller = new VolumeController(mixer);
+		this.mixer = host.audioMixer;
+		this.encodeFrame = host.encodeFrame;
+		this.controller = new VolumeController(
+			host.audioMixer,
+			host.spotifyImageName
+		);
 		this.ticker = new ProgressTicker({
 			schedule: scheduleTimeout,
 			intervalMilliseconds: VolumeControl.refreshIntervalMilliseconds,
@@ -63,7 +91,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 			},
 		});
 		nowPlaying.onHidden(() => {
-			this.lastImages.clear();
+			this.lastSvgs.clear();
 			void this.renderAll();
 		});
 		nowPlaying.onBackdropChanged(() => {
@@ -78,7 +106,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 			return;
 		}
 		this.targets.set(ev.action.id, readVolumeTarget(ev.payload.settings));
-		this.lastImages.delete(ev.action.id);
+		this.lastSvgs.delete(ev.action.id);
 		this.nowPlaying.attach(toNowPlayingDial(ev.action));
 		this.ticker.restart(true);
 		await this.render(ev.action);
@@ -86,8 +114,9 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 
 	override onWillDisappear(ev: WillDisappearEvent<VolumeDialSettings>): void {
 		this.targets.delete(ev.action.id);
-		this.lastImages.delete(ev.action.id);
+		this.lastSvgs.delete(ev.action.id);
 		this.queues.delete(ev.action.id);
+		this.replies.forget(ev.action.id);
 		this.nowPlaying.detach(ev.action.id);
 		if (this.targets.size === 0) {
 			this.ticker.stop();
@@ -131,15 +160,27 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		if (!AudioAppsDataSource.isRequest(ev.payload)) {
 			return;
 		}
+		await this.answerAppList(ev.action);
+	}
+
+	override async onPropertyInspectorDidAppear(
+		ev: PropertyInspectorDidAppearEvent<VolumeDialSettings>
+	): Promise<void> {
+		await this.replies.deliverPending(ev.action.id);
+		await this.answerAppList(ev.action);
+	}
+
+	private async answerAppList(action: VolumeSettingsReader): Promise<void> {
 		try {
-			const settings = await ev.action.getSettings();
+			const settings = await action.getSettings();
 			const items = listAudioAppChoices({
 				apps: await this.mixer.listApps(),
 				pickedImageName: settings.appImageName,
 			});
-			await streamDeck.ui.sendToPropertyInspector({
+			await this.replies.reply({
+				actionId: action.id,
 				event: AudioAppsDataSource.event,
-				items,
+				payload: { event: AudioAppsDataSource.event, items },
 			});
 		} catch (error) {
 			streamDeck.logger.error('Cannot list the apps playing sound', error);
@@ -174,28 +215,37 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		await Promise.all(
 			this.actions
 				.toArray()
-				.filter((candidate): candidate is VolumeDial => candidate.isDial())
+				.filter(
+					(candidate): candidate is VolumeDial =>
+						candidate.isDial() && !this.renders.isBusy(candidate.id)
+				)
 				.map((dial) => this.render(dial))
 		);
 	}
 
 	/** Draws the volume of a dial, unless the "now playing" screen covers it or the image did not change. */
-	private async render(dial: VolumeDial): Promise<void> {
+	private render(dial: VolumeDial): Promise<void> {
+		return this.renders.track(dial.id, () => this.draw(dial));
+	}
+
+	private async draw(dial: VolumeDial): Promise<void> {
 		const target = this.targets.get(dial.id);
 		if (target === undefined || this.nowPlaying.isShowing) {
 			return;
 		}
 		try {
-			const image = toSvgDataUrl(
-				buildVolumeDialSvg(
-					await this.controller.read(target),
-					toDialBackdrop(this.nowPlaying.backdropCover, dial.coordinates.column)
-				)
+			const svg = buildVolumeDialSvg(
+				await this.controller.read(target),
+				toDialBackdrop(this.nowPlaying.backdropCover, dial.coordinates.column)
 			);
-			if (this.nowPlaying.isShowing || this.lastImages.get(dial.id) === image) {
+			if (this.nowPlaying.isShowing || this.lastSvgs.get(dial.id) === svg) {
 				return;
 			}
-			this.lastImages.set(dial.id, image);
+			const image = await this.encodeFrame(svg);
+			if (image === undefined || this.nowPlaying.isShowing) {
+				return;
+			}
+			this.lastSvgs.set(dial.id, svg);
 			await dial.setFeedback({ [CANVAS_FEEDBACK_KEY]: image });
 		} catch (error) {
 			streamDeck.logger.error('Cannot draw a volume dial', error);

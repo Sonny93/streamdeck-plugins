@@ -1,6 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { DialAction } from '@elgato/streamdeck';
-import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
@@ -53,9 +52,10 @@ export class PlaylistsCarouselRenderer {
 			return;
 		}
 		const svg = this.buildFrame(request, showPresence);
-		await request.dial.setFeedback({
-			[CANVAS_FEEDBACK_KEY]: toSvgDataUrl(svg),
-		});
+		const image = await this.options.encodeFrame(svg);
+		if (image !== undefined) {
+			await request.dial.setFeedback({ [CANVAS_FEEDBACK_KEY]: image });
+		}
 	}
 
 	/** Draws a frame of a scroll, without the heart, logging at debug level how long the first one of a dial took to send. */

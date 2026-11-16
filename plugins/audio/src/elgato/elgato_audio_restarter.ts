@@ -1,5 +1,6 @@
 import { ElgatoAudioRestartTimeoutError } from './elgato_audio_restart_timeout_error';
 import type { ElgatoAudioRestarterOptions } from './elgato_audio_restarter_options';
+import { ElgatoAudioUnsupportedError } from './elgato_audio_unsupported_error';
 
 /** What a call to `restart` did: it ran to the end, or it was ignored because a restart was already in progress. */
 export type ElgatoAudioRestartOutcome = 'restarted' | 'ignored';
@@ -13,8 +14,16 @@ export class ElgatoAudioRestarter {
 
 	constructor(private readonly options: ElgatoAudioRestarterOptions) {}
 
-	/** Rejects with `ElgatoAudioProcessError` when the process cannot be listed or killed, and with `ElgatoAudioRestartTimeoutError` when it never comes back. */
+	/** `false` when the system has no Elgato audio server: the key shows unavailable and `restart` rejects without spawning anything. */
+	get isSupported(): boolean {
+		return this.options.serverProcess.isSupported;
+	}
+
+	/** Rejects with `ElgatoAudioUnsupportedError` when the system has no server, with `ElgatoAudioProcessError` when the process cannot be listed or killed, and with `ElgatoAudioRestartTimeoutError` when it never comes back. */
 	async restart(): Promise<ElgatoAudioRestartOutcome> {
+		if (!this.isSupported) {
+			throw new ElgatoAudioUnsupportedError();
+		}
 		if (this.isRestarting) {
 			return 'ignored';
 		}

@@ -1,11 +1,14 @@
 import type { DisplayConfigApi } from '../windows/display_config_api';
 import type { DisplayInfo } from './display_info';
 import { parseDisplayPaths } from './parse_display_paths';
+import { parseWindowsPnpId } from './parse_windows_pnp_id';
 import { readHdrInfo } from './read_hdr_info';
 import { readSdrWhiteLevel } from './read_sdr_white_level';
 import { readSourceBounds } from './read_source_bounds';
 import { readSourceGdiName } from './read_source_gdi_name';
 import { readTargetName } from './read_target_name';
+
+const GDI_NAME_PREFIX = /^\\\\\.\\/u;
 
 /** Lists the monitors Windows lights, skipping the paths it cannot fully describe. */
 export function readDisplayInfos(api: DisplayConfigApi): DisplayInfo[] {
@@ -33,13 +36,18 @@ export function readDisplayInfos(api: DisplayConfigApi): DisplayInfo[] {
 			{
 				id: name.devicePath,
 				model: name.model === '' ? gdiName : name.model,
-				gdiName,
+				...parseWindowsPnpId(name.devicePath),
+				portName: gdiName.replace(GDI_NAME_PREFIX, ''),
 				bounds,
 				isPrimary: bounds.left === 0 && bounds.top === 0,
-				target: path.target,
 				hdr,
-				hdrApiVersion: version,
-				sdrWhiteLevel: readSdrWhiteLevel(api, path.target),
+				platform: {
+					kind: 'windows',
+					gdiName,
+					target: path.target,
+					hdrApiVersion: version,
+					sdrWhiteLevel: readSdrWhiteLevel(api, path.target),
+				},
 			},
 		];
 	});

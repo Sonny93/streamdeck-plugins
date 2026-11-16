@@ -46,6 +46,12 @@ function buildPresenceBadge(slots: readonly CarouselSlot[]): string {
 	const { badge } = CarouselMetrics;
 	const centerX = geometry.left + geometry.size - badge.inset;
 	const centerY = geometry.top + badge.inset;
+	if (
+		centerX + badge.radius <= 0 ||
+		centerX - badge.radius >= CarouselMetrics.stripWidth
+	) {
+		return '';
+	}
 	const heart = buildCarouselHeart({
 		x: centerX - badge.heartSize / HALF_DIVISOR,
 		y: centerY - badge.heartSize / HALF_DIVISOR,

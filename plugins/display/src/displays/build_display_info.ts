@@ -2,6 +2,8 @@ import { buildMonitorId } from './build_monitor_id';
 import type { DisplayInfo } from './display_info';
 import type { ScreenBounds } from './screen_bounds';
 
+const PNP_MANUFACTURER_LENGTH = 3;
+
 /** Builds a monitor as Windows describes it, for tests: an SDR monitor without HDR unless told otherwise. */
 export function buildDisplayInfo(
 	options: Readonly<{
@@ -16,12 +18,18 @@ export function buildDisplayInfo(
 	return {
 		id: buildMonitorId(options.pnpId, options.uid),
 		model: options.model,
-		gdiName: options.gdiName,
+		manufacturerId: options.pnpId.slice(0, PNP_MANUFACTURER_LENGTH),
+		productCode: options.pnpId.slice(PNP_MANUFACTURER_LENGTH),
+		portName: options.gdiName.replace(/^\\\\\.\\/u, ''),
 		bounds: options.bounds,
 		isPrimary: options.bounds.left === 0 && options.bounds.top === 0,
-		target: { adapterLow: 1, adapterHigh: 0, id: options.uid },
 		hdr: options.hdr ?? { isSupported: false, isEnabled: false },
-		hdrApiVersion: 2,
-		sdrWhiteLevel: 1000,
+		platform: {
+			kind: 'windows',
+			gdiName: options.gdiName,
+			target: { adapterLow: 1, adapterHigh: 0, id: options.uid },
+			hdrApiVersion: 2,
+			sdrWhiteLevel: 1000,
+		},
 	};
 }

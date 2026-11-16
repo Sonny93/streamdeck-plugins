@@ -33,7 +33,7 @@ export function listAudioDeviceChoices(
 	const groups: Array<Choice | ChoiceGroup> = [];
 	if (choices.offersDefaults) {
 		groups.push({
-			label: 'Follow Windows',
+			label: 'Follow system',
 			children: choices.flows.map((flow) => DEFAULT_CHOICES[flow]),
 		});
 	}

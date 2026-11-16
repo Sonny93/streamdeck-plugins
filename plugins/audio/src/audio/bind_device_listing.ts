@@ -5,9 +5,9 @@ import { checkHresult } from '../windows/check_hresult';
 import { ComError } from '../windows/com_error';
 import { useComObject } from '../windows/use_com_object';
 import type { AudioDevice } from './audio_device';
-import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';
 import type { CoreAudioContext } from './core_audio_context';
+import type { SyncCoreAudio } from './sync_core_audio';
 
 const { slots } = CoreAudioConstants;
 
@@ -86,7 +86,7 @@ function readCount(
 /** Binds the listing of the active devices and the reading of the default ones. */
 export function bindDeviceListing(
 	context: CoreAudioContext
-): Pick<CoreAudio, 'listDevices' | 'readDefaultDeviceId'> {
+): Pick<SyncCoreAudio, 'listDevices' | 'readDefaultDeviceId'> {
 	const { runtime, prototypes, enumerator } = context;
 	return {
 		listDevices: (flow) => {
