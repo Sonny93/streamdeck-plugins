@@ -130,7 +130,42 @@
 			"Type": "Keypad"
 		},
 		{
-			"Actions": null,
+			"Actions": {
+				"0,0": {
+					"ActionID": "9c65bf6b-ecf4-40bd-8e5b-c7c8db75f2ed",
+					"LinkedTitle": true,
+					"Name": "Volume",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"device": "default:output"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.audio.volume"
+				},
+				"1,0": {
+					"ActionID": "923231f1-636b-4e9d-95a8-c2594ed9f50e",
+					"LinkedTitle": true,
+					"Name": "Volume",
+					"Plugin": {
+						"Name": "Audio Deck",
+						"UUID": "com.sonny93.audio",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"device": "default:input"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.audio.volume"
+				}
+			},
 			"Type": "Encoder"
 		}
 	],

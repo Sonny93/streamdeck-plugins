@@ -102,6 +102,53 @@
 					"State": 0,
 					"States": [{}],
 					"UUID": "com.sonny93.display.brightness"
+				},
+				"1,0": {
+					"ActionID": "90d261a7-8fe2-4f97-9866-609ebcaa8d1a",
+					"LinkedTitle": true,
+					"Name": "Brightness Dial",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.display.brightness"
+				},
+				"2,0": {
+					"ActionID": "226f9480-ce10-419e-9836-0d4ff08bd369",
+					"LinkedTitle": true,
+					"Name": "Brightness Dial",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.display.brightness"
+				},
+				"3,0": {
+					"ActionID": "da0c17de-2f93-43cd-a534-38c3408d9b53",
+					"LinkedTitle": true,
+					"Name": "Brightness Dial",
+					"Plugin": {
+						"Name": "Display Deck",
+						"UUID": "com.sonny93.display",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"monitor": "all"
+					},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.display.brightness"
 				}
 			},
 			"Type": "Encoder"

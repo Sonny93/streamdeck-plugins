@@ -8,6 +8,19 @@ const PERSONAL_SETTING_KEYS: ReadonlySet<string> = new Set([
 	'selectedUri',
 ]);
 
+const FIXED_SETTING_VALUES: Readonly<Record<string, ReadonlySet<string>>> =
+	Object.freeze({
+		device: new Set(['default:output', 'default:input']),
+		monitor: new Set(['all', 'primary']),
+	});
+
+function isFixedSettingValue(key: string, value: unknown): boolean {
+	return (
+		typeof value === 'string' &&
+		(FIXED_SETTING_VALUES[key]?.has(value) ?? false)
+	);
+}
+
 const APP_TARGET_KEY = 'target';
 const LABEL_KEY = 'label';
 const PERSONAL_LABEL_ACTION_UUIDS: ReadonlySet<string> = new Set([
@@ -31,7 +44,9 @@ function scrubSettings(
 		removedKeys.add(LABEL_KEY);
 	}
 	return Object.fromEntries(
-		Object.entries(settings).filter(([key]) => !removedKeys.has(key))
+		Object.entries(settings).filter(
+			([key, value]) => !removedKeys.has(key) || isFixedSettingValue(key, value)
+		)
 	);
 }
 
@@ -64,7 +79,7 @@ function scrubController(controller: unknown): unknown {
 	return { ...controller, Actions: actions };
 }
 
-/** Drops the device, playlist, monitor and app settings of this repo's actions (and the target that goes with an app, and the label of the default-output and play-on-device keys) from a parsed profile page manifest; any other JSON is returned as it is. */
+/** Drops the device, playlist, monitor and app settings (except a `device` or `monitor` that is one of the plugins' fixed values, such as `default:output` or `all`) of this repo's actions (and the target that goes with an app, and the label of the default-output and play-on-device keys) from a parsed profile page manifest; any other JSON is returned as it is. */
 export function removePersonalSettings(
 	options: Readonly<{ manifest: unknown }>
 ): unknown {

@@ -37,7 +37,7 @@
 							"FontSize": 12,
 							"FontStyle": "",
 							"FontUnderline": false,
-							"Image": "Images/18RD63MN0L729BF0EQRJ8OLKE8Z.png",
+							"Image": "Images/IP8PD7TDK01WGNLC3I7MPO518Z.png",
 							"OutlineThickness": 2,
 							"ShowTitle": true,
 							"TitleAlignment": "top",
@@ -96,11 +96,40 @@
 							"FontSize": 12,
 							"FontStyle": "",
 							"FontUnderline": false,
-							"Image": "Images/EHJCGIJKD96BL74SNR7TBVHRE0Z.png",
+							"Image": "Images/KG3J7Y3WKQCWFEN3UFP4BRZGLZ.png",
 							"OutlineThickness": 2,
 							"ShowTitle": true,
 							"TitleAlignment": "top",
 							"TitleColor": "#01ff34"
+						}
+					],
+					"UUID": "com.elgato.streamdeck.profile.openchild"
+				},
+				"2,1": {
+					"ActionID": "752970c1-cb45-46e4-927b-29fbc1dceca0",
+					"LinkedTitle": true,
+					"Name": "Create Folder",
+					"Plugin": {
+						"Name": "Create Folder",
+						"UUID": "com.elgato.streamdeck.profile.openchild",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"ProfileUUID": "3bff5397-c611-492b-8a52-671cc924ff20"
+					},
+					"State": 0,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 12,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"Image": "Images/21JIZE3DBT4SGKFZBO3G6WEACZ.png",
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#ffffff"
 						}
 					],
 					"UUID": "com.elgato.streamdeck.profile.openchild"

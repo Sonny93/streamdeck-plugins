@@ -74,6 +74,45 @@ describe('removePersonalSettings', () => {
 		);
 	});
 
+	it.each([
+		['device', 'default:output'],
+		['device', 'default:input'],
+		['monitor', 'all'],
+		['monitor', 'primary'],
+	])('should keep %s set to the fixed value %s', (key, value) => {
+		const manifest = buildManifest({
+			'0,0': { UUID: 'com.sonny93.audio.volume', Settings: { [key]: value } },
+		});
+
+		expect(removePersonalSettings({ manifest })).toEqual(manifest);
+	});
+
+	it.each([
+		['device', 'alsa_output.usb-Example-00.analog-stereo'],
+		['device', 'default:output '],
+		['device', 'default:outputX'],
+		['monitor', 'ABC1234-0000000000001'],
+		['monitor', 'ALL'],
+		['device', 'all'],
+		['monitor', 'default:output'],
+	])('should drop %s set to %s', (key, value) => {
+		const manifest = buildManifest({
+			'0,0': {
+				UUID: 'com.sonny93.audio.volume',
+				Settings: { [key]: value, label: 'Keep', step: 5 },
+			},
+		});
+
+		expect(removePersonalSettings({ manifest })).toEqual(
+			buildManifest({
+				'0,0': {
+					UUID: 'com.sonny93.audio.volume',
+					Settings: { label: 'Keep', step: 5 },
+				},
+			})
+		);
+	});
+
 	it('should leave actions of other plugins untouched', () => {
 		const manifest = buildManifest({
 			'0,0': {

@@ -1,0 +1,173 @@
+{
+	"Controllers": [
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "5a1762ad-5967-4e0a-8c1c-c734c4927394",
+					"AutoExit": {
+						"Delay": 0,
+						"Enabled": false
+					},
+					"LinkedTitle": true,
+					"Name": "Dossier parent",
+					"Plugin": {
+						"Name": "Open Parent Folder",
+						"UUID": "com.elgato.streamdeck.profile.backtoparent",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.elgato.streamdeck.profile.backtoparent"
+				},
+				"1,0": {
+					"ActionID": "5d6ad9ec-b9be-4576-bc4e-6b772fbaffbd",
+					"LinkedTitle": true,
+					"Name": "Power",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.power"
+				},
+				"2,0": {
+					"ActionID": "131ecd61-79af-44d0-8ba7-2e6d1689c6c7",
+					"LinkedTitle": true,
+					"Name": "Create Folder",
+					"Plugin": {
+						"Name": "Create Folder",
+						"UUID": "com.elgato.streamdeck.profile.openchild",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"ProfileUUID": "35591c85-7aa2-4200-81ee-efeb4f9f5ee8"
+					},
+					"State": 0,
+					"States": [
+						{
+							"FontFamily": "",
+							"FontSize": 12,
+							"FontStyle": "",
+							"FontUnderline": false,
+							"Image": "Images/GMYOR0J1HEMBGG3574YJ3KDZTZ.png",
+							"OutlineThickness": 2,
+							"ShowTitle": true,
+							"TitleAlignment": "top",
+							"TitleColor": "#ffffff"
+						}
+					],
+					"UUID": "com.elgato.streamdeck.profile.openchild"
+				},
+				"3,0": {
+					"ActionID": "c0fc71f7-0968-4e98-9189-6da971344860",
+					"LinkedTitle": true,
+					"Name": "Special mode",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "powerful"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.special-mode"
+				},
+				"0,1": {
+					"ActionID": "f86325ac-1824-404a-adfd-bf836c3c79cf",
+					"LinkedTitle": true,
+					"Name": "Special mode",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "econo"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.special-mode"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "53a8a5c1-78c3-4166-88f7-4b8df03de2ec",
+					"LinkedTitle": true,
+					"Name": "Climate",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.dial"
+				},
+				"1,0": {
+					"ActionID": "978365f5-f41d-447f-8627-64924794dedb",
+					"LinkedTitle": true,
+					"Name": "Info",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.info"
+				},
+				"2,0": {
+					"ActionID": "31ae98ed-cf96-4950-ad3d-7bbd86d43003",
+					"LinkedTitle": true,
+					"Name": "Energy",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.energy"
+				},
+				"3,0": {
+					"ActionID": "88edefaa-2ba9-4a92-a191-39e5a9e8e168",
+					"LinkedTitle": true,
+					"Name": "Fan dial",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.fan-dial"
+				}
+			},
+			"Type": "Encoder"
+		}
+	],
+	"Icon": "",
+	"Name": ""
+}
