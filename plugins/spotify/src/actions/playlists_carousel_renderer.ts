@@ -1,5 +1,6 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { DialAction } from '@elgato/streamdeck';
+import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
 
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
@@ -106,7 +107,7 @@ export class PlaylistsCarouselRenderer {
 		const { position } = request;
 		const backdrop = toDialBackdrop(
 			this.options.readBackdropCover(),
-			request.dial.coordinates.column
+			resolveStripColumn(request.dial.coordinates)
 		);
 		const { playlists } = this.options.catalog;
 		const center = Math.round(position);

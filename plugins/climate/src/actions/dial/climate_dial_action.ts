@@ -59,7 +59,7 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 	override async onDialRotate(
 		ev: DialRotateEvent<ClimateActionSettings>
 	): Promise<void> {
-		if (this.consumeWake()) {
+		if (this.consumeWake('other')) {
 			return;
 		}
 		await this.runChange(ev.action, (state, config) => {
@@ -74,7 +74,7 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 	}
 
 	override onDialDown(ev: DialDownEvent<ClimateActionSettings>): void {
-		if (this.consumeWake()) {
+		if (this.consumeWake('press')) {
 			return;
 		}
 		this.drafts.press(ev.action.id);
@@ -83,7 +83,7 @@ export class ClimateDialAction extends ClimateStripAction<DialConfig> {
 	override async onDialUp(
 		ev: DialUpEvent<ClimateActionSettings>
 	): Promise<void> {
-		if (this.consumeWake()) {
+		if (this.consumeWake('release')) {
 			return;
 		}
 		const targetTemperature = this.drafts.release(ev.action.id);

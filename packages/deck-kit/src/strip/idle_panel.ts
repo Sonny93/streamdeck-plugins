@@ -1,6 +1,9 @@
 import { toSvgDataUrl } from '../text/to_svg_data_url';
 import type { IdleDial } from './idle_dial';
 import type { IdlePanelOptions } from './idle_panel_options';
+import { IdleTiming } from './idle_timing';
+import { WakeGate } from './wake_gate';
+import type { WakeGesture } from './wake_gesture';
 
 const DEFAULT_FEEDBACK_KEY = 'canvas';
 
@@ -13,7 +16,8 @@ function encodeAsDataUrl(svg: string): Promise<string | undefined> {
  * Every dial of the plugin attaches itself and draws the slice of its column; a column without a dial of the plugin stays as it is.
  * It shows only while the plugin says its content is available, and draws again whenever that content changes.
  * It follows the inactivity monitor and the content only while a dial is attached.
- * The first interaction on a dial only wakes the dials (`wake`): the caller must then do nothing else.
+ * A page that opens counts as activity: the panel shows only after the full delay spent on that page without touching a dial.
+ * While the panel shows, a gesture on a dial only wakes the dials (`wake`), however long it lasts: see `WakeGate`.
  */
 export class IdlePanel {
 	private readonly dials = new Map<string, IdleDial>();
@@ -21,10 +25,17 @@ export class IdlePanel {
 	private readonly sentSlices = new Map<string, string>();
 	private readonly shownListeners = new Set<() => void>();
 	private readonly hiddenListeners = new Set<() => void>();
+	private readonly wakeGate: WakeGate;
 	private unsubscribes: (() => void)[] | undefined;
 	private wasShowing = false;
 
-	constructor(private readonly options: IdlePanelOptions) {}
+	constructor(private readonly options: IdlePanelOptions) {
+		this.wakeGate = new WakeGate({
+			schedule: options.schedule,
+			quietMilliseconds:
+				options.wakeQuietMilliseconds ?? IdleTiming.wakeQuietMilliseconds,
+		});
+	}
 
 	/** Whether the dials currently show the panel instead of their own content. */
 	get isShowing(): boolean {
@@ -35,8 +46,11 @@ export class IdlePanel {
 		);
 	}
 
-	/** Adds a dial that appeared (or replaces it when it moved); the first dial starts the panel. */
+	/** Adds a dial that appeared (or replaces it when it moved); the first dial starts the panel and restarts the inactivity delay. */
 	attach(dial: IdleDial): void {
+		if (this.dials.size === 0) {
+			this.options.inactivity.recordActivity();
+		}
 		this.dials.set(dial.id, dial);
 		this.sentSlices.delete(dial.id);
 		this.start();
@@ -68,11 +82,11 @@ export class IdlePanel {
 		};
 	}
 
-	/** Records an interaction on a dial; returns whether the panel was showing, i.e. the interaction only woke the dials. */
-	wake(): boolean {
+	/** Records an interaction on a dial; returns whether the event must be swallowed because it only wakes the dials. */
+	wake(gesture: WakeGesture = 'other'): boolean {
 		const wasShowing = this.isShowing;
 		this.options.inactivity.recordActivity();
-		return wasShowing;
+		return this.wakeGate.swallow(gesture, wasShowing);
 	}
 
 	private start(): void {

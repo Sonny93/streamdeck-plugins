@@ -1,3 +1,8 @@
+import { IdleTiming } from 'deck-kit/strip/idle_timing';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
+import { WakeGate } from 'deck-kit/strip/wake_gate';
+import type { WakeGesture } from 'deck-kit/strip/wake_gesture';
+
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
 import { buildNowPlayingLyrics } from './build_now_playing_lyrics';
 import { buildNowPlayingSvg } from './build_now_playing_svg';
@@ -16,9 +21,11 @@ const CANVAS_FEEDBACK_KEY = 'canvas';
 type LoadedCover = Readonly<{ url: string; dataUrl: string | undefined }>;
 
 function isUnderLyrics(column: number): boolean {
-	const { segmentWidth, lyrics } = NowPlayingMetrics;
-	const sliceLeft = column * segmentWidth;
-	return sliceLeft < lyrics.right && sliceLeft + segmentWidth > lyrics.left;
+	const { lyrics } = NowPlayingMetrics;
+	const sliceLeft = column * StripPanel.slotWidth;
+	return (
+		sliceLeft < lyrics.right && sliceLeft + StripPanel.slotWidth > lyrics.left
+	);
 }
 
 type LoadedLyrics = Readonly<{
@@ -39,6 +46,7 @@ export class NowPlayingScreen {
 	private readonly hiddenListeners = new Set<() => void>();
 	private readonly backdropListeners = new Set<() => void>();
 	private readonly ticker: ProgressTicker;
+	private readonly wakeGate: WakeGate;
 	private showing = false;
 	private cover: LoadedCover | undefined;
 	private backdrop: string | undefined;
@@ -51,6 +59,10 @@ export class NowPlayingScreen {
 	private unsubscribes: (() => void)[] | undefined;
 
 	constructor(private readonly options: NowPlayingScreenOptions) {
+		this.wakeGate = new WakeGate({
+			schedule: options.schedule,
+			quietMilliseconds: IdleTiming.wakeQuietMilliseconds,
+		});
 		this.ticker = new ProgressTicker({
 			schedule: options.schedule,
 			intervalMilliseconds: NowPlayingTiming.progressIntervalMilliseconds,
@@ -65,8 +77,14 @@ export class NowPlayingScreen {
 		return this.showing;
 	}
 
-	/** Adds a dial that appeared (or replaces it when it moved), drawing on it at once while the screen shows; the first dial starts the screen. */
+	/**
+	 * Adds a dial that appeared (or replaces it when it moved), drawing on it at once while the screen shows; the first dial starts the screen
+	 * and restarts the inactivity delay: a page that opens counts as activity.
+	 */
 	attach(dial: NowPlayingDial): void {
+		if (this.dials.size === 0) {
+			this.options.inactivity.recordActivity();
+		}
 		this.dials.set(dial.id, dial);
 		this.start();
 		if (this.showing) {
@@ -103,11 +121,14 @@ export class NowPlayingScreen {
 		};
 	}
 
-	/** Records an interaction on a dial; returns whether the screen was showing, i.e. the interaction only woke the dials. */
-	wake(): boolean {
+	/**
+	 * Records an interaction on a dial; returns whether the event must be swallowed because it only wakes the dials:
+	 * while the screen shows, and until the dials were left alone for the quiet period of `WakeGate`.
+	 */
+	wake(gesture: WakeGesture = 'other'): boolean {
 		const wasShowing = this.showing;
 		this.options.inactivity.recordActivity();
-		return wasShowing;
+		return this.wakeGate.swallow(gesture, wasShowing);
 	}
 
 	/** Draws the playing track on every attached dial; does nothing while the screen is not showing. */
@@ -125,7 +146,7 @@ export class NowPlayingScreen {
 				const image = await this.options.encodeFrame(
 					buildNowPlayingSvg({
 						frame,
-						sliceLeft: dial.column * NowPlayingMetrics.segmentWidth,
+						sliceLeft: dial.column * StripPanel.slotWidth,
 					})
 				);
 				if (image !== undefined) {

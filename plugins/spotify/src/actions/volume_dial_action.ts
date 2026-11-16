@@ -11,6 +11,7 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
 import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { AudioMixer } from '../audio/audio_mixer';
@@ -134,7 +135,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	}
 
 	override onDialRotate(ev: DialRotateEvent<VolumeDialSettings>): void {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('other')) {
 			return;
 		}
 		this.enqueue(ev.action, (target) =>
@@ -143,14 +144,14 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	}
 
 	override onDialDown(ev: DialDownEvent<VolumeDialSettings>): void {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('press')) {
 			return;
 		}
 		this.enqueue(ev.action, (target) => this.controller.toggleMute(target));
 	}
 
 	override onTouchTap(ev: TouchTapEvent<VolumeDialSettings>): void {
-		if (this.nowPlaying.wake()) {
+		if (this.nowPlaying.wake('other')) {
 			return;
 		}
 		this.enqueue(ev.action, (target) => this.controller.toggleMute(target));
@@ -236,7 +237,10 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		try {
 			const svg = buildVolumeDialSvg(
 				await this.controller.read(target),
-				toDialBackdrop(this.nowPlaying.backdropCover, dial.coordinates.column)
+				toDialBackdrop(
+					this.nowPlaying.backdropCover,
+					resolveStripColumn(dial.coordinates)
+				)
 			);
 			if (this.nowPlaying.isShowing || this.lastSvgs.get(dial.id) === svg) {
 				return;

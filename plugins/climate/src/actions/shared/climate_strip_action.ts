@@ -7,8 +7,8 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import type { IdlePanel } from 'deck-kit/strip/idle_panel';
-import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
-import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
+import { StripDialSurface } from 'deck-kit/strip/strip_dial_surface';
+import type { WakeGesture } from 'deck-kit/strip/wake_gesture';
 
 import type { ClimateHub } from '../../climate/climate_hub';
 import type { ClimateView } from '../../climate/climate_view';
@@ -17,28 +17,27 @@ import { ClimateAction } from './climate_action';
 import type { ClimateActionHandle } from './climate_action_handle';
 import type { ClimateActionSettings } from './climate_action_settings';
 
-const CANVAS_FEEDBACK_KEY = 'canvas';
-
 /**
- * Base of the dials that draw one 200 px picture on their slot of the touch strip, as an SVG data URL.
- * The picture is only sent again when it changed, since the strips are redrawn on every poll of the unit.
- * While the idle dashboard shows, the dial draws nothing of its own, and any interaction on it only wakes the dials;
- * the dials that do something override the handlers and start with `consumeWake`.
+ * Base of the dials that draw one 200 px picture on their slot of the touch strip.
+ * The shared `StripDialSurface` takes care of the idle panel: the dial draws nothing of its own while it shows,
+ * and any event on the dial only wakes the dials; the dials that do something override the handlers and start with `consumeWake`.
  */
 export abstract class ClimateStripAction<
 	TConfig,
 > extends ClimateAction<TConfig> {
-	private readonly lastImages = new Map<string, string>();
+	private readonly surface: StripDialSurface;
 
 	constructor(
 		hub: ClimateHub,
 		addressPanel: UnitAddressPanel,
-		protected readonly idle: IdlePanel
+		idle: IdlePanel
 	) {
 		super(hub, addressPanel);
-		idle.onHidden(() => {
-			this.lastImages.clear();
-			void this.redrawAll();
+		this.surface = new StripDialSurface({
+			idle,
+			redraw: () => {
+				void this.redrawAll();
+			},
 		});
 	}
 
@@ -46,12 +45,7 @@ export abstract class ClimateStripAction<
 		ev: WillAppearEvent<ClimateActionSettings>
 	): Promise<void> {
 		if (ev.action.isDial()) {
-			const dial = ev.action;
-			this.idle.attach({
-				id: dial.id,
-				column: resolveStripColumn(dial.coordinates),
-				setFeedback: (feedback) => dial.setFeedback(feedback),
-			});
+			this.surface.appear(ev.action);
 		}
 		await super.onWillAppear(ev);
 	}
@@ -59,38 +53,37 @@ export abstract class ClimateStripAction<
 	override onWillDisappear(
 		ev: WillDisappearEvent<ClimateActionSettings>
 	): void {
-		this.lastImages.delete(ev.action.id);
-		this.idle.detach(ev.action.id);
+		this.surface.disappear(ev.action.id);
 		super.onWillDisappear(ev);
 	}
 
 	override onDialRotate(
 		_ev: DialRotateEvent<ClimateActionSettings>
 	): Promise<void> | void {
-		this.consumeWake();
+		this.consumeWake('other');
 	}
 
 	override onDialDown(
 		_ev: DialDownEvent<ClimateActionSettings>
 	): Promise<void> | void {
-		this.consumeWake();
+		this.consumeWake('press');
 	}
 
 	override onDialUp(
 		_ev: DialUpEvent<ClimateActionSettings>
 	): Promise<void> | void {
-		this.consumeWake();
+		this.consumeWake('release');
 	}
 
 	override onTouchTap(
 		_ev: TouchTapEvent<ClimateActionSettings>
 	): Promise<void> | void {
-		this.consumeWake();
+		this.consumeWake('other');
 	}
 
-	/** Records an interaction; returns whether the idle dashboard was showing, i.e. the interaction must do nothing more. */
-	protected consumeWake(): boolean {
-		return this.idle.wake();
+	/** Records an interaction; returns whether the event must be swallowed because it only wakes the dials. */
+	protected consumeWake(gesture: WakeGesture): boolean {
+		return this.surface.consumeWake(gesture);
 	}
 
 	protected abstract buildStripSvg(
@@ -105,21 +98,11 @@ export abstract class ClimateStripAction<
 		view: ClimateView,
 		config: TConfig
 	): Promise<void> {
-		if (!action.isDial() || this.idle.isShowing) {
+		if (!action.isDial()) {
 			return;
 		}
-		const image = toSvgDataUrl(
-			this.buildStripSvg(
-				action.id,
-				view,
-				config,
-				resolveStripColumn(action.coordinates)
-			)
+		await this.surface.draw(action, (column) =>
+			this.buildStripSvg(action.id, view, config, column)
 		);
-		if (this.lastImages.get(action.id) === image) {
-			return;
-		}
-		this.lastImages.set(action.id, image);
-		await action.setFeedback({ [CANVAS_FEEDBACK_KEY]: image });
 	}
 }

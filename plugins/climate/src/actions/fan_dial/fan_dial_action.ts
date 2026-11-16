@@ -19,7 +19,7 @@ export class FanDialAction extends ClimateStripAction<undefined> {
 	override async onDialRotate(
 		ev: DialRotateEvent<ClimateActionSettings>
 	): Promise<void> {
-		if (this.consumeWake()) {
+		if (this.consumeWake('other')) {
 			return;
 		}
 		await this.runChange(ev.action, (state) => {
@@ -37,7 +37,7 @@ export class FanDialAction extends ClimateStripAction<undefined> {
 	override async onDialDown(
 		ev: DialDownEvent<ClimateActionSettings>
 	): Promise<void> {
-		if (this.consumeWake()) {
+		if (this.consumeWake('press')) {
 			return;
 		}
 		await this.runChange(ev.action, (state) =>

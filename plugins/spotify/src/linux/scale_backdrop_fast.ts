@@ -1,7 +1,7 @@
-import { NowPlayingMetrics } from '../actions/now_playing_metrics';
+import { StripPanel } from 'deck-kit/strip/strip_panel';
 
 const BACKDROP_IMAGE = new RegExp(
-	`<image (?=[^>]*width="${NowPlayingMetrics.stripWidth}")`,
+	`<image (?=[^>]*width="${StripPanel.width}")`,
 	'g'
 );
 
