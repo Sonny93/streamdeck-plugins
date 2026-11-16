@@ -38,6 +38,12 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 - On OpenDeck, the property inspector lists (outputs, inputs, monitors, apps, devices) fill in as soon as the inspector opens instead of staying on "Looking for ...".
 - Display Deck no longer piles up monitor reads when a monitor is slow to answer.
+- Climate Deck no longer reads the unit again each time a page flip brings its keys back: it waits the 10 s minimum between two reads.
+- Linux: a volume or mute change in Audio Deck reads the devices once instead of twice.
+- Linux: Audio Deck looks for an unplugged Volt 1 less and less often, down to every 30 s, and goes back to every 2 s once it is found.
+- Display Deck reports an error in its log instead of an unhandled rejection when the display system cannot be read after a change.
+- Linux: Spotify Deck runs at most four `fc-match` lookups at a time when a title holds many unusual characters.
+- The status of the Climate Deck address field is cleared when the language changes, and the language options of the property inspectors are marked with their language for screen readers.
 
 ## [1.2.0] - 2026-11-08
 

@@ -282,9 +282,14 @@ export class DisplayHub {
 	}
 
 	private publishCurrent(): void {
-		void this.options.loadDisplaySystem().then((system) => {
-			this.publish(this.buildSnapshot(system));
-		});
+		void this.options
+			.loadDisplaySystem()
+			.then((system) => {
+				this.publish(this.buildSnapshot(system));
+			})
+			.catch((error: unknown) => {
+				this.options.onError(error);
+			});
 	}
 
 	private startPolling(): void {

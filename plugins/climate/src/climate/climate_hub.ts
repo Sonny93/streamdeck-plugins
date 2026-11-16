@@ -30,6 +30,8 @@ export class ClimateHub {
 	private sensors: SensorReading | undefined;
 	private energy: UnitEnergy | undefined;
 	private nextEnergyReadAt = 0;
+	/** When the last read of the current unit ended, to space the first read after a subscribe. */
+	private lastReadFinishedAt: number | undefined;
 	private specialWrite: Promise<void> = Promise.resolve();
 	/** The special mode write talking to the unit now, so a patch write waits for it. */
 	private activeSpecialWrite: Promise<void> | undefined;
@@ -87,6 +89,7 @@ export class ClimateHub {
 		this.sensors = undefined;
 		this.energy = undefined;
 		this.nextEnergyReadAt = 0;
+		this.lastReadFinishedAt = undefined;
 		this.isUnreachable = false;
 		this.pollIntervalMilliseconds = this.options.pollIntervalMilliseconds;
 		this.stopPolling();
@@ -226,6 +229,7 @@ export class ClimateHub {
 		}
 		try {
 			const snapshot = await driver.readSnapshot();
+			this.lastReadFinishedAt = this.options.now();
 			if (this.isStale(generation, writeEpoch)) {
 				return;
 			}
@@ -233,6 +237,7 @@ export class ClimateHub {
 			this.sensors = snapshot.sensors;
 			this.markReachable();
 		} catch (error) {
+			this.lastReadFinishedAt = this.options.now();
 			if (this.isStale(generation, writeEpoch)) {
 				return;
 			}
@@ -265,7 +270,23 @@ export class ClimateHub {
 		}
 		const token = Symbol('poll');
 		this.pollToken = token;
-		this.runPoll(token);
+		const delay = this.computeFirstPollDelay(this.driver);
+		if (delay === 0) {
+			this.runPoll(token);
+			return;
+		}
+		this.cancelPoll = this.options.schedule(() => {
+			this.runPoll(token);
+		}, delay);
+	}
+
+	/** The unit gets no read sooner than its minimum interval after the previous one, however often the listeners come and go. */
+	private computeFirstPollDelay(driver: UnitDriver): number {
+		if (this.lastReadFinishedAt === undefined) {
+			return 0;
+		}
+		const elapsed = this.options.now() - this.lastReadFinishedAt;
+		return Math.max(0, driver.hints.minimumPollIntervalMs - elapsed);
 	}
 
 	private stopPolling(): void {
@@ -285,7 +306,9 @@ export class ClimateHub {
 			return;
 		}
 		void this.read()
-			.then(() => this.readEnergyIfDue())
+			.then(() =>
+				this.pollToken === token ? this.readEnergyIfDue() : undefined
+			)
 			.then(() => {
 				this.scheduleNextPoll(token);
 			});

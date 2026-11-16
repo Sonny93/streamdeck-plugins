@@ -10,6 +10,8 @@ import { VoltStateUnknownError } from './volt_state_unknown_error';
 import type { VoltStatus } from './volt_status';
 
 const RECONNECT_DELAY_MILLISECONDS = 2000;
+const FAST_RECONNECT_ATTEMPTS = 3;
+const MAXIMUM_RECONNECT_DELAY_MILLISECONDS = 30_000;
 const MONITOR_AND_PHANTOM_POWER_ON = 0x19;
 
 function flushPromises(): Promise<void> {
@@ -20,19 +22,23 @@ function flushPromises(): Promise<void> {
 
 function createHub(openConnection: () => Promise<FakeVoltConnection>) {
 	const scheduled: Array<() => void> = [];
+	const delays: number[] = [];
 	const onError = vi.fn();
 	const hub = new VoltHub({
 		openConnection,
-		schedule: (callback) => {
+		schedule: (callback, delayMilliseconds) => {
 			scheduled.push(callback);
+			delays.push(delayMilliseconds);
 			return () => undefined;
 		},
 		reconnectDelayMilliseconds: RECONNECT_DELAY_MILLISECONDS,
+		fastReconnectAttempts: FAST_RECONNECT_ATTEMPTS,
+		maximumReconnectDelayMilliseconds: MAXIMUM_RECONNECT_DELAY_MILLISECONDS,
 		onError,
 	});
 	const statuses: VoltStatus[] = [];
 	hub.subscribe((status) => statuses.push(status));
-	return { hub, scheduled, onError, statuses };
+	return { hub, scheduled, delays, onError, statuses };
 }
 
 async function connectHub() {
@@ -144,5 +150,52 @@ describe('VoltHub', () => {
 		scheduled[0]?.();
 		await flushPromises();
 		expect(hub.current).toEqual({ kind: 'waitingForState' });
+	});
+
+	it('backs off up to the maximum while the Volt 1 stays absent, then starts over once it is found', async () => {
+		const openConnection = vi
+			.fn<() => Promise<FakeVoltConnection>>()
+			.mockRejectedValue(new VoltNotFoundError());
+		const { hub, scheduled, delays } = createHub(openConnection);
+		hub.start();
+		await flushPromises();
+
+		for (let attempt = 0; attempt < 9; attempt += 1) {
+			scheduled.at(-1)?.();
+			await flushPromises();
+		}
+		const delaysWhileAbsent = [...delays];
+		openConnection.mockResolvedValueOnce(new FakeVoltConnection());
+		scheduled.at(-1)?.();
+		await flushPromises();
+
+		expect(delaysWhileAbsent).toEqual([
+			2000, 2000, 2000, 4000, 8000, 16_000, 30_000, 30_000, 30_000, 30_000,
+		]);
+		expect(hub.current).toEqual({ kind: 'waitingForState' });
+	});
+
+	it('uses the short delay again after the Volt 1 was found and unplugged', async () => {
+		const openConnection = vi
+			.fn<() => Promise<FakeVoltConnection>>()
+			.mockRejectedValueOnce(new VoltNotFoundError())
+			.mockRejectedValueOnce(new VoltNotFoundError())
+			.mockRejectedValueOnce(new VoltNotFoundError())
+			.mockRejectedValueOnce(new VoltNotFoundError());
+		const connection = new FakeVoltConnection();
+		openConnection.mockResolvedValueOnce(connection);
+		const { hub, scheduled, delays } = createHub(openConnection);
+		hub.start();
+		await flushPromises();
+		for (let attempt = 0; attempt < 4; attempt += 1) {
+			scheduled.at(-1)?.();
+			await flushPromises();
+		}
+
+		connection.unplug();
+		await flushPromises();
+
+		expect(delays.at(-2)).toBe(2000 * 2);
+		expect(delays.at(-1)).toBe(2000);
 	});
 });

@@ -3,12 +3,14 @@
  * deck-kit owns this file: each plugin build copies it next to its bundle (bin/language_inspector.js), and its pages load it from there.
  * The English text is the text written in the page; an element with a French text carries it in an attribute:
  * data-fr for its text, data-fr-label for its label attribute, data-fr-placeholder for its placeholder, data-fr-loading for its loading attribute.
- * A plugin script can read InspectorLanguage.current, the language the plugin last sent.
+ * A plugin script can read InspectorLanguage.current, the language the plugin last sent,
+ * and listen to the "inspectorlanguagechange" event on document, fired when that language changes.
  */
 const InspectorLanguage = { current: 'en' };
 
 (function () {
 	const LANGUAGE_EVENT = 'language';
+	const LANGUAGE_CHANGE_EVENT = 'inspectorlanguagechange';
 	const FRENCH = 'fr';
 	const languageSelect = document.getElementById('language-select');
 	const streamDeckClient = SDPIComponents.streamDeckClient;
@@ -18,6 +20,7 @@ const InspectorLanguage = { current: 'en' };
 	}
 
 	function applyLanguage(language) {
+		const hasChanged = InspectorLanguage.current !== language;
 		InspectorLanguage.current = language;
 		document.documentElement.lang = language;
 		for (const element of document.querySelectorAll('[data-fr]')) {
@@ -53,6 +56,9 @@ const InspectorLanguage = { current: 'en' };
 					? element.dataset.frLoading
 					: element.dataset.enLoading
 			);
+		}
+		if (hasChanged) {
+			document.dispatchEvent(new Event(LANGUAGE_CHANGE_EVENT));
 		}
 	}
 

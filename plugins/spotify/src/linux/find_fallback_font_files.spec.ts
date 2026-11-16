@@ -46,4 +46,24 @@ describe('createFallbackFontFinder', () => {
 			await createFallbackFontFinder({ runCommand })([0x591c])
 		).toStrictEqual([]);
 	});
+
+	it('should run at most four lookups at the same time', async () => {
+		let running = 0;
+		let peak = 0;
+		const runCommand = vi.fn<CommandRunner>(async () => {
+			running += 1;
+			peak = Math.max(peak, running);
+			await new Promise((resolve) => {
+				setImmediate(resolve);
+			});
+			running -= 1;
+			return 'Noto\t/f/a.ttf\n';
+		});
+		const codePoints = Array.from({ length: 32 }, (_, index) => 0x4e00 + index);
+
+		await createFallbackFontFinder({ runCommand })(codePoints);
+
+		expect(runCommand).toHaveBeenCalledTimes(32);
+		expect(peak).toBe(4);
+	});
 });

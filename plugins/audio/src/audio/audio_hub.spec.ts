@@ -213,6 +213,35 @@ describe('AudioHub', () => {
 		expect(cancelPoll).toHaveBeenCalledOnce();
 	});
 
+	it('reads once for a volume change and the change notice it causes', async () => {
+		let notifyChange: () => void = () => undefined;
+		const coreAudio = createCoreAudio();
+		const readSnapshot = vi.spyOn(coreAudio, 'readSnapshot');
+		const { hub, scheduled, delays } = createHub(coreAudio, (onChange) => {
+			notifyChange = onChange;
+			return () => undefined;
+		});
+		hub.subscribe(() => undefined);
+		await flushPromises();
+		const readsBefore = readSnapshot.mock.calls.length;
+
+		const change = hub.changeVolume(
+			{ kind: 'device', deviceId: 'speakers' },
+			1
+		);
+		notifyChange();
+		await change;
+		notifyChange();
+		scheduled
+			.filter((_, index) => delays[index] === CHANGE_DEBOUNCE_MILLISECONDS)
+			.forEach((callback) => {
+				callback();
+			});
+		await flushPromises();
+
+		expect(readSnapshot.mock.calls.length - readsBefore).toBe(1);
+	});
+
 	it('refuses to change the default device of a direction that has none', async () => {
 		const coreAudio = new FakeCoreAudio();
 		coreAudio.plug(buildAudioDevice('headphones'));

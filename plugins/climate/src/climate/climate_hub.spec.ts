@@ -25,10 +25,12 @@ function createHub(
 	timings: Readonly<{
 		energyIntervalMilliseconds?: number;
 		energyRetryMilliseconds?: number;
+		minimumPollIntervalMs?: number;
 	}> = {}
 ) {
+	const { minimumPollIntervalMs, ...hubTimings } = timings;
 	const scheduler = createFakeScheduler();
-	const unit = createFakeUnitDriver();
+	const unit = createFakeUnitDriver(minimumPollIntervalMs);
 	const onError = vi.fn();
 	const hub = new ClimateHub({
 		createDriver: () => unit.driver,
@@ -38,7 +40,7 @@ function createHub(
 		energyIntervalMilliseconds: ENERGY_INTERVAL,
 		energyRetryMilliseconds: ENERGY_RETRY,
 		now: scheduler.now,
-		...timings,
+		...hubTimings,
 		onError,
 	});
 	hub.setHost(TEST_HOST);
@@ -118,6 +120,53 @@ describe('ClimateHub polling', () => {
 		await scheduler.settle();
 
 		expect([statusBeforeRead, hub.view.status]).toEqual(['loading', 'ready']);
+	});
+});
+
+describe('ClimateHub polling after listeners come and go', () => {
+	const MINIMUM_POLL_INTERVAL = 10_000;
+
+	it('should not read again when listeners leave and return within the minimum interval', async () => {
+		const { hub, scheduler, unit } = createHub({
+			minimumPollIntervalMs: MINIMUM_POLL_INTERVAL,
+		});
+		const unsubscribeFirst = hub.subscribe(() => undefined);
+		unit.answerRead(buildUnitSnapshotForTest());
+		await scheduler.settle();
+		unsubscribeFirst();
+
+		for (let flip = 0; flip < 3; flip += 1) {
+			await scheduler.advance(1_000);
+			hub.subscribe(() => undefined)();
+		}
+
+		expect(unit.readCount()).toBe(1);
+	});
+
+	it('should read once the minimum interval has passed after a listener returns', async () => {
+		const { hub, scheduler, unit } = createHub({
+			minimumPollIntervalMs: MINIMUM_POLL_INTERVAL,
+		});
+		hub.subscribe(() => undefined)();
+		unit.answerRead(buildUnitSnapshotForTest());
+		await scheduler.settle();
+		await scheduler.advance(3_000);
+
+		hub.subscribe(() => undefined);
+		await scheduler.advance(MINIMUM_POLL_INTERVAL - 3_000);
+
+		expect(unit.readCount()).toBe(2);
+	});
+
+	it('should not read the energy when the poll stopped before its read resolved', async () => {
+		const { hub, scheduler, unit } = createHub();
+		const unsubscribe = hub.subscribe(() => undefined);
+
+		unsubscribe();
+		unit.answerRead(buildUnitSnapshotForTest());
+		await scheduler.settle();
+
+		expect(unit.energyReadCount()).toBe(0);
 	});
 });
 

@@ -49,7 +49,9 @@ export type FakeUnitDriver = Readonly<{
 }>;
 
 /** A driver whose reads and writes wait until the test answers them, to hold them in flight. */
-export function createFakeUnitDriver(): FakeUnitDriver {
+export function createFakeUnitDriver(
+	minimumPollIntervalMs = 0
+): FakeUnitDriver {
 	const reads: Deferred<UnitSnapshot>[] = [];
 	const writes: Deferred<UnitState>[] = [];
 	const patches: DesiredUnitState[] = [];
@@ -64,7 +66,7 @@ export function createFakeUnitDriver(): FakeUnitDriver {
 	let writesAnswered = 0;
 
 	const driver: UnitDriver = {
-		hints: { minimumPollIntervalMs: 0 },
+		hints: { minimumPollIntervalMs },
 		readSnapshot: () => {
 			readsStarted += 1;
 			const read = createDeferred<UnitSnapshot>();

@@ -21,6 +21,10 @@ streamDeckClient.sendToPropertyInspector.subscribe((event) => {
 	}
 });
 
+document.addEventListener('inspectorlanguagechange', () => {
+	statusMessage.textContent = '';
+});
+
 saveButton.addEventListener('click', () => {
 	saveButton.disabled = true;
 	statusMessage.textContent = CHECKING_MESSAGES[InspectorLanguage.current];

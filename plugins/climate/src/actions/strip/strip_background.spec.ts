@@ -14,6 +14,7 @@ import type { StripTone } from './strip_tone';
 import { StripTones } from './strip_tones';
 
 const MINIMUM_CONTRAST = 4.5;
+const MINIMUM_GRAPHIC_CONTRAST = 3;
 const TONES = [
 	'heat',
 	'cool',
@@ -63,6 +64,18 @@ describe('the strip backgrounds', () => {
 			);
 		}
 	});
+
+	it.each(TONES)(
+		'should keep the dimmed accent visible as a graphic over the lightest stop of the %s tone',
+		(tone) => {
+			const background = lightestStop(tone);
+			const dimmed = blendOver(StripPalette.accent, background, DIMMED_OPACITY);
+
+			expect(computeContrastRatio(dimmed, background)).toBeGreaterThanOrEqual(
+				MINIMUM_GRAPHIC_CONTRAST
+			);
+		}
+	);
 
 	it.each(TONES)(
 		'should keep every text color readable at every point of the whole panel in the %s tone',

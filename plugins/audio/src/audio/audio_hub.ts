@@ -29,6 +29,8 @@ export class AudioHub {
 	private lastChange: Promise<unknown> = Promise.resolve();
 	private lastRefresh: Promise<unknown> = Promise.resolve();
 	private queuedRefresh: Promise<AudioSnapshot | undefined> | undefined;
+	private readsStarted = 0;
+	private changeRefreshesInFlight = 0;
 
 	constructor(private readonly options: AudioHubOptions) {}
 
@@ -72,7 +74,7 @@ export class AudioHub {
 				coreAudio.setDefaultDevice(deviceId)
 			)
 		);
-		await this.refresh();
+		await this.refreshAfterChange();
 	}
 
 	async toggleMute(target: AudioTarget): Promise<void> {
@@ -81,7 +83,7 @@ export class AudioHub {
 				coreAudio.toggleMute(deviceId)
 			)
 		);
-		await this.refresh();
+		await this.refreshAfterChange();
 	}
 
 	/** Moves the volume by a number of steps (negative to lower it), unmuting the device; steps asked while a change waits are added to it. */
@@ -108,7 +110,20 @@ export class AudioHub {
 			pending.steps += steps;
 			await pending.done;
 		}
-		await this.refresh();
+		await this.refreshAfterChange();
+	}
+
+	/**
+	 * Reads right after one of our own changes, so the dial shows it without waiting for the platform notice.
+	 * The notice that change causes is then covered by this read, so it does not start a second one.
+	 */
+	private async refreshAfterChange(): Promise<void> {
+		this.changeRefreshesInFlight += 1;
+		try {
+			await this.refresh();
+		} finally {
+			this.changeRefreshesInFlight -= 1;
+		}
 	}
 
 	private enqueue(change: () => Promise<void>): Promise<void> {
@@ -133,6 +148,7 @@ export class AudioHub {
 	}
 
 	private async readAndPublish(): Promise<AudioSnapshot | undefined> {
+		this.readsStarted += 1;
 		try {
 			const coreAudio = await this.options.loadCoreAudio();
 			this.publish(await coreAudio.readSnapshot());
@@ -167,11 +183,15 @@ export class AudioHub {
 	}
 
 	private refreshSoon(): void {
-		if (this.cancelDebounce !== undefined) {
+		if (this.cancelDebounce !== undefined || this.changeRefreshesInFlight > 0) {
 			return;
 		}
+		const readsStartedAtNotice = this.readsStarted;
 		this.cancelDebounce = this.options.schedule(() => {
 			this.cancelDebounce = undefined;
+			if (this.readsStarted > readsStartedAtNotice) {
+				return;
+			}
 			void this.refresh();
 		}, this.options.changeDebounceMilliseconds);
 	}

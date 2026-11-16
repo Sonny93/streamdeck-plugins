@@ -24,6 +24,7 @@ export class VoltHub {
 	private connection: VoltConnection | undefined;
 	private lastChange: Promise<unknown> = Promise.resolve();
 	private isStarted = false;
+	private consecutiveMisses = 0;
 
 	constructor(private readonly options: VoltHubOptions) {}
 
@@ -77,6 +78,7 @@ export class VoltHub {
 		try {
 			const connection = await this.options.openConnection();
 			this.connection = connection;
+			this.consecutiveMisses = 0;
 			this.publish({ kind: 'waitingForState' });
 			await this.followReports(connection);
 		} catch (error) {
@@ -87,7 +89,21 @@ export class VoltHub {
 		this.publish({ kind: 'disconnected' });
 		this.options.schedule(() => {
 			void this.connect();
-		}, this.options.reconnectDelayMilliseconds);
+		}, this.nextReconnectDelay());
+	}
+
+	/** Short at first so a replug is noticed quickly, then doubling up to the maximum while the Volt 1 stays absent. */
+	private nextReconnectDelay(): number {
+		const { reconnectDelayMilliseconds, fastReconnectAttempts } = this.options;
+		this.consecutiveMisses += 1;
+		const slowMisses = this.consecutiveMisses - fastReconnectAttempts;
+		if (slowMisses <= 0) {
+			return reconnectDelayMilliseconds;
+		}
+		return Math.min(
+			reconnectDelayMilliseconds * 2 ** slowMisses,
+			this.options.maximumReconnectDelayMilliseconds
+		);
 	}
 
 	/** Reads reports until the Volt 1 is gone, which rejects. */

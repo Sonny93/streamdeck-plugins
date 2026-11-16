@@ -32,6 +32,9 @@ const voltHub = new VoltHub({
 	openConnection: platform.openVoltConnection,
 	schedule: scheduleTimeout,
 	reconnectDelayMilliseconds: VoltTiming.reconnectDelayMilliseconds,
+	fastReconnectAttempts: VoltTiming.fastReconnectAttempts,
+	maximumReconnectDelayMilliseconds:
+		VoltTiming.maximumReconnectDelayMilliseconds,
 	onError: (error) => streamDeck.logger.debug('Volt 1 unavailable', error),
 });
 

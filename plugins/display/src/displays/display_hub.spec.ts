@@ -119,6 +119,31 @@ describe('DisplayHub', () => {
 		expect(monitorOf(hub, UserSetup.topIiyama.id)?.monitorBrightness).toBe(45);
 	});
 
+	it('should report through onError when the display system cannot be loaded to show a change', async () => {
+		const system = createSystem();
+		const loadFailure = new Error('System unavailable');
+		let isLoadFailing = false;
+		const onError = vi.fn();
+		const hub = new DisplayHub({
+			loadDisplaySystem: () =>
+				isLoadFailing ? Promise.reject(loadFailure) : Promise.resolve(system),
+			schedule: () => () => undefined,
+			pollIntervalMilliseconds: 2000,
+			onError,
+		});
+		await hub.refresh();
+		isLoadFailing = true;
+
+		await hub
+			.setBrightness(UserSetup.topIiyama.id, 'monitor', 30)
+			.catch(() => undefined);
+		await new Promise((resolve) => {
+			setImmediate(resolve);
+		});
+
+		expect(onError).toHaveBeenCalledWith(loadFailure);
+	});
+
 	it('merges the brightness changes asked while one is written', async () => {
 		const system = createSystem();
 		const { hub } = createHub(system);
