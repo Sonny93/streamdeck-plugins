@@ -1,10 +1,10 @@
+import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { describe, expect, it, vi } from 'vitest';
 
 import { buildClimateViewForTest } from '../climate/build_climate_view_for_test';
 import type { ClimateView } from '../climate/climate_view';
 import { createFakeScheduler } from '../climate/create_fake_scheduler';
 import { IdleDashboard } from './idle_dashboard';
-import { InactivityMonitor } from './inactivity_monitor';
 
 const DELAY = 5000;
 
