@@ -1,5 +1,7 @@
 import { audioFolderGlyph } from './audio_folder_glyph.ts';
 import { backGlyph } from './back_glyph.ts';
+import { climateFolderGlyph } from './climate_folder_glyph.ts';
+import { climateModesFolderGlyph } from './climate_modes_folder_glyph.ts';
 import { displayFolderGlyph } from './display_folder_glyph.ts';
 import { folderGlyph } from './folder_glyph.ts';
 import { IconPalette } from './icon_palette.ts';
@@ -31,6 +33,22 @@ export const PackIcons: readonly PackIcon[] = [
 		glyph: displayFolderGlyph,
 		color: IconPalette.display,
 		label: 'Display',
+	},
+	{
+		id: 'climate-folder',
+		name: 'Climate folder',
+		tags: ['folder', 'climate', 'air conditioning'],
+		glyph: climateFolderGlyph,
+		color: IconPalette.climate,
+		label: 'Climat',
+	},
+	{
+		id: 'climate-modes-folder',
+		name: 'Climate modes folder',
+		tags: ['folder', 'climate', 'air conditioning', 'modes'],
+		glyph: climateModesFolderGlyph,
+		color: IconPalette.climate,
+		label: 'Modes',
 	},
 	{
 		id: 'macros-folder',
