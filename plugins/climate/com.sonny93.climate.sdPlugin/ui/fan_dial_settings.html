@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+	<head lang="fr">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="">
+			<details>
+				<summary>Fonctionnement du cadran</summary>
+				<p>
+					Tournez pour changer la vitesse de ventilation (auto, silence, puis 1
+					à 5), sans aller au-delà des extrémités : plusieurs crans ne font
+					qu'une seule modification. Appuyez pour activer ou couper le balayage.
+				</p>
+			</details>
+		</sdpi-item>
+		<sdpi-item label="Adresse de la climatisation">
+			<sdpi-textfield
+				id="unit-address"
+				placeholder="Adresse sur votre réseau"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="">
+			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+		</sdpi-item>
+		<sdpi-item label="">
+			<p id="address-status" role="status"></p>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos de l'adresse</summary>
+				<p>
+					Adresse de l'unité sur votre réseau local, partagée par toutes les
+					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
+					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
+					votre box (réservation DHCP) pour qu'elle ne change pas.
+				</p>
+			</details>
+		</sdpi-item>
+		<script src="unit_address.js"></script>
+	</body>
+</html>

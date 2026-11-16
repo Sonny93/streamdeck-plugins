@@ -5,7 +5,7 @@ Stream Deck + plugins for Windows (Stream Deck app) and Linux (OpenDeck), one pn
 ## Verify
 
 - `mise x -- pnpm check` from the root runs lint, format check, typecheck and the tests of every package. Node and pnpm come from mise and are not on the bare PATH.
-- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck|display-deck|deck-kit|icon-pack|release-tools> exec vitest run <path>`.
+- One test file: `mise x -- pnpm --filter <audio-deck|spotify-deck|display-deck|climate-deck|deck-kit|icon-pack|release-tools> exec vitest run <path>`.
 - Package tests run one at a time (`--workspace-concurrency=1`): vitest 5 shares its module cache at the workspace root, and parallel runs fail with `ENOTEMPTY` on `node_modules/.vitest-cache`.
 - `mise x -- pnpm package` writes the release files into `dist/` and needs a `pnpm build` first.
 - `mise x -- pnpm format` can need a second run before `format:check` passes, because the lint fixes and oxfmt's import sorting each change the other's output.
@@ -17,7 +17,7 @@ Stream Deck + plugins for Windows (Stream Deck app) and Linux (OpenDeck), one pn
 
 - Load `typescript-conventions` before touching TypeScript, and `commit` to commit.
 - Every user-visible change adds a line under `## [Unreleased]` in `CHANGELOG.md` in the same commit: release-it fails on an empty section.
-- Keys share one look: background `#121212`, one accent per domain (amber `#FFB020` audio, green `#1DB954` Spotify, sky blue `#4FC3F7` displays, white for neutral folders, grey for navigation), and a label the plugin draws in SVG in the icon color, because a plugin cannot change the color of the native title.
+- Keys share one look: background `#121212`, one accent per domain (amber `#FFB020` audio, green `#1DB954` Spotify, sky blue `#4FC3F7` displays, mint `#5EEAD4` climate, white for neutral folders, grey for navigation), and a label the plugin draws in SVG in the icon color, because a plugin cannot change the color of the native title.
 
 ## Decisions
 
@@ -40,6 +40,8 @@ Stream Deck + plugins for Windows (Stream Deck app) and Linux (OpenDeck), one pn
 - OpenDeck runs a `.js` plugin with the `node` on the user's `PATH` (not mise) and always reports `platform: "windows"` in its info: branch on `process.platform`, never on the SDK info.
 - On Linux, KWin owns the DDC/CI brightness of monitors where `kscreen-doctor -j` shows `ddcCiAllowed: true`: go through `kscreen-doctor` there, never `ddcutil` brightness, or KWin restores its own value. `ddcutil` costs about 0.4 s of CPU per call on the user's nvidia GPU, so it never runs on the 2 s poll.
 - Windows APIs go through koffi FFI instead of native addons, so no C++ toolchain is needed: the tsdown config copies the prebuilt `@koromix/koffi-win32-x64` into `bin/node_modules`, and `allowBuilds` keeps koffi's install script off.
+- Climate Deck keeps the address of the air conditioner in the plugin's global settings, never in an action's settings, because exported profiles are committed here; its tests and docs use loopback or documentation addresses, and `climate_files_privacy.spec.ts` fails on a private address or a MAC.
+- Climate Deck shows its text in French (strips, keys, inspectors, manifest), unlike the other plugins: its only user is French. Code, README and docs stay in English.
 - `.gitattributes` forces LF because Git for Windows checks out CRLF here (`core.autocrlf=true`), which makes oxfmt flag every file.
 
 ## Rejected

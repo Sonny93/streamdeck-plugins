@@ -14,6 +14,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 - Linux: the black screen of Screen Power is not available, because Wayland does not let a plugin draw over the desktop. A new Screen Power key uses the standby, and one set to black screen shows as unavailable.
 - Linux: Restart Elgato Audio shows as unavailable, since Elgato has no audio server there.
 - Linux: Spotify shows in the app list of the volume dial, and covers, backdrops and playlist thumbnails show on the touch strip. The plugin draws the strip frames as PNG with resvg compiled to WebAssembly, because OpenDeck drops pictures inside SVG frames; a frame that fails to draw is skipped instead of stopping the plugin.
+- Climate Deck, a new plugin for a Daikin air conditioner with the local HTTP API, on Windows and Linux: a dial for the target temperature (turn to choose, push to apply, hold to cancel), dials for the outdoor temperature, the consumption and the fan, keys for power, presets and the Powerful and Econo modes, and a dashboard across the touch strip while the dials are idle. Its text is in French.
 
 ### Changed
 
