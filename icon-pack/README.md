@@ -2,13 +2,15 @@
 
 An icon pack for the keys a plugin cannot draw on, the native folders and their Back key, in the look of the plugin keys: a stroked icon and a label in one accent color on a dark key.
 
-| Icon           | Color    |
-| -------------- | -------- |
-| Audio folder   | Amber    |
-| Spotify folder | Green    |
-| Display folder | Sky blue |
-| Macros folder  | White    |
-| Back           | Grey     |
+| Icon                 | Color    |
+| -------------------- | -------- |
+| Audio folder         | Amber    |
+| Spotify folder       | Green    |
+| Display folder       | Sky blue |
+| Climate folder       | Mint     |
+| Climate modes folder | Mint     |
+| Macros folder        | White    |
+| Back                 | Grey     |
 
 Each icon comes three ways: label on top, label at the bottom, and no label for a key that uses the native title. The label positions match the labels of Audio Deck.
 
