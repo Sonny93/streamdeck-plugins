@@ -12,7 +12,17 @@ An icon pack for the keys a plugin cannot draw on, the native folders and their 
 | Macros folder        | White    |
 | Back                 | Grey     |
 
-Each icon comes three ways: label on top, label at the bottom, and no label for a key that uses the native title. The label positions match the labels of Audio Deck.
+Each icon comes five ways, named `<id>.png` for the image without label (for a key that uses the native title) and `<id>-label-top-<language>.png` and `<id>-label-bottom-<language>.png` for the label on top and at the bottom, with `<language>` being `en` or `fr`. In the key image menu they read like "Display folder, label at the bottom (French)". The label positions match the labels of Audio Deck.
+
+| Icon                 | English | French    |
+| -------------------- | ------- | --------- |
+| Audio folder         | Audio   | Audio     |
+| Spotify folder       | Spotify | Spotify   |
+| Display folder       | Display | Affichage |
+| Climate folder       | Climate | Climat    |
+| Climate modes folder | Modes   | Modes     |
+| Macros folder        | Macros  | Macros    |
+| Back                 | Back    | Retour    |
 
 Labels use the bundled Selawik Bold font (SIL OFL, in [`fonts/`](fonts)), so the build looks the same on any OS.
 
