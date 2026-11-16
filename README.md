@@ -2,12 +2,13 @@
 
 Stream Deck plugins for Windows and Linux, built for the Stream Deck +: Spotify control, PC audio control (Universal Audio Volt 1, system audio devices) and monitor control, plus an icon pack and a Stream Deck + profile, in one pnpm workspace.
 
-| Package                                   | What it does                                                        |
-| ----------------------------------------- | ------------------------------------------------------------------- |
-| [Spotify Deck](plugins/spotify/README.md) | The Spotify desktop app: playback, likes, playlists, lyrics, volume |
-| [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, system audio devices            |
-| [Display Deck](plugins/display/README.md) | Monitors: turning them off, brightness, HDR                         |
-| [Sonny93 Keys](icon-pack/README.md)       | Icon pack for the native folder and Back keys                       |
+| Package                                   | What it does                                                                           |
+| ----------------------------------------- | -------------------------------------------------------------------------------------- |
+| [Spotify Deck](plugins/spotify/README.md) | The Spotify desktop app: playback, likes, playlists, lyrics, volume                    |
+| [Audio Deck](plugins/audio/README.md)     | Universal Audio Volt 1 front panel, system audio devices                               |
+| [Display Deck](plugins/display/README.md) | Monitors: turning them off, brightness, HDR                                            |
+| [Climate Deck](plugins/climate/README.md) | A Daikin air conditioner on the local network: power, target temperature, presets, fan |
+| [Sonny93 Keys](icon-pack/README.md)       | Icon pack for the native folder and Back keys                                          |
 
 A Stream Deck + profile lays the keys and dials of these plugins out over several pages.
 

@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+	<head lang="fr">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Mode">
+			<sdpi-select setting="mode">
+				<option value="">Garder le mode actuel</option>
+				<option value="cool">Froid</option>
+				<option value="heat">Chaud</option>
+				<option value="auto">Auto</option>
+				<option value="dry">Déshumidification</option>
+				<option value="fan">Ventilation</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Consigne (°C)">
+			<sdpi-textfield
+				setting="temperature"
+				pattern="\d{2}([.,]5)?"
+				placeholder="Garder la consigne actuelle"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Ventilation">
+			<sdpi-select setting="fanRate">
+				<option value="">Garder la vitesse actuelle</option>
+				<option value="auto">Auto</option>
+				<option value="silent">Silence</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos des préréglages</summary>
+				<p>
+					Avec un mode, la touche allume la climatisation dans ce mode. Sans
+					mode, elle règle seulement la consigne et la ventilation dans le mode
+					actuel et ne touche pas à la marche. Les modes déshumidification et
+					ventilation n'ont pas de consigne, et la consigne doit convenir au
+					mode : de 18 à 32 en froid, de 10 à 30 en chaud, de 18 à 30 en auto,
+					par pas de 0,5. Un préréglage inapplicable s'affiche comme
+					indisponible.
+				</p>
+			</details>
+		</sdpi-item>
+		<sdpi-item label="Libellé">
+			<sdpi-textfield
+				setting="label"
+				placeholder="Mode et consigne"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Position du libellé">
+			<sdpi-select setting="labelPosition" default="top">
+				<option value="top">Haut</option>
+				<option value="bottom">Bas</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Adresse de la climatisation">
+			<sdpi-textfield
+				id="unit-address"
+				placeholder="Adresse sur votre réseau"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="">
+			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+		</sdpi-item>
+		<sdpi-item label="">
+			<p id="address-status" role="status"></p>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos de l'adresse</summary>
+				<p>
+					Adresse de l'unité sur votre réseau local, partagée par toutes les
+					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
+					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
+					votre box (réservation DHCP) pour qu'elle ne change pas.
+				</p>
+			</details>
+		</sdpi-item>
+		<script src="unit_address.js"></script>
+	</body>
+</html>

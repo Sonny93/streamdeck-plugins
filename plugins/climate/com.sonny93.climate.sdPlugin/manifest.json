@@ -1,0 +1,184 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"Name": "Climate Deck",
+	"Version": "0.1.0.0",
+	"Author": "Sonny93",
+	"Description": "Pilotez une climatisation Daikin depuis le Stream Deck, sur votre réseau local : marche / arrêt, consigne, préréglages, ventilation, modes spéciaux, infos et consommation.",
+	"UUID": "com.sonny93.climate",
+	"Category": "Climate Deck",
+	"CategoryIcon": "imgs/plugin/category-icon",
+	"Icon": "imgs/plugin/marketplace",
+	"CodePath": "bin/plugin.js",
+	"SDKVersion": 3,
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
+	"Actions": [
+		{
+			"Name": "Climat",
+			"UUID": "com.sonny93.climate.dial",
+			"Icon": "imgs/actions/climate/icon",
+			"Tooltip": "Choisit la consigne de la climatisation avec le cadran et la valide d'une pression. Affiche la température de la pièce.",
+			"PropertyInspectorPath": "ui/dial_settings.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/climate.json",
+				"Icon": "imgs/actions/climate/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Choisir la consigne",
+					"Push": "Valider (maintenir pour annuler)"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/climate/key"
+				}
+			]
+		},
+		{
+			"Name": "Ventilation",
+			"UUID": "com.sonny93.climate.fan-dial",
+			"Icon": "imgs/actions/fan-dial/icon",
+			"Tooltip": "Change la vitesse de ventilation en tournant le cadran, et active ou coupe le balayage d'une pression.",
+			"PropertyInspectorPath": "ui/fan_dial_settings.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/climate.json",
+				"Icon": "imgs/actions/fan-dial/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Changer la vitesse de ventilation",
+					"Push": "Activer / couper le balayage"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/fan-dial/key"
+				}
+			]
+		},
+		{
+			"Name": "Info",
+			"UUID": "com.sonny93.climate.info",
+			"Icon": "imgs/actions/info/icon",
+			"Tooltip": "Affiche la température extérieure, l'état du compresseur et les modes spéciaux actifs.",
+			"PropertyInspectorPath": "ui/info_settings.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/climate.json",
+				"Icon": "imgs/actions/info/dial-icon"
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/info/key"
+				}
+			]
+		},
+		{
+			"Name": "Énergie",
+			"UUID": "com.sonny93.climate.energy",
+			"Icon": "imgs/actions/energy/icon",
+			"Tooltip": "Affiche l'énergie consommée par la climatisation aujourd'hui et sur 7 jours.",
+			"PropertyInspectorPath": "ui/energy_settings.html",
+			"Controllers": ["Encoder"],
+			"Encoder": {
+				"layout": "layouts/climate.json",
+				"Icon": "imgs/actions/energy/dial-icon"
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/energy/key"
+				}
+			]
+		},
+		{
+			"Name": "Marche / arrêt",
+			"UUID": "com.sonny93.climate.power",
+			"Icon": "imgs/actions/power/icon",
+			"Tooltip": "Allume ou éteint la climatisation, s'allume quand elle fonctionne et affiche la température de la pièce.",
+			"PropertyInspectorPath": "ui/power_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/power/key-off"
+				},
+				{
+					"Image": "imgs/actions/power/key"
+				},
+				{
+					"Image": "imgs/actions/power/key-unavailable"
+				}
+			]
+		},
+		{
+			"Name": "Préréglage",
+			"UUID": "com.sonny93.climate.preset",
+			"Icon": "imgs/actions/preset/icon",
+			"Tooltip": "Règle la climatisation sur un mode, une consigne et une vitesse de ventilation, et s'allume tant qu'elle y correspond.",
+			"PropertyInspectorPath": "ui/preset_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/preset/key-off"
+				},
+				{
+					"Image": "imgs/actions/preset/key"
+				},
+				{
+					"Image": "imgs/actions/preset/key-unavailable"
+				}
+			]
+		},
+		{
+			"Name": "Ventilateur",
+			"UUID": "com.sonny93.climate.fan",
+			"Icon": "imgs/actions/fan/icon",
+			"Tooltip": "Passe à la vitesse de ventilation suivante à chaque pression, ou active et coupe le balayage.",
+			"PropertyInspectorPath": "ui/fan_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/fan/key-off"
+				},
+				{
+					"Image": "imgs/actions/fan/key"
+				},
+				{
+					"Image": "imgs/actions/fan/key-unavailable"
+				}
+			]
+		},
+		{
+			"Name": "Mode spécial",
+			"UUID": "com.sonny93.climate.special-mode",
+			"Icon": "imgs/actions/special-mode/icon",
+			"Tooltip": "Active ou coupe le mode puissant ou éco de la climatisation, et s'allume tant qu'il est actif.",
+			"PropertyInspectorPath": "ui/special_mode_settings.html",
+			"Controllers": ["Keypad"],
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/special-mode/key-off"
+				},
+				{
+					"Image": "imgs/actions/special-mode/key"
+				},
+				{
+					"Image": "imgs/actions/special-mode/key-unavailable"
+				}
+			]
+		}
+	]
+}

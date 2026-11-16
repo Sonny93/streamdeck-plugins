@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+	<head lang="fr">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Pas">
+			<sdpi-select setting="step" default="0.5">
+				<option value="0.5">0,5 °C par cran</option>
+				<option value="1">1 °C par cran</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>Fonctionnement du cadran</summary>
+				<p>
+					Tournez pour choisir une consigne : le cadran l'affiche en couleur
+					sous « À VALIDER » et rien n'est envoyé. Appuyez brièvement pour la
+					valider, ou maintenez le cadran enfoncé environ une demi-seconde pour
+					l'annuler. Un choix laissé de côté est annulé après 10 secondes.
+				</p>
+			</details>
+		</sdpi-item>
+		<sdpi-item label="Adresse de la climatisation">
+			<sdpi-textfield
+				id="unit-address"
+				placeholder="Adresse sur votre réseau"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="">
+			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+		</sdpi-item>
+		<sdpi-item label="">
+			<p id="address-status" role="status"></p>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos de l'adresse</summary>
+				<p>
+					Adresse de l'unité sur votre réseau local, partagée par toutes les
+					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
+					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
+					votre box (réservation DHCP) pour qu'elle ne change pas.
+				</p>
+			</details>
+		</sdpi-item>
+		<script src="unit_address.js"></script>
+	</body>
+</html>

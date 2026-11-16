@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+	<head lang="fr">
+		<meta charset="utf-8" />
+		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
+	</head>
+	<body>
+		<sdpi-item label="Mode">
+			<sdpi-select setting="mode" default="powerful">
+				<option value="powerful">Puissant</option>
+				<option value="econo">Éco</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos des modes spéciaux</summary>
+				<p>
+					Puissant et Éco se remplacent l'un l'autre. La touche s'allume tant
+					que le mode est actif, et se contente d'afficher une alerte quand la
+					climatisation est éteinte.
+				</p>
+			</details>
+		</sdpi-item>
+		<sdpi-item label="Libellé">
+			<sdpi-textfield
+				setting="label"
+				placeholder="Nom du mode"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="Position du libellé">
+			<sdpi-select setting="labelPosition" default="top">
+				<option value="top">Haut</option>
+				<option value="bottom">Bas</option>
+			</sdpi-select>
+		</sdpi-item>
+		<sdpi-item label="Adresse de la climatisation">
+			<sdpi-textfield
+				id="unit-address"
+				placeholder="Adresse sur votre réseau"
+			></sdpi-textfield>
+		</sdpi-item>
+		<sdpi-item label="">
+			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+		</sdpi-item>
+		<sdpi-item label="">
+			<p id="address-status" role="status"></p>
+		</sdpi-item>
+		<sdpi-item label="">
+			<details>
+				<summary>À propos de l'adresse</summary>
+				<p>
+					Adresse de l'unité sur votre réseau local, partagée par toutes les
+					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
+					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
+					votre box (réservation DHCP) pour qu'elle ne change pas.
+				</p>
+			</details>
+		</sdpi-item>
+		<script src="unit_address.js"></script>
+	</body>
+</html>
