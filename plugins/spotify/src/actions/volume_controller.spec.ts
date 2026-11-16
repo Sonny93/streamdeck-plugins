@@ -43,11 +43,20 @@ describe('VolumeController', () => {
 	it('should read the volume of Spotify', async () => {
 		const { controller } = buildController();
 
-		expect(await controller.read({ kind: 'spotify' })).toEqual({
+		expect(await controller.read({ kind: 'spotify' }, 'en')).toEqual({
 			caption: 'SPOTIFY',
 			name: 'Spotify',
 			volume: 0.5,
 			isMuted: false,
+		});
+	});
+
+	it('should write the caption and the name in French', async () => {
+		const { controller } = buildController();
+
+		expect(await controller.read({ kind: 'focused' }, 'fr')).toMatchObject({
+			caption: 'APPLI ACTIVE',
+			name: 'Aucune appli',
 		});
 	});
 
@@ -57,7 +66,7 @@ describe('VolumeController', () => {
 			foreground: 'discord.exe',
 		});
 
-		expect(await controller.read({ kind: 'focused' })).toEqual({
+		expect(await controller.read({ kind: 'focused' }, 'en')).toEqual({
 			caption: 'FOCUSED APP',
 			name: 'Discord',
 			volume: 0.3,
@@ -68,7 +77,7 @@ describe('VolumeController', () => {
 	it('should name the foreground app even when it plays no sound', async () => {
 		const { controller } = buildController({ foreground: 'explorer.exe' });
 
-		expect(await controller.read({ kind: 'focused' })).toMatchObject({
+		expect(await controller.read({ kind: 'focused' }, 'en')).toMatchObject({
 			name: 'Explorer',
 			volume: undefined,
 		});
@@ -78,7 +87,7 @@ describe('VolumeController', () => {
 		const { controller } = buildController();
 
 		expect(
-			await controller.read({ kind: 'app', imageName: undefined })
+			await controller.read({ kind: 'app', imageName: undefined }, 'en')
 		).toMatchObject({ caption: 'APP', name: 'Pick an app', volume: undefined });
 	});
 
@@ -149,8 +158,8 @@ describe('VolumeController', () => {
 		const { controller, mixer } = buildController();
 
 		await Promise.all([
-			controller.read({ kind: 'spotify' }),
-			controller.read({ kind: 'spotify' }),
+			controller.read({ kind: 'spotify' }, 'en'),
+			controller.read({ kind: 'spotify' }, 'en'),
 		]);
 
 		expect(mixer.listApps).toHaveBeenCalledOnce();
@@ -159,8 +168,8 @@ describe('VolumeController', () => {
 	it('should list again once the previous listing is done', async () => {
 		const { controller, mixer } = buildController();
 
-		await controller.read({ kind: 'spotify' });
-		await controller.read({ kind: 'spotify' });
+		await controller.read({ kind: 'spotify' }, 'en');
+		await controller.read({ kind: 'spotify' }, 'en');
 
 		expect(mixer.listApps).toHaveBeenCalledTimes(2);
 	});
@@ -196,7 +205,7 @@ describe('VolumeController', () => {
 			foreground: 'discord.exe',
 		});
 
-		await controller.read({ kind: 'focused' });
+		await controller.read({ kind: 'focused' }, 'en');
 
 		expect(mixer.readForegroundApp).toHaveBeenCalledWith({});
 	});
@@ -214,7 +223,7 @@ describe('VolumeController', () => {
 			foregroundApp: { imageName: '===>>> BeamNGMa', processId: 49_021 },
 		});
 
-		expect(await controller.read({ kind: 'focused' })).toMatchObject({
+		expect(await controller.read({ kind: 'focused' }, 'en')).toMatchObject({
 			name: 'BeamNG.drive',
 			volume: 0.4,
 		});

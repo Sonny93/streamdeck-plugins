@@ -9,14 +9,15 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
-import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import { listSpotifyDevices } from '../spotify/list_spotify_devices';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
 import type { SpotifyDevice } from '../spotify/spotify_device';
 import { transferSpotifyPlayback } from '../spotify/transfer_spotify_playback';
 import { buildDeviceKeySvg } from './build_device_key_svg';
+import { LanguageInspectorChannel } from './language/language_inspector_channel';
 import { listDeviceChoices } from './list_device_choices';
 import type { PlayOnDeviceSettings } from './play_on_device_settings';
 import { playOnDeviceSettingsSchema } from './play_on_device_settings_schema';
@@ -26,9 +27,6 @@ import { resolveDeviceKey } from './resolve_device_key';
 import { runSpotifyAction } from './run_spotify_action';
 import { SpotifyDevicesDataSource } from './spotify_devices_data_source';
 
-type PropertyInspectorPayload = Parameters<
-	typeof streamDeck.ui.sendToPropertyInspector
->[0];
 type DeviceKey = KeyAction<PlayOnDeviceSettings>;
 type PlayOnDeviceSendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<PlayOnDeviceSettings>['onSendToPlugin']>
@@ -51,15 +49,17 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	private readonly lastImages = new Map<string, string>();
 	private knownDevices: readonly SpotifyDevice[] = [];
 	private unsubscribe: (() => void) | undefined;
-	private readonly replies =
-		new PropertyInspectorReplies<PropertyInspectorPayload>({
-			readCurrentActionId: () => streamDeck.ui.action?.id,
-			sendToCurrent: (payload) =>
-				streamDeck.ui.sendToPropertyInspector(payload),
-		});
+	private readonly inspector: LanguageInspectorChannel;
 
-	constructor(private readonly playerStateHub: PlayerStateHub) {
+	constructor(
+		private readonly playerStateHub: PlayerStateHub,
+		private readonly languageStore: LanguageStore
+	) {
 		super();
+		this.inspector = new LanguageInspectorChannel(languageStore);
+		languageStore.subscribe(() => {
+			void this.renderAll();
+		});
 	}
 
 	override async onWillAppear(
@@ -78,7 +78,7 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	override onWillDisappear(ev: WillDisappearEvent<PlayOnDeviceSettings>): void {
 		this.settings.delete(ev.action.id);
 		this.lastImages.delete(ev.action.id);
-		this.replies.forget(ev.action.id);
+		this.inspector.forget(ev.action.id);
 		if (this.settings.size > 0) {
 			return;
 		}
@@ -108,6 +108,9 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	override async onSendToPlugin(
 		ev: PlayOnDeviceSendToPluginEvent
 	): Promise<void> {
+		if (await this.inspector.handle(ev.action.id, ev.payload)) {
+			return;
+		}
 		const request = SpotifyDevicesDataSource.readRequest(ev.payload);
 		if (request === undefined) {
 			return;
@@ -118,7 +121,7 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	override async onPropertyInspectorDidAppear(
 		ev: PropertyInspectorDidAppearEvent<PlayOnDeviceSettings>
 	): Promise<void> {
-		await this.replies.deliverPending(ev.action.id);
+		await this.inspector.deliverTo(ev.action.id);
 		await this.answerDeviceList(ev.action, false);
 	}
 
@@ -137,12 +140,16 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 		}
 		try {
 			const settings = readSettings(await action.getSettings());
-			await this.replies.reply({
+			await this.inspector.replies.reply({
 				actionId: action.id,
 				event: SpotifyDevicesDataSource.event,
 				payload: {
 					event: SpotifyDevicesDataSource.event,
-					items: listDeviceChoices({ devices, settings }),
+					items: listDeviceChoices({
+						devices,
+						settings,
+						language: this.languageStore.current,
+					}),
 				},
 			});
 			if (action.isKey()) {
@@ -189,6 +196,7 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 				resolveDeviceKey({
 					settings,
 					activeDeviceId: this.playerStateHub.current?.activeDeviceId,
+					language: this.languageStore.current,
 				})
 			)
 		);

@@ -19,6 +19,8 @@ All notable changes to streamdeck-plugins are written here for the people who us
 - Climate Deck exists in English and French: it follows the system language, and a Language setting in its property inspectors forces one.
 - Display Deck exists in English and French, with the same Language setting. Its Brightness Dial draws its own strip on a background shared across the dials (monitor name, brightness, HDR badge, "Off"), and after 5 s without touching the dials they show one panel with a slot per monitor.
 - Audio Deck exists in English and French, with the same Language setting. Its Device Volume dial draws its own strip on a background shared across the dials (device name, volume, "Muted"), and after 5 s without touching the dials they show one panel with the default output, the default input and the Volt 1 buttons (Monitor, Vintage, 48V, read-only).
+- Spotify Deck exists in English and French, with a Language setting in every property inspector that follows the system by default.
+- Choosing the playlist of the Like key no longer erases the other global settings of Spotify Deck.
 
 ### Changed
 

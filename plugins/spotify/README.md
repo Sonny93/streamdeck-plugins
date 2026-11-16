@@ -16,6 +16,10 @@ Install and develop it as described in the [root README](../../README.md).
 - **Open search**: brings Spotify to the front with the search field focused.
 - **Show Spotify**: brings the Spotify window to the foreground.
 
+## Language
+
+The plugin exists in English and French: the keys, the touch strips and the property inspectors. Every property inspector has a **Language / Langue** select with three choices: follow the system (the default), French, or English. The choice is kept in the global settings of the plugin, next to the playlist of the Like key, and redraws every key and strip at once. Following the system reads the locale from the environment of the plugin (`LC_ALL`, then `LC_MESSAGES`, then `LANG`), then from the runtime when none is set; any locale that is not French gives English. Track, artist, playlist, device and app names, the lyrics and the covers come from Spotify and the system, and are not translated; only Liked Songs is named "Titres likés" in French. The names and tooltips of the actions in the Stream Deck app follow the language of that app (`fr.json` next to the manifest); OpenDeck shows them in English.
+
 ## How the plugin reaches Spotify
 
 Spotify has no local API for its desktop app, so the plugin drives the app through its Chrome DevTools port, `9229` on `localhost`. Spotify opens that port only when it is launched with `--remote-debugging-port`:

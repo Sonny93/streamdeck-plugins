@@ -11,8 +11,8 @@ import type {
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
-import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { AudioMixer } from '../audio/audio_mixer';
 import type { FrameEncoder } from '../platform/frame_encoder';
@@ -20,6 +20,7 @@ import type { SpotifyHost } from '../platform/spotify_host';
 import { AudioAppsDataSource } from './audio_apps_data_source';
 import { buildVolumeDialSvg } from './build_volume_dial_svg';
 import { BusyKeys } from './busy_keys';
+import { LanguageInspectorChannel } from './language/language_inspector_channel';
 import { listAudioAppChoices } from './list_audio_app_choices';
 import type { NowPlayingScreen } from './now_playing_screen';
 import { ProgressTicker } from './progress_ticker';
@@ -31,9 +32,6 @@ import { VolumeController } from './volume_controller';
 import type { VolumeDialSettings } from './volume_dial_settings';
 import type { VolumeTarget } from './volume_target';
 
-type PropertyInspectorPayload = Parameters<
-	typeof streamDeck.ui.sendToPropertyInspector
->[0];
 type VolumeDial = DialAction<VolumeDialSettings>;
 type VolumeSendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<VolumeDialSettings>['onSendToPlugin']>
@@ -63,21 +61,17 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	private readonly controller: VolumeController;
 	private readonly ticker: ProgressTicker;
 
-	private readonly replies =
-		new PropertyInspectorReplies<PropertyInspectorPayload>({
-			readCurrentActionId: () => streamDeck.ui.action?.id,
-			sendToCurrent: (payload) =>
-				streamDeck.ui.sendToPropertyInspector(payload),
-		});
-
+	private readonly inspector: LanguageInspectorChannel;
 	private readonly mixer: AudioMixer;
 	private readonly encodeFrame: FrameEncoder;
 
 	constructor(
 		host: SpotifyHost,
-		private readonly nowPlaying: NowPlayingScreen
+		private readonly nowPlaying: NowPlayingScreen,
+		private readonly languageStore: LanguageStore
 	) {
 		super();
+		this.inspector = new LanguageInspectorChannel(languageStore);
 		this.mixer = host.audioMixer;
 		this.encodeFrame = host.encodeFrame;
 		this.controller = new VolumeController(
@@ -96,6 +90,9 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 			void this.renderAll();
 		});
 		nowPlaying.onBackdropChanged(() => {
+			void this.renderAll();
+		});
+		languageStore.subscribe(() => {
 			void this.renderAll();
 		});
 	}
@@ -117,7 +114,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 		this.targets.delete(ev.action.id);
 		this.lastSvgs.delete(ev.action.id);
 		this.queues.delete(ev.action.id);
-		this.replies.forget(ev.action.id);
+		this.inspector.forget(ev.action.id);
 		this.nowPlaying.detach(ev.action.id);
 		if (this.targets.size === 0) {
 			this.ticker.stop();
@@ -158,6 +155,9 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	}
 
 	override async onSendToPlugin(ev: VolumeSendToPluginEvent): Promise<void> {
+		if (await this.inspector.handle(ev.action.id, ev.payload)) {
+			return;
+		}
 		if (!AudioAppsDataSource.isRequest(ev.payload)) {
 			return;
 		}
@@ -167,7 +167,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 	override async onPropertyInspectorDidAppear(
 		ev: PropertyInspectorDidAppearEvent<VolumeDialSettings>
 	): Promise<void> {
-		await this.replies.deliverPending(ev.action.id);
+		await this.inspector.deliverTo(ev.action.id);
 		await this.answerAppList(ev.action);
 	}
 
@@ -178,7 +178,7 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 				apps: await this.mixer.listApps(),
 				pickedImageName: settings.appImageName,
 			});
-			await this.replies.reply({
+			await this.inspector.replies.reply({
 				actionId: action.id,
 				event: AudioAppsDataSource.event,
 				payload: { event: AudioAppsDataSource.event, items },
@@ -235,8 +235,10 @@ export class VolumeDialAction extends SingletonAction<VolumeDialSettings> {
 			return;
 		}
 		try {
+			const language = this.languageStore.current;
 			const svg = buildVolumeDialSvg(
-				await this.controller.read(target),
+				await this.controller.read(target, language),
+				language,
 				toDialBackdrop(
 					this.nowPlaying.backdropCover,
 					resolveStripColumn(dial.coordinates)

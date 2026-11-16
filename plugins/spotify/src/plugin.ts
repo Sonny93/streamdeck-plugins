@@ -1,6 +1,8 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
+import { LanguageStore } from 'deck-kit/i18n/language_store';
+import { readSystemLocale } from 'deck-kit/i18n/read_system_locale';
 import { IdleTiming } from 'deck-kit/strip/idle_timing';
 
 import { LikeAction } from './actions/like_action';
@@ -20,6 +22,7 @@ import { UiStateHub } from './actions/ui_state_hub';
 import { VolumeDialAction } from './actions/volume_dial_action';
 import { CurrentSpotifyHost } from './platform/current_spotify_host';
 import { loadSpotifyHost } from './platform/load_spotify_host';
+import { streamDeckGlobalSettings } from './settings/stream_deck_global_settings';
 import { fetchCoverDataUrl } from './spotify/fetch_cover_data_url';
 import { fetchTrackLyrics } from './spotify/fetch_track_lyrics';
 import { prepareSpotifyOnStartup } from './startup/prepare_spotify_on_startup';
@@ -28,7 +31,17 @@ const spotifyHost = await loadSpotifyHost();
 CurrentSpotifyHost.provide(spotifyHost);
 
 const playerStateHub = new PlayerStateHub();
-const likeTargetStore = new LikeTargetStore();
+const likeTargetStore = new LikeTargetStore(streamDeckGlobalSettings);
+const languageStore = new LanguageStore({
+	settings: streamDeckGlobalSettings,
+	readSystemLocale: () =>
+		readSystemLocale({
+			environment: process.env,
+			readIntlLocale: () => Intl.DateTimeFormat().resolvedOptions().locale,
+		}),
+	onError: (error) =>
+		streamDeck.logger.warn('Cannot draw again after a language change', error),
+});
 const uiStateHub = new UiStateHub();
 const inactivity = new InactivityMonitor({
 	delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
@@ -49,10 +62,16 @@ const nowPlaying = new NowPlayingScreen({
 
 streamDeck.actions.registerAction(new OpenSearchAction(uiStateHub));
 streamDeck.actions.registerAction(new ShowSpotifyAction(uiStateHub));
-streamDeck.actions.registerAction(new ToggleLyricsAction(uiStateHub));
-streamDeck.actions.registerAction(new ToggleFullscreenAction(uiStateHub));
+streamDeck.actions.registerAction(
+	new ToggleLyricsAction(uiStateHub, languageStore)
+);
+streamDeck.actions.registerAction(
+	new ToggleFullscreenAction(uiStateHub, languageStore)
+);
 streamDeck.actions.registerAction(new PlayPauseAction(playerStateHub));
-streamDeck.actions.registerAction(new PlayOnDeviceAction(playerStateHub));
+streamDeck.actions.registerAction(
+	new PlayOnDeviceAction(playerStateHub, languageStore)
+);
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());
 streamDeck.actions.registerAction(
@@ -60,14 +79,15 @@ streamDeck.actions.registerAction(
 		playerStateHub,
 		likeTargetStore,
 		nowPlaying,
-		spotifyHost
+		spotifyHost,
+		languageStore
 	)
 );
 streamDeck.actions.registerAction(
-	new VolumeDialAction(spotifyHost, nowPlaying)
+	new VolumeDialAction(spotifyHost, nowPlaying, languageStore)
 );
 streamDeck.actions.registerAction(
-	new LikeAction(playerStateHub, likeTargetStore)
+	new LikeAction(playerStateHub, likeTargetStore, languageStore)
 );
 
 void streamDeck.connect();
@@ -75,5 +95,10 @@ void likeTargetStore
 	.load()
 	.catch((error: unknown) =>
 		streamDeck.logger.error('Cannot load the like target', error)
+	);
+void languageStore
+	.load()
+	.catch((error: unknown) =>
+		streamDeck.logger.error('Cannot load the language', error)
 	);
 void prepareSpotifyOnStartup(spotifyHost);

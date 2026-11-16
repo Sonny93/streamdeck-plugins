@@ -1,3 +1,5 @@
+import type { Language } from 'deck-kit/i18n/language';
+
 import type { AudioApp } from '../audio/audio_app';
 import type { AudioMixer } from '../audio/audio_mixer';
 import { findForegroundApp } from '../audio/find_foreground_app';
@@ -5,17 +7,16 @@ import type { ForegroundApp } from '../audio/foreground_app';
 import type { ForegroundReadOptions } from '../audio/foreground_read_options';
 import { formatAppDisplayName } from '../audio/format_app_display_name';
 import { isSameImageName } from '../audio/is_same_image_name';
+import { spotifyMessages } from '../i18n/spotify_messages';
 import { VolumeControl } from './volume_control';
 import type { VolumeReading } from './volume_reading';
 import type { VolumeTarget } from './volume_target';
 
-const CAPTIONS: Readonly<Record<VolumeTarget['kind'], string>> = {
-	spotify: 'SPOTIFY',
-	focused: 'FOCUSED APP',
-	app: 'APP',
-};
-const NO_FOREGROUND_APP_NAME = 'No app';
-const NO_PICKED_APP_NAME = 'Pick an app';
+const CAPTION_KEYS = {
+	spotify: 'volumeCaptionSpotify',
+	focused: 'volumeCaptionFocused',
+	app: 'volumeCaptionApp',
+} as const satisfies Readonly<Record<VolumeTarget['kind'], string>>;
 const PERCENT = 100;
 
 type ResolvedTarget = Readonly<{
@@ -46,11 +47,11 @@ export class VolumeController {
 	) {}
 
 	/** Tells what the dial shows for a target. */
-	async read(target: VolumeTarget): Promise<VolumeReading> {
+	async read(target: VolumeTarget, language: Language): Promise<VolumeReading> {
 		const { imageName, app } = await this.resolve(target);
 		return {
-			caption: CAPTIONS[target.kind],
-			name: this.nameOf({ target, imageName, app }),
+			caption: spotifyMessages.text(CAPTION_KEYS[target.kind], language),
+			name: this.nameOf({ target, imageName, app, language }),
 			volume: app?.volume,
 			isMuted: app?.isMuted ?? false,
 		};
@@ -123,9 +124,10 @@ export class VolumeController {
 			target: VolumeTarget;
 			imageName: string | undefined;
 			app: AudioApp | undefined;
+			language: Language;
 		}>
 	): string {
-		const { target, imageName, app } = options;
+		const { target, imageName, app, language } = options;
 		const isFoundByProcess =
 			imageName !== undefined &&
 			app !== undefined &&
@@ -136,6 +138,9 @@ export class VolumeController {
 		if (imageName !== undefined) {
 			return formatAppDisplayName(imageName);
 		}
-		return target.kind === 'app' ? NO_PICKED_APP_NAME : NO_FOREGROUND_APP_NAME;
+		return spotifyMessages.text(
+			target.kind === 'app' ? 'pickApp' : 'noApp',
+			language
+		);
 	}
 }

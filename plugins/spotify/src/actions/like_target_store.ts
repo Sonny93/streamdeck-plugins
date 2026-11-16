@@ -1,4 +1,6 @@
 import { streamDeck } from '@elgato/streamdeck';
+import type { GlobalSettingsPort } from 'deck-kit/settings/global_settings_port';
+import { mergeGlobalSettings } from 'deck-kit/settings/merge_global_settings';
 
 import type { LikeTarget } from './like_target';
 import { likeTargetSettingsSchema } from './like_target_settings_schema';
@@ -6,14 +8,14 @@ import { likeTargetSettingsSchema } from './like_target_settings_schema';
 type LikeTargetListener = (target: LikeTarget | undefined) => void;
 
 /**
- * Holds the playlist that the "like" key adds tracks to, persisted in the Stream Deck global settings.
+ * Holds the playlist that the "like" key adds tracks to, persisted in the global settings next to the other settings of the plugin.
  * Invalid or missing settings mean there is no target. Listeners are notified whenever the target changes.
  */
 export class LikeTargetStore {
 	private readonly listeners = new Set<LikeTargetListener>();
 	private target: LikeTarget | undefined;
 
-	constructor() {
+	constructor(private readonly settings: GlobalSettingsPort) {
 		streamDeck.settings.onDidReceiveGlobalSettings((ev) => {
 			this.apply(ev.settings);
 		});
@@ -26,12 +28,12 @@ export class LikeTargetStore {
 
 	/** Reads the global settings once and notifies the listeners. */
 	async load(): Promise<void> {
-		this.apply(await streamDeck.settings.getGlobalSettings());
+		this.apply(await this.settings.read());
 	}
 
 	/** Persists the target in the global settings, then makes it current and notifies the listeners. */
 	async set(target: LikeTarget): Promise<void> {
-		await streamDeck.settings.setGlobalSettings({ likeTarget: target });
+		await mergeGlobalSettings(this.settings, { likeTarget: target });
 		this.target = target;
 		this.notify();
 	}

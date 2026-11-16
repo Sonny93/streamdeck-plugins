@@ -1,5 +1,7 @@
+import type { Language } from 'deck-kit/i18n/language';
 import { escapeXml } from 'deck-kit/text/escape_xml';
 
+import { spotifyMessages } from '../i18n/spotify_messages';
 import { buildDialBackdrop } from './build_dial_backdrop';
 import type { DialBackdrop } from './dial_backdrop';
 import { formatSvgNumber } from './format_svg_number';
@@ -11,10 +13,7 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
 const HALF_DIVISOR = 2;
 const PERCENT = 100;
-const MUTED_LABEL = 'Muted';
 const NO_LEVEL_LABEL = '–';
-const SILENT_NOTE = 'Not playing sound';
-const MUTED_NOTE = 'Press to unmute';
 
 type TextOptions = Readonly<{
 	x: number;
@@ -35,12 +34,12 @@ function buildText(text: string, options: TextOptions): string {
 	return `<text x="${options.x}" y="${style.y}" text-anchor="${options.anchor}" font-family="${VolumeDialMetrics.fontFamily}" font-size="${style.fontSize}"${weight} fill="${options.color ?? style.color}">${escapeXml(text)}</text>`;
 }
 
-function formatLevel(reading: VolumeReading): string {
+function formatLevel(reading: VolumeReading, language: Language): string {
 	if (reading.volume === undefined) {
 		return NO_LEVEL_LABEL;
 	}
 	return reading.isMuted
-		? MUTED_LABEL
+		? spotifyMessages.text('muted', language)
 		: `${Math.round(reading.volume * PERCENT)}%`;
 }
 
@@ -58,11 +57,16 @@ function buildBar(reading: VolumeReading): string {
 	return `${track}<rect x="${left}" y="${bar.y}" width="${filledWidth}" height="${bar.height}" rx="${radius}" fill="${color}"/>`;
 }
 
-function readNote(reading: VolumeReading): string | undefined {
+function readNote(
+	reading: VolumeReading,
+	language: Language
+): string | undefined {
 	if (reading.volume === undefined) {
-		return SILENT_NOTE;
+		return spotifyMessages.text('notPlayingSound', language);
 	}
-	return reading.isMuted ? MUTED_NOTE : undefined;
+	return reading.isMuted
+		? spotifyMessages.text('pressToUnmute', language)
+		: undefined;
 }
 
 /**
@@ -72,11 +76,12 @@ function readNote(reading: VolumeReading): string | undefined {
  */
 export function buildVolumeDialSvg(
 	reading: VolumeReading,
+	language: Language,
 	backdrop?: DialBackdrop
 ): string {
 	const { stripWidth, stripHeight, background, left, right } =
 		VolumeDialMetrics;
-	const note = readNote(reading);
+	const note = readNote(reading, language);
 	return [
 		`<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}" width="${stripWidth}" height="${stripHeight}" viewBox="0 0 ${stripWidth} ${stripHeight}">`,
 		`<rect width="${stripWidth}" height="${stripHeight}" fill="${background}"/>`,
@@ -93,7 +98,7 @@ export function buildVolumeDialSvg(
 			}),
 			{ x: left, anchor: 'start', style: VolumeDialMetrics.name }
 		),
-		buildText(formatLevel(reading), {
+		buildText(formatLevel(reading, language), {
 			x: right,
 			anchor: 'end',
 			style: VolumeDialMetrics.level,

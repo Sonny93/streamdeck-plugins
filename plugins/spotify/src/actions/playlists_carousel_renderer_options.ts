@@ -1,14 +1,17 @@
+import type { Language } from 'deck-kit/i18n/language';
+
 import type { FrameEncoder } from '../platform/frame_encoder';
 import type { CoverLoader } from './cover_loader';
 import type { DialPresence } from './dial_presence';
 import type { PlaylistCatalog } from './playlist_catalog';
 
-/** What the carousel renderer reads: the playlists, the covers, whether the playing track is in the playlist, the playing track's cover for the backdrop, and how to encode a frame for the strip, and who to tell when covers arrive. */
+/** What the carousel renderer reads: the playlists, the covers, whether the playing track is in the playlist, the playing track's cover for the backdrop, the language to draw in, and how to encode a frame for the strip, and who to tell when covers arrive. */
 export type PlaylistsCarouselRendererOptions = Readonly<{
 	catalog: Pick<PlaylistCatalog, 'playlists' | 'hasContent'>;
 	covers: Pick<CoverLoader, 'get' | 'fetch' | 'retryFailed'>;
 	presence: Pick<DialPresence, 'contains'>;
 	encodeFrame: FrameEncoder;
 	readBackdropCover: () => string | undefined;
+	readLanguage: () => Language;
 	onCoversLoaded: () => void;
 }>;

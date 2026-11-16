@@ -14,7 +14,13 @@ const DEVICES = [
 
 describe('listDeviceChoices', () => {
 	it('should list the devices by name', () => {
-		expect(listDeviceChoices({ devices: DEVICES, settings: {} })).toEqual([
+		expect(
+			listDeviceChoices({
+				devices: DEVICES,
+				settings: {},
+				language: 'en',
+			})
+		).toEqual([
 			{ label: 'DESKTOP', value: 'local_device' },
 			{ label: 'Phone', value: 'phone' },
 		]);
@@ -22,7 +28,11 @@ describe('listDeviceChoices', () => {
 
 	it('should not repeat the picked device when it is listed', () => {
 		expect(
-			listDeviceChoices({ devices: DEVICES, settings: { deviceId: 'phone' } })
+			listDeviceChoices({
+				devices: DEVICES,
+				settings: { deviceId: 'phone' },
+				language: 'en',
+			})
 		).toHaveLength(2);
 	});
 
@@ -30,6 +40,7 @@ describe('listDeviceChoices', () => {
 		const choices = listDeviceChoices({
 			devices: DEVICES,
 			settings: { deviceId: 'tv', deviceName: 'TV' },
+			language: 'en',
 		});
 
 		expect(choices[0]).toEqual({ label: 'TV (not found)', value: 'tv' });
@@ -39,6 +50,7 @@ describe('listDeviceChoices', () => {
 		const [choice] = listDeviceChoices({
 			devices: [],
 			settings: { deviceId: 'tv' },
+			language: 'en',
 		});
 
 		expect(choice).toEqual({ label: 'Picked device (not found)', value: 'tv' });
@@ -46,7 +58,24 @@ describe('listDeviceChoices', () => {
 
 	it('should give an empty list when no device is listed nor picked', () => {
 		expect(
-			listDeviceChoices({ devices: [], settings: { deviceId: '' } })
+			listDeviceChoices({
+				devices: [],
+				settings: { deviceId: '' },
+				language: 'en',
+			})
 		).toEqual([]);
+	});
+
+	it('should write a missing picked device in French', () => {
+		const [choice] = listDeviceChoices({
+			devices: [],
+			settings: { deviceId: 'tv' },
+			language: 'fr',
+		});
+
+		expect(choice).toEqual({
+			label: 'Appareil choisi (introuvable)',
+			value: 'tv',
+		});
 	});
 });

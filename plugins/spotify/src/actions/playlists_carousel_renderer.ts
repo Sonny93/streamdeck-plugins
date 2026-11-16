@@ -2,6 +2,7 @@ import { streamDeck } from '@elgato/streamdeck';
 import type { DialAction } from '@elgato/streamdeck';
 import { resolveStripColumn } from 'deck-kit/strip/resolve_strip_column';
 
+import { spotifyMessages } from '../i18n/spotify_messages';
 import type { SpotifyPlaylist } from '../spotify/spotify_playlist';
 import { buildCarouselFrameSvg } from './build_carousel_frame_svg';
 import { CarouselMetrics } from './carousel_metrics';
@@ -9,10 +10,10 @@ import type { CarouselSlot } from './carousel_slot';
 import { formatPlaylistPosition } from './format_playlist_position';
 import type { PlaylistsCarouselRendererOptions } from './playlists_carousel_renderer_options';
 import type { PlaylistsDialSettings } from './playlists_dial_settings';
+import { resolvePlaylistName } from './resolve_playlist_name';
 import { toDialBackdrop } from './to_dial_backdrop';
 import { wrapIndex } from './wrap_index';
 
-const SPOTIFY_CLOSED_TITLE = 'Spotify closed';
 const CANVAS_FEEDBACK_KEY = 'canvas';
 
 type RenderableDial = Pick<
@@ -110,13 +111,14 @@ export class PlaylistsCarouselRenderer {
 			resolveStripColumn(request.dial.coordinates)
 		);
 		const { playlists } = this.options.catalog;
+		const language = this.options.readLanguage();
 		const center = Math.round(position);
 		const centered = this.playlistAt(center);
 		if (centered === undefined) {
 			return buildCarouselFrameSvg({
 				position,
 				slots: [{ offset: 0, coverDataUrl: undefined }],
-				title: SPOTIFY_CLOSED_TITLE,
+				title: spotifyMessages.text('spotifyClosed', language),
 				positionLabel: '',
 				containsPlayingTrack: false,
 				backdrop,
@@ -130,7 +132,7 @@ export class PlaylistsCarouselRenderer {
 		return buildCarouselFrameSvg({
 			position,
 			slots,
-			title: centered.name,
+			title: resolvePlaylistName({ playlist: centered, language }),
 			positionLabel: formatPlaylistPosition({
 				index: wrapIndex({ index: center, length: playlists.length }),
 				total: playlists.length,

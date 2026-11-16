@@ -1,0 +1,62 @@
+{
+	"Name": "Spotify Deck",
+	"Description": "Pilotez l’application Spotify de bureau directement depuis le Stream Deck.",
+	"com.sonny93.spotify.open-search": {
+		"Name": "Ouvrir la recherche",
+		"Tooltip": "Place Spotify au premier plan avec le champ de recherche sélectionné."
+	},
+	"com.sonny93.spotify.show-spotify": {
+		"Name": "Afficher Spotify",
+		"Tooltip": "Place la fenêtre Spotify au premier plan."
+	},
+	"com.sonny93.spotify.toggle-lyrics": {
+		"Name": "Afficher ou masquer les paroles",
+		"Tooltip": "Affiche ou masque la vue des paroles."
+	},
+	"com.sonny93.spotify.toggle-fullscreen": {
+		"Name": "Basculer en plein écran",
+		"Tooltip": "Active ou quitte le mode plein écran de Spotify."
+	},
+	"com.sonny93.spotify.play-pause": {
+		"Name": "Lecture / Pause",
+		"Tooltip": "Lance ou met en pause le titre en cours."
+	},
+	"com.sonny93.spotify.previous-track": {
+		"Name": "Titre précédent",
+		"Tooltip": "Passe au titre précédent."
+	},
+	"com.sonny93.spotify.next-track": {
+		"Name": "Titre suivant",
+		"Tooltip": "Passe au titre suivant."
+	},
+	"com.sonny93.spotify.play-on-device": {
+		"Name": "Lire sur un appareil",
+		"Tooltip": "Déplace la lecture vers un appareil Spotify Connect : ce PC, votre téléphone, une télé ou une enceinte."
+	},
+	"com.sonny93.spotify.like": {
+		"Name": "Aimer",
+		"Tooltip": "Ajoute le titre en cours à la playlist choisie sur le cadran Playlists (Titres likés par défaut)."
+	},
+	"com.sonny93.spotify.playlists": {
+		"Name": "Playlists",
+		"Tooltip": "Parcourez vos playlists, lancez-en une, ou ajoutez-y le titre en cours.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Parcourir les playlists",
+				"Push": "Lancer la playlist",
+				"Touch": "Ajouter le titre en cours"
+			}
+		}
+	},
+	"com.sonny93.spotify.volume": {
+		"Name": "Volume",
+		"Tooltip": "Règle le volume de Spotify, de l’application au premier plan ou d’une application de votre choix.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Changer le volume",
+				"Push": "Couper / rétablir le son",
+				"Touch": "Couper / rétablir le son"
+			}
+		}
+	}
+}
