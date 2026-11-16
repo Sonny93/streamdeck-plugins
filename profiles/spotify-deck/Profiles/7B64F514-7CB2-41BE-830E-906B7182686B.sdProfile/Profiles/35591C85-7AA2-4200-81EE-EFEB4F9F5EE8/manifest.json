@@ -1,0 +1,182 @@
+{
+	"Controllers": [
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "f0774f9a-d6dd-4f5b-8c61-8a2abcc4bbc5",
+					"AutoExit": {
+						"Delay": 0,
+						"Enabled": false
+					},
+					"LinkedTitle": true,
+					"Name": "Dossier parent",
+					"Plugin": {
+						"Name": "Open Parent Folder",
+						"UUID": "com.elgato.streamdeck.profile.backtoparent",
+						"Version": "1.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.elgato.streamdeck.profile.backtoparent"
+				},
+				"1,0": {
+					"ActionID": "0f9530ca-912f-4979-b942-14b75a8f64bd",
+					"LinkedTitle": true,
+					"Name": "Preset",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "cool",
+						"temperature": "24"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.preset"
+				},
+				"2,0": {
+					"ActionID": "586c31e3-4b4e-40d6-addd-d45e103452c0",
+					"LinkedTitle": true,
+					"Name": "Preset",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "heat",
+						"temperature": "21"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.preset"
+				},
+				"3,0": {
+					"ActionID": "0171036f-bbc2-4339-9019-9ccd5298f4fc",
+					"LinkedTitle": true,
+					"Name": "Preset",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "fan"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.preset"
+				},
+				"0,1": {
+					"ActionID": "30737986-5bb7-4a20-bb2d-b71bb0733880",
+					"LinkedTitle": true,
+					"Name": "Preset",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "dry"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.preset"
+				},
+				"1,1": {
+					"ActionID": "1e6bd726-9a95-460b-9d67-f2e486bbe6d5",
+					"LinkedTitle": true,
+					"Name": "Preset",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {
+						"mode": "auto"
+					},
+					"State": 0,
+					"States": [{}, {}, {}],
+					"UUID": "com.sonny93.climate.preset"
+				}
+			},
+			"Type": "Keypad"
+		},
+		{
+			"Actions": {
+				"0,0": {
+					"ActionID": "276b43dd-b462-4aa5-a8eb-f26a94b8598e",
+					"LinkedTitle": true,
+					"Name": "Climate",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.dial"
+				},
+				"1,0": {
+					"ActionID": "75d5650b-5481-410b-a676-f3791ecd7b82",
+					"LinkedTitle": true,
+					"Name": "Info",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.info"
+				},
+				"2,0": {
+					"ActionID": "00f88289-8778-4b2b-bbb7-bb5bf12c3456",
+					"LinkedTitle": true,
+					"Name": "Energy",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.energy"
+				},
+				"3,0": {
+					"ActionID": "14fe15b1-5e5c-4794-82c8-ef3f3f8aa821",
+					"LinkedTitle": true,
+					"Name": "Fan dial",
+					"Plugin": {
+						"Name": "Climate Deck",
+						"UUID": "com.sonny93.climate",
+						"Version": "0.1.0.0"
+					},
+					"Resources": null,
+					"Settings": {},
+					"State": 0,
+					"States": [{}],
+					"UUID": "com.sonny93.climate.fan-dial"
+				}
+			},
+			"Type": "Encoder"
+		}
+	],
+	"Icon": "",
+	"Name": ""
+}
