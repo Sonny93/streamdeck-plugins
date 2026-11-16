@@ -1,4 +1,5 @@
 import { streamDeck } from '@elgato/streamdeck';
+import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
 
 import { ClimateDialAction } from './actions/dial/climate_dial_action';
@@ -14,7 +15,6 @@ import { ClimateTiming } from './climate/climate_timing';
 import { createLocalHttpDriver } from './daikin/local/create_local_http_driver';
 import type { UnitDriver } from './daikin/unit_driver';
 import { IdleDashboard } from './idle/idle_dashboard';
-import { InactivityMonitor } from './idle/inactivity_monitor';
 import { saveUnitAddress } from './unit_address/save_unit_address';
 import { UnitAddressPanel } from './unit_address/unit_address_panel';
 import { UnitAddressStore } from './unit_address/unit_address_store';

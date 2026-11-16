@@ -1,8 +1,8 @@
+import type { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import type { Scheduler } from 'deck-kit/async/scheduler';
 
 import type { FrameEncoder } from '../platform/frame_encoder';
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
-import type { InactivityMonitor } from './inactivity_monitor';
 import type { PlayerStateHub } from './player_state_hub';
 
 /**

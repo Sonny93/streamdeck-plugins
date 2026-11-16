@@ -1,7 +1,7 @@
 import { streamDeck } from '@elgato/streamdeck';
+import { InactivityMonitor } from 'deck-kit/async/inactivity_monitor';
 import { scheduleTimeout } from 'deck-kit/async/schedule_timeout';
 
-import { InactivityMonitor } from './actions/inactivity_monitor';
 import { LikeAction } from './actions/like_action';
 import { LikeTargetStore } from './actions/like_target_store';
 import { NextTrackAction } from './actions/next_track_action';

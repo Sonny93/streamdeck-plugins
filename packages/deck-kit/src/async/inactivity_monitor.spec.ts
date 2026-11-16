@@ -1,7 +1,7 @@
-import type { Scheduler } from 'deck-kit/async/scheduler';
 import { describe, expect, it, vi } from 'vitest';
 
 import { InactivityMonitor } from './inactivity_monitor';
+import type { Scheduler } from './scheduler';
 
 const DELAY = 30_000;
 
