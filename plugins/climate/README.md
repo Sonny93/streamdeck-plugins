@@ -8,7 +8,11 @@ Install and develop it as described in the [root README](../../README.md).
 
 Only Daikin units with the **local HTTP API** work: the ones with a wifi module of the `aircon` type. Newer modules (type `GPF`, driven by the Daikin cloud) answer nothing on the local network and are refused when you save their address. The plugin talks to the unit directly, with no cloud account.
 
-The text the plugin draws on the keys and strips, and the settings in Stream Deck, are in French. This documentation is in English.
+## Language
+
+The plugin exists in English and French: the keys, the strips, the idle dashboard, the messages and the property inspectors. Every property inspector has a **Language / Langue** select with three choices: follow the system (the default), French, or English. The choice is kept once, in the global settings of the plugin on this computer, and redraws every key and strip at once.
+
+Following the system reads the locale from the environment of the plugin (`LC_ALL`, then `LC_MESSAGES`, then `LANG`), then from the runtime when none is set, as on Windows; any locale that is not French gives English. The setting is read from the plugin and not from the host application, because OpenDeck always reports English. The names and tooltips of the actions in the Stream Deck app follow the language of that app (`fr.json` next to the manifest); OpenDeck shows them in English.
 
 ## Set the address of the unit
 

@@ -1,3 +1,4 @@
+import type { Language } from 'deck-kit/i18n/language';
 import { measureStripTexts } from 'deck-kit/strip/measure_strip_texts';
 import { StripPanel } from 'deck-kit/strip/strip_panel';
 import { describe, expect, it } from 'vitest';
@@ -13,16 +14,20 @@ const ENERGY = {
 };
 const COLUMNS = [0, 1, 2, 3] as const;
 
-function contentOf(view = buildClimateViewForTest()): string {
+function contentOf(
+	view = buildClimateViewForTest(),
+	language: Language = 'fr'
+): string {
 	return buildDashboardContent(
 		view,
-		view.state ?? buildClimateViewForTest().state!
+		view.state ?? buildClimateViewForTest().state!,
+		language
 	);
 }
 
 describe('buildDashboardSvg', () => {
 	it('should draw the room temperature very large under its caption in the first slot', () => {
-		const svg = buildDashboardSvg(buildClimateViewForTest(), 0);
+		const svg = buildDashboardSvg(buildClimateViewForTest(), 'fr', 0);
 
 		expect(svg).toContain('>PIÈCE<');
 		expect(svg).toContain('font-size="54" font-weight="bold">23°<');
@@ -33,6 +38,7 @@ describe('buildDashboardSvg', () => {
 			buildClimateViewForTest({
 				state: { mode: 'heat', targetTemperature: 21.5 },
 			}),
+			'fr',
 			1
 		);
 
@@ -44,6 +50,7 @@ describe('buildDashboardSvg', () => {
 			buildClimateViewForTest({
 				state: { mode: 'dry', targetTemperature: null },
 			}),
+			'fr',
 			1
 		);
 
@@ -55,6 +62,7 @@ describe('buildDashboardSvg', () => {
 			buildClimateViewForTest({
 				state: { specialModes: ['powerful', 'econo'] },
 			}),
+			'fr',
 			1
 		);
 
@@ -66,6 +74,7 @@ describe('buildDashboardSvg', () => {
 			buildClimateViewForTest({
 				state: { isPowered: false, specialModes: ['powerful'] },
 			}),
+			'fr',
 			1
 		);
 
@@ -80,10 +89,12 @@ describe('buildDashboardSvg', () => {
 			buildClimateViewForTest({
 				sensors: { outdoorTemperature: 4.5, compressorFrequency: 20 },
 			}),
+			'fr',
 			2
 		);
 		const idle = buildDashboardSvg(
 			buildClimateViewForTest({ sensors: { compressorFrequency: 0 } }),
+			'fr',
 			2
 		);
 
@@ -96,6 +107,7 @@ describe('buildDashboardSvg', () => {
 	it('should draw the fan rate and the energy of today in the fourth slot', () => {
 		const svg = buildDashboardSvg(
 			buildClimateViewForTest({ state: { fanRate: 'silent' }, energy: ENERGY }),
+			'fr',
 			3
 		);
 
@@ -104,14 +116,14 @@ describe('buildDashboardSvg', () => {
 	});
 
 	it('should draw a dash for the energy while it is unknown', () => {
-		const svg = buildDashboardSvg(buildClimateViewForTest(), 3);
+		const svg = buildDashboardSvg(buildClimateViewForTest(), 'fr', 3);
 
 		expect(svg).toContain('>Aujourd&apos;hui –<');
 	});
 
 	it('should give a different slice for each of the four columns', () => {
 		const slices = COLUMNS.map((column) =>
-			buildDashboardSvg(buildClimateViewForTest(), column)
+			buildDashboardSvg(buildClimateViewForTest(), 'fr', column)
 		);
 
 		expect(new Set(slices).size).toBe(4);
@@ -119,7 +131,7 @@ describe('buildDashboardSvg', () => {
 
 	it('should shift the design by one slot per column so the slices join into one panel', () => {
 		const offsets = COLUMNS.map((column) =>
-			buildDashboardSvg(buildClimateViewForTest(), column).match(
+			buildDashboardSvg(buildClimateViewForTest(), 'fr', column).match(
 				/translate\(-(\d+) 0\)/gu
 			)
 		);
@@ -139,7 +151,11 @@ describe('buildDashboardSvg', () => {
 	] as const)(
 		'should draw the message strip when the status is %s',
 		(status, message) => {
-			const svg = buildDashboardSvg(buildClimateViewForTest({ status }), 1);
+			const svg = buildDashboardSvg(
+				buildClimateViewForTest({ status }),
+				'fr',
+				1
+			);
 
 			expect(svg).toContain(`>${message}<`);
 			expect(svg).not.toContain('PIÈCE');
@@ -147,55 +163,58 @@ describe('buildDashboardSvg', () => {
 	);
 });
 
-describe('the texts of the dashboard', () => {
-	it.each(['cool', 'heat', 'auto', 'dry', 'fan'] as const)(
-		'should each sit inside one slot of the panel in %s mode, with the longest values',
-		(mode) => {
-			const view = buildClimateViewForTest({
-				state: {
-					mode,
-					targetTemperature: mode === 'dry' || mode === 'fan' ? null : 29.5,
-					fanRate: 'silent',
-					specialModes: ['powerful', 'econo', 'streamer'],
-				},
-				sensors: {
-					indoorTemperature: 33.5,
-					outdoorTemperature: -12.5,
-					compressorFrequency: 0,
-				},
-				energy: {
-					heat: { todayKilowattHours: 12.5, lastSevenDaysKilowattHours: 0 },
-					cool: { todayKilowattHours: 33.3, lastSevenDaysKilowattHours: 0 },
-				},
-			});
+describe.each(['fr', 'en'] as const)(
+	'the texts of the dashboard in %s',
+	(language) => {
+		it.each(['cool', 'heat', 'auto', 'dry', 'fan'] as const)(
+			'should each sit inside one slot of the panel in %s mode, with the longest values',
+			(mode) => {
+				const view = buildClimateViewForTest({
+					state: {
+						mode,
+						targetTemperature: mode === 'dry' || mode === 'fan' ? null : 29.5,
+						fanRate: 'silent',
+						specialModes: ['powerful', 'econo', 'streamer'],
+					},
+					sensors: {
+						indoorTemperature: 33.5,
+						outdoorTemperature: -12.5,
+						compressorFrequency: 0,
+					},
+					energy: {
+						heat: { todayKilowattHours: 12.5, lastSevenDaysKilowattHours: 0 },
+						cool: { todayKilowattHours: 33.3, lastSevenDaysKilowattHours: 0 },
+					},
+				});
 
-			const texts = measureStripTexts(contentOf(view));
+				const texts = measureStripTexts(contentOf(view, language));
 
-			expect(texts.length).toBeGreaterThan(5);
-			for (const text of texts) {
-				const slot = Math.floor(text.left / StripPanel.slotWidth);
-				expect(text.left, text.text).toBeGreaterThanOrEqual(
-					slot * StripPanel.slotWidth
-				);
-				expect(text.right, text.text).toBeLessThanOrEqual(
-					(slot + 1) * StripPanel.slotWidth
-				);
-			}
-		}
-	);
-
-	it('should not overlap when they share a line', () => {
-		const texts = measureStripTexts(contentOf());
-
-		for (const first of texts) {
-			for (const second of texts) {
-				if (first !== second && first.y === second.y) {
-					expect(
-						first.right <= second.left || second.right <= first.left,
-						`${first.text} / ${second.text}`
-					).toBe(true);
+				expect(texts.length).toBeGreaterThan(5);
+				for (const text of texts) {
+					const slot = Math.floor(text.left / StripPanel.slotWidth);
+					expect(text.left, text.text).toBeGreaterThanOrEqual(
+						slot * StripPanel.slotWidth
+					);
+					expect(text.right, text.text).toBeLessThanOrEqual(
+						(slot + 1) * StripPanel.slotWidth
+					);
 				}
 			}
-		}
-	});
-});
+		);
+
+		it('should not overlap when they share a line', () => {
+			const texts = measureStripTexts(contentOf(undefined, language));
+
+			for (const first of texts) {
+				for (const second of texts) {
+					if (first !== second && first.y === second.y) {
+						expect(
+							first.right <= second.left || second.right <= first.left,
+							`${first.text} / ${second.text}`
+						).toBe(true);
+					}
+				}
+			}
+		});
+	}
+);

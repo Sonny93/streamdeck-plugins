@@ -6,7 +6,8 @@ import { buildInfoDialSvg } from './build_info_dial_svg';
 describe('buildInfoDialSvg', () => {
 	it('should draw the outdoor temperature large under its label', () => {
 		const svg = buildInfoDialSvg(
-			buildClimateViewForTest({ sensors: { outdoorTemperature: 4.5 } })
+			buildClimateViewForTest({ sensors: { outdoorTemperature: 4.5 } }),
+			'fr'
 		);
 
 		expect(svg).toContain('>Extérieur<');
@@ -15,7 +16,8 @@ describe('buildInfoDialSvg', () => {
 
 	it('should say the compressor is on when its frequency is above zero', () => {
 		const svg = buildInfoDialSvg(
-			buildClimateViewForTest({ sensors: { compressorFrequency: 35 } })
+			buildClimateViewForTest({ sensors: { compressorFrequency: 35 } }),
+			'fr'
 		);
 
 		expect(svg).toContain('>Compresseur actif<');
@@ -23,7 +25,8 @@ describe('buildInfoDialSvg', () => {
 
 	it('should say the compressor is idle when its frequency is zero', () => {
 		const svg = buildInfoDialSvg(
-			buildClimateViewForTest({ sensors: { compressorFrequency: 0 } })
+			buildClimateViewForTest({ sensors: { compressorFrequency: 0 } }),
+			'fr'
 		);
 
 		expect(svg).toContain('>Compresseur à l&apos;arrêt<');
@@ -31,7 +34,8 @@ describe('buildInfoDialSvg', () => {
 
 	it('should say nothing about the compressor when its frequency is unknown', () => {
 		const svg = buildInfoDialSvg(
-			buildClimateViewForTest({ sensors: { compressorFrequency: null } })
+			buildClimateViewForTest({ sensors: { compressorFrequency: null } }),
+			'fr'
 		);
 
 		expect(svg).not.toContain('Compresseur');
@@ -41,21 +45,23 @@ describe('buildInfoDialSvg', () => {
 		const svg = buildInfoDialSvg(
 			buildClimateViewForTest({
 				state: { specialModes: ['powerful', 'streamer'] },
-			})
+			}),
+			'fr'
 		);
 
 		expect(svg).toContain('>Puissant, Streamer<');
 	});
 
 	it('should list no special mode when none is active', () => {
-		const svg = buildInfoDialSvg(buildClimateViewForTest());
+		const svg = buildInfoDialSvg(buildClimateViewForTest(), 'fr');
 
 		expect(svg).not.toMatch(/Puissant|Éco|Streamer/u);
 	});
 
 	it('should draw a dash when the outdoor temperature is unknown', () => {
 		const svg = buildInfoDialSvg(
-			buildClimateViewForTest({ sensors: { outdoorTemperature: null } })
+			buildClimateViewForTest({ sensors: { outdoorTemperature: null } }),
+			'fr'
 		);
 
 		expect(svg).toContain('>–<');
@@ -68,7 +74,7 @@ describe('buildInfoDialSvg', () => {
 	] as const)(
 		'should draw a message when the status is %s',
 		(status, message) => {
-			const svg = buildInfoDialSvg(buildClimateViewForTest({ status }));
+			const svg = buildInfoDialSvg(buildClimateViewForTest({ status }), 'fr');
 
 			expect(svg).toContain(`>${message}<`);
 			expect(svg).not.toContain('Extérieur');

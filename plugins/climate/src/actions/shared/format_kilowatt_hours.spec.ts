@@ -9,10 +9,10 @@ describe('formatKilowattHours', () => {
 		[0.1 + 0.2, '0,3'],
 		[12, '12,0'],
 	])('should show %s kWh as %s when there is a value', (value, expected) => {
-		expect(formatKilowattHours(value)).toBe(expected);
+		expect(formatKilowattHours(value, 'fr')).toBe(expected);
 	});
 
 	it('should show a dash when there is no value', () => {
-		expect(formatKilowattHours(undefined)).toBe('–');
+		expect(formatKilowattHours(undefined, 'fr')).toBe('–');
 	});
 });

@@ -31,55 +31,64 @@ function expectFits(svg: string): void {
 	}
 }
 
-describe('the texts of the strips', () => {
-	it.each(['cool', 'heat', 'auto', 'dry', 'fan'] as const)(
-		'should fit the Climate strip in %s mode, with the longest values',
-		(mode) => {
+describe.each(['fr', 'en'] as const)(
+	'the texts of the strips in %s',
+	(language) => {
+		it.each(['cool', 'heat', 'auto', 'dry', 'fan'] as const)(
+			'should fit the Climate strip in %s mode, with the longest values',
+			(mode) => {
+				const view = buildClimateViewForTest({
+					state: {
+						mode,
+						targetTemperature: mode === 'dry' || mode === 'fan' ? null : 29.5,
+					},
+					sensors: { indoorTemperature: 33.5, outdoorTemperature: -12.5 },
+				});
+
+				expectFits(buildClimateDialSvg(view, language));
+				expectFits(buildClimateDialSvg(view, language, 30, 3));
+			}
+		);
+
+		it('should fit the Info strip with every special mode and the longest compressor text', () => {
 			const view = buildClimateViewForTest({
-				state: {
-					mode,
-					targetTemperature: mode === 'dry' || mode === 'fan' ? null : 29.5,
-				},
-				sensors: { indoorTemperature: 33.5, outdoorTemperature: -12.5 },
+				state: { specialModes: ['powerful', 'econo', 'streamer'] },
+				sensors: { outdoorTemperature: -12.5, compressorFrequency: 0 },
 			});
 
-			expectFits(buildClimateDialSvg(view));
-			expectFits(buildClimateDialSvg(view, 30, 3));
-		}
-	);
-
-	it('should fit the Info strip with every special mode and the longest compressor text', () => {
-		const view = buildClimateViewForTest({
-			state: { specialModes: ['powerful', 'econo', 'streamer'] },
-			sensors: { outdoorTemperature: -12.5, compressorFrequency: 0 },
+			expectFits(buildInfoDialSvg(view, language));
 		});
 
-		expectFits(buildInfoDialSvg(view));
-	});
+		it.each(['auto', 'silent', 5] as const)(
+			'should fit the Ventilation strip with the fan rate %s',
+			(fanRate) => {
+				expectFits(
+					buildFanDialSvg(
+						buildClimateViewForTest({
+							state: { fanRate, fanDirection: 'both' },
+						}),
+						language
+					)
+				);
+			}
+		);
 
-	it.each(['auto', 'silent', 5] as const)(
-		'should fit the Ventilation strip with the fan rate %s',
-		(fanRate) => {
+		it('should fit the Energy strip with large values', () => {
 			expectFits(
-				buildFanDialSvg(
-					buildClimateViewForTest({ state: { fanRate, fanDirection: 'both' } })
+				buildEnergyDialSvg(
+					buildClimateViewForTest({ energy: BIG_ENERGY }),
+					language
 				)
 			);
-		}
-	);
+		});
 
-	it('should fit the Energy strip with large values', () => {
-		expectFits(
-			buildEnergyDialSvg(buildClimateViewForTest({ energy: BIG_ENERGY }))
+		it.each(['unconfigured', 'loading', 'unreachable'] as const)(
+			'should fit the message of the %s status',
+			(status) => {
+				const view = buildClimateViewForTest({ status });
+
+				expectFits(buildClimateDialSvg(view, language));
+			}
 		);
-	});
-
-	it.each(['unconfigured', 'loading', 'unreachable'] as const)(
-		'should fit the message of the %s status',
-		(status) => {
-			const view = buildClimateViewForTest({ status });
-
-			expectFits(buildClimateDialSvg(view));
-		}
-	);
-});
+	}
+);

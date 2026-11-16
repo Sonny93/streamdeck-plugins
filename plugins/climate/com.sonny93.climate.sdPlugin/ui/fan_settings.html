@@ -1,39 +1,58 @@
 <!doctype html>
-<html>
-	<head lang="fr">
+<html lang="en">
+	<head>
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	</head>
 	<body>
-		<sdpi-item label="Commande">
+		<sdpi-item label="Control" data-fr-label="Commande">
 			<sdpi-select setting="control" default="rate">
-				<option value="rate">Vitesse de ventilation</option>
-				<option value="swing">Balayage</option>
+				<option value="rate" data-fr="Vitesse de ventilation">Fan rate</option>
+				<option value="swing" data-fr="Balayage">Swing</option>
 			</sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Adresse de la climatisation">
+		<sdpi-item
+			label="Air conditioner address"
+			data-fr-label="Adresse de la climatisation"
+		>
 			<sdpi-textfield
 				id="unit-address"
-				placeholder="Adresse sur votre réseau"
+				placeholder="Address on your network"
+				data-fr-placeholder="Adresse sur votre réseau"
 			></sdpi-textfield>
 		</sdpi-item>
 		<sdpi-item label="">
-			<sdpi-button id="save-address">Enregistrer l'adresse</sdpi-button>
+			<sdpi-button id="save-address" data-fr="Enregistrer l'adresse">
+				Save address
+			</sdpi-button>
 		</sdpi-item>
 		<sdpi-item label="">
 			<p id="address-status" role="status"></p>
 		</sdpi-item>
 		<sdpi-item label="">
 			<details>
-				<summary>À propos de l'adresse</summary>
-				<p>
-					Adresse de l'unité sur votre réseau local, partagée par toutes les
-					actions du plugin et conservée sur cet ordinateur uniquement. Elle est
-					vérifiée avant d'être enregistrée. Réservez-lui une adresse fixe dans
-					votre box (réservation DHCP) pour qu'elle ne change pas.
+				<summary data-fr="À propos de l&#x27;adresse">
+					About the address
+				</summary>
+				<p
+					data-fr="Adresse de l&#x27;unité sur votre réseau local, partagée par toutes les actions du plugin et conservée sur cet ordinateur uniquement. Elle est vérifiée avant d&#x27;être enregistrée. Réservez-lui une adresse fixe dans votre box (réservation DHCP) pour qu&#x27;elle ne change pas."
+				>
+					The address of the unit on your local network, shared by every action
+					of the plugin and kept on this computer only. It is checked before it
+					is saved. Give the unit a fixed address in your router (DHCP
+					reservation) so it does not change.
 				</p>
 			</details>
 		</sdpi-item>
-		<script src="unit_address.js"></script>
+		<sdpi-item label="Language / Langue">
+			<sdpi-select id="language-select">
+				<option value="system" data-fr="Système (par défaut)">
+					System (default)
+				</option>
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+			</sdpi-select>
+		</sdpi-item>
+		<script src="inspector.js"></script>
 	</body>
 </html>

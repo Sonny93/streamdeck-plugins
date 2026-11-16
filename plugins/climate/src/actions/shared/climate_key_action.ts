@@ -1,4 +1,5 @@
 import type { WillDisappearEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import type { ClimateView } from '../../climate/climate_view';
 import type { KeyDescription } from '../keys/key_description';
@@ -20,18 +21,20 @@ export abstract class ClimateKeyAction<TConfig> extends ClimateAction<TConfig> {
 
 	protected abstract describeKey(
 		view: ClimateView,
-		config: TConfig
+		config: TConfig,
+		language: Language
 	): KeyDescription;
 
 	protected override async render(
 		action: ClimateActionHandle,
 		view: ClimateView,
-		config: TConfig
+		config: TConfig,
+		language: Language
 	): Promise<void> {
 		if (!action.isKey()) {
 			return;
 		}
-		const description = this.describeKey(view, config);
+		const description = this.describeKey(view, config, language);
 		await action.setState(description.state);
 		await this.images.draw(action, description);
 	}

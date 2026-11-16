@@ -5,11 +5,13 @@ import type {
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
+import type { LanguageStore } from 'deck-kit/i18n/language_store';
 
 import type { ClimateHub } from '../../climate/climate_hub';
 import type { ClimateView } from '../../climate/climate_view';
 import type { UnitState } from '../../daikin/unit_types';
-import type { UnitAddressPanel } from '../../unit_address/unit_address_panel';
+import type { InspectorPanel } from '../../inspector/inspector_panel';
 import type { ClimateActionHandle } from './climate_action_handle';
 import type { ClimateActionSettings } from './climate_action_settings';
 
@@ -30,7 +32,8 @@ export abstract class ClimateAction<
 
 	constructor(
 		protected readonly hub: ClimateHub,
-		private readonly addressPanel: UnitAddressPanel
+		private readonly inspectorPanel: InspectorPanel,
+		protected readonly languageStore: LanguageStore
 	) {
 		super();
 	}
@@ -39,9 +42,7 @@ export abstract class ClimateAction<
 		ev: WillAppearEvent<ClimateActionSettings>
 	): Promise<void> {
 		this.configs.set(ev.action.id, this.readConfig(ev.payload.settings));
-		this.unsubscribe ??= this.hub.subscribe(() => {
-			void this.redrawAll();
-		});
+		this.unsubscribe ??= this.subscribeToChanges();
 		await this.renderSafely(ev.action);
 	}
 
@@ -49,7 +50,7 @@ export abstract class ClimateAction<
 		ev: WillDisappearEvent<ClimateActionSettings>
 	): void {
 		this.configs.delete(ev.action.id);
-		this.addressPanel.forget(ev.action.id);
+		this.inspectorPanel.forget(ev.action.id);
 		if (this.configs.size > 0) {
 			return;
 		}
@@ -65,13 +66,13 @@ export abstract class ClimateAction<
 	}
 
 	override async onSendToPlugin(ev: ClimateSendToPluginEvent): Promise<void> {
-		await this.addressPanel.handleMessage(ev.action.id, ev.payload);
+		await this.inspectorPanel.handleMessage(ev.action.id, ev.payload);
 	}
 
 	override async onPropertyInspectorDidAppear(
 		ev: PropertyInspectorDidAppearEvent<ClimateActionSettings>
 	): Promise<void> {
-		await this.addressPanel.announce(ev.action.id);
+		await this.inspectorPanel.announce(ev.action.id);
 	}
 
 	protected abstract readConfig(rawSettings: unknown): TConfig;
@@ -79,7 +80,8 @@ export abstract class ClimateAction<
 	protected abstract render(
 		action: ClimateActionHandle,
 		view: ClimateView,
-		config: TConfig
+		config: TConfig,
+		language: Language
 	): Promise<void>;
 
 	protected configOf(actionId: string): TConfig {
@@ -117,6 +119,23 @@ export abstract class ClimateAction<
 		}
 	}
 
+	/** Follows the unit and the language: any change draws the visible actions again. */
+	private subscribeToChanges(): () => void {
+		const stops = [
+			this.hub.subscribe(() => {
+				void this.redrawAll();
+			}),
+			this.languageStore.subscribe(() => {
+				void this.redrawAll();
+			}),
+		];
+		return () => {
+			for (const stop of stops) {
+				stop();
+			}
+		};
+	}
+
 	/** Draws every visible action again; it never rejects. */
 	protected async redrawAll(): Promise<void> {
 		await Promise.all(
@@ -128,7 +147,12 @@ export abstract class ClimateAction<
 
 	private async renderSafely(action: ClimateActionHandle): Promise<void> {
 		try {
-			await this.render(action, this.hub.view, this.configOf(action.id));
+			await this.render(
+				action,
+				this.hub.view,
+				this.configOf(action.id),
+				this.languageStore.current
+			);
 		} catch (error) {
 			streamDeck.logger.error('Cannot draw a climate action', error);
 		}

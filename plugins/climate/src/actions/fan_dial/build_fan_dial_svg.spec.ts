@@ -13,7 +13,8 @@ describe('buildFanDialSvg', () => {
 		'should draw the fan rate %s as %s under its caption',
 		(fanRate, text) => {
 			const svg = buildFanDialSvg(
-				buildClimateViewForTest({ state: { fanRate } })
+				buildClimateViewForTest({ state: { fanRate } }),
+				'fr'
 			);
 
 			expect(svg).toContain(`font-size="40" font-weight="bold">${text}<`);
@@ -22,7 +23,7 @@ describe('buildFanDialSvg', () => {
 	);
 
 	it('should say the louver is fixed when the unit does not swing', () => {
-		expect(buildFanDialSvg(buildClimateViewForTest())).toContain(
+		expect(buildFanDialSvg(buildClimateViewForTest(), 'fr')).toContain(
 			'>Volet fixe<'
 		);
 	});
@@ -31,7 +32,8 @@ describe('buildFanDialSvg', () => {
 		'should say the louver swings when the direction is %s',
 		(fanDirection) => {
 			const svg = buildFanDialSvg(
-				buildClimateViewForTest({ state: { fanDirection } })
+				buildClimateViewForTest({ state: { fanDirection } }),
+				'fr'
 			);
 
 			expect(svg).toContain('>Balayage<');
@@ -40,7 +42,8 @@ describe('buildFanDialSvg', () => {
 
 	it('should dim the picture over the neutral background when the unit is off', () => {
 		const svg = buildFanDialSvg(
-			buildClimateViewForTest({ state: { isPowered: false } })
+			buildClimateViewForTest({ state: { isPowered: false } }),
+			'fr'
 		);
 
 		expect(svg).toContain('<g opacity="0.7">');
@@ -54,7 +57,7 @@ describe('buildFanDialSvg', () => {
 	] as const)(
 		'should draw a message when the status is %s',
 		(status, message) => {
-			const svg = buildFanDialSvg(buildClimateViewForTest({ status }));
+			const svg = buildFanDialSvg(buildClimateViewForTest({ status }), 'fr');
 
 			expect(svg).toContain(`>${message}<`);
 			expect(svg).not.toContain('VENTILATION');

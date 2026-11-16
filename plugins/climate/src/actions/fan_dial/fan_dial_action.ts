@@ -1,4 +1,5 @@
 import type { DialDownEvent, DialRotateEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
@@ -56,8 +57,9 @@ export class FanDialAction extends ClimateStripAction<undefined> {
 		_actionId: string,
 		view: ClimateView,
 		_config: undefined,
-		column: number
+		column: number,
+		language: Language
 	): string {
-		return buildFanDialSvg(view, column);
+		return buildFanDialSvg(view, language, column);
 	}
 }

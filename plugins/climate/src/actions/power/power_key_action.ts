@@ -1,4 +1,5 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
@@ -26,7 +27,11 @@ export class PowerKeyAction extends ClimateKeyAction<undefined> {
 		return undefined;
 	}
 
-	protected override describeKey(view: ClimateView): KeyDescription {
-		return describePowerKey(view);
+	protected override describeKey(
+		view: ClimateView,
+		_config: undefined,
+		language: Language
+	): KeyDescription {
+		return describePowerKey(view, language);
 	}
 }

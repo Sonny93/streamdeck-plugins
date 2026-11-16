@@ -49,11 +49,11 @@ describe('readPresetConfig', () => {
 		});
 	});
 
-	it('should use the mode and the temperature as the label when none is typed', () => {
+	it('should keep no typed label and the top position when none is typed', () => {
 		const config = readPresetConfig({ mode: 'cool', temperature: '24' });
 
 		expect(config).toMatchObject({
-			label: { text: 'Froid 24 °C', position: 'top' },
+			label: { typedText: undefined, position: 'top' },
 		});
 	});
 
@@ -65,7 +65,7 @@ describe('readPresetConfig', () => {
 		});
 
 		expect(config).toMatchObject({
-			label: { text: 'Night', position: 'bottom' },
+			label: { typedText: 'Night', position: 'bottom' },
 		});
 	});
 

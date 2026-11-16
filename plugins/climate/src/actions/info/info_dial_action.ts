@@ -1,3 +1,5 @@
+import type { Language } from 'deck-kit/i18n/language';
+
 import type { ClimateView } from '../../climate/climate_view';
 import { ClimateStripAction } from '../shared/climate_strip_action';
 import { buildInfoDialSvg } from './build_info_dial_svg';
@@ -14,8 +16,9 @@ export class InfoDialAction extends ClimateStripAction<undefined> {
 		_actionId: string,
 		view: ClimateView,
 		_config: undefined,
-		column: number
+		column: number,
+		language: Language
 	): string {
-		return buildInfoDialSvg(view, column);
+		return buildInfoDialSvg(view, language, column);
 	}
 }

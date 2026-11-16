@@ -3,15 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { readSpecialModeConfig } from './read_special_mode_config';
 
 describe('readSpecialModeConfig', () => {
-	it.each([
-		['powerful', 'Puissant'],
-		['econo', 'Éco'],
-	] as const)(
-		'should use the name of the %s mode as the label when none is typed',
-		(mode, text) => {
+	it.each(['powerful', 'econo'] as const)(
+		'should keep the %s mode and no typed label when none is typed',
+		(mode) => {
 			expect(readSpecialModeConfig({ mode })).toEqual({
 				mode,
-				label: { text, position: 'top' },
+				label: { typedText: undefined, position: 'top' },
 			});
 		}
 	);
@@ -30,6 +27,6 @@ describe('readSpecialModeConfig', () => {
 			labelPosition: 'bottom',
 		});
 
-		expect(config.label).toEqual({ text: 'Save', position: 'bottom' });
+		expect(config.label).toEqual({ typedText: 'Save', position: 'bottom' });
 	});
 });

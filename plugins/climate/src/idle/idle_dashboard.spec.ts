@@ -30,6 +30,7 @@ function createIdle(initialView: ClimateView = buildClimateViewForTest()) {
 		inactivity,
 		schedule: scheduler.schedule,
 		hub,
+		languageStore: { current: 'fr', subscribe: () => () => undefined },
 		onError,
 	});
 	const setFeedback = vi.fn((_feedback: Readonly<Record<string, string>>) =>

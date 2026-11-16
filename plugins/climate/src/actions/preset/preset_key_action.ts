@@ -1,4 +1,5 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 
 import { ClimateTiming } from '../../climate/climate_timing';
 import type { ClimateView } from '../../climate/climate_view';
@@ -25,7 +26,8 @@ export class PresetKeyAction extends ClimateKeyAction<PresetConfig> {
 		await this.runChange(ev.action, async (_state, config) => {
 			if (
 				config.kind === 'invalid' ||
-				this.describeKey(this.hub.view, config).state === KeyState.unavailable
+				this.describeKey(this.hub.view, config, this.languageStore.current)
+					.state === KeyState.unavailable
 			) {
 				await this.showAlertSafely(ev.action);
 				return;
@@ -43,8 +45,9 @@ export class PresetKeyAction extends ClimateKeyAction<PresetConfig> {
 
 	protected override describeKey(
 		view: ClimateView,
-		config: PresetConfig
+		config: PresetConfig,
+		language: Language
 	): KeyDescription {
-		return describePresetKey(view, config);
+		return describePresetKey(view, config, language);
 	}
 }
