@@ -1,10 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { activateProcessWindow } from '../windows/activate_process_window';
+import { buildFakeSpotifyHost } from '../platform/build_fake_spotify_host';
 import { bringSpotifyToFront } from './bring_spotify_to_front';
 import type { SpotifySession } from './spotify_session';
-
-vi.mock('../windows/activate_process_window');
 
 const BROWSER_PROCESS_ID = 4321;
 
@@ -28,8 +26,10 @@ function buildSession(): SpotifySession {
 
 describe('bringSpotifyToFront', () => {
 	it('should activate the window of the Spotify browser process', async () => {
-		await bringSpotifyToFront(buildSession());
+		const host = buildFakeSpotifyHost();
 
-		expect(activateProcessWindow).toHaveBeenCalledWith(BROWSER_PROCESS_ID);
+		await bringSpotifyToFront(buildSession(), host);
+
+		expect(host.activateWindow).toHaveBeenCalledWith(BROWSER_PROCESS_ID);
 	});
 });

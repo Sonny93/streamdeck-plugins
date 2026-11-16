@@ -10,8 +10,8 @@ export function readBrightness(
 	switch (resolveBrightnessSource(monitor, control)) {
 		case 'monitor':
 			return monitor.monitorBrightness;
-		case 'windows':
-			return monitor.windowsBrightness;
+		case 'system':
+			return monitor.systemBrightness;
 		case undefined:
 			return undefined;
 	}

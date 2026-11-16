@@ -1,0 +1,122 @@
+[
+	{
+		"index": 65,
+		"state": "SUSPENDED",
+		"name": "alsa_output.pci-0000_01_00.1.hdmi-stereo.monitor",
+		"description": "Monitor of Example High Definition Audio Controller Stéréo numérique (HDMI) [Example Monitor]",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"base_volume": {
+			"value": 65536,
+			"value_percent": "100%",
+			"db": "0.00 dB"
+		},
+		"monitor_source": "alsa_output.pci-0000_01_00.1.hdmi-stereo",
+		"properties": {
+			"device.class": "monitor",
+			"media.class": "Audio/Sink",
+			"node.name": "alsa_output.pci-0000_01_00.1.hdmi-stereo"
+		}
+	},
+	{
+		"index": 66,
+		"state": "RUNNING",
+		"name": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo.monitor",
+		"description": "Monitor of Volt 1 Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"base_volume": {
+			"value": 65536,
+			"value_percent": "100%",
+			"db": "0.00 dB"
+		},
+		"monitor_source": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo",
+		"properties": {
+			"device.class": "monitor",
+			"media.class": "Audio/Sink",
+			"node.name": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo"
+		}
+	},
+	{
+		"index": 67,
+		"state": "SUSPENDED",
+		"name": "alsa_input.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo",
+		"description": "Volt 1 Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"base_volume": {
+			"value": 65536,
+			"value_percent": "100%",
+			"db": "0.00 dB"
+		},
+		"monitor_source": "",
+		"properties": {
+			"device.class": "sound",
+			"media.class": "Audio/Source",
+			"node.name": "alsa_input.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo"
+		}
+	},
+	{
+		"index": 68,
+		"state": "SUSPENDED",
+		"name": "alsa_input.pci-0000_10_00.6.analog-stereo",
+		"description": "Example Audio Controller Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"base_volume": {
+			"value": 6554,
+			"value_percent": "10%",
+			"db": "-60.00 dB"
+		},
+		"monitor_source": "",
+		"properties": {
+			"device.class": "sound",
+			"media.class": "Audio/Source",
+			"node.name": "alsa_input.pci-0000_10_00.6.analog-stereo"
+		}
+	}
+]

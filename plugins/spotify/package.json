@@ -7,10 +7,11 @@
 		"watch": "tsdown --watch",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
+		"restart": "node ../../packages/release-tools/src/restart_plugin.ts com.sonny93.spotify"
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "^3.0.3",
+		"@resvg/resvg-wasm": "^2.6.2",
 		"deck-kit": "workspace:*",
 		"koffi": "^3.3.4",
 		"zod": "^4.6.7"

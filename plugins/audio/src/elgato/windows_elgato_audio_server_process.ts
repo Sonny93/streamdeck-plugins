@@ -27,6 +27,7 @@ async function runTool(
 
 /** The Elgato audio server process of Windows, reached through `tasklist.exe` and `taskkill.exe` without a shell. */
 export const windowsElgatoAudioServerProcess: ElgatoAudioServerProcess = {
+	isSupported: true,
 	async isRunning() {
 		try {
 			const output = await runTool('tasklist.exe', [

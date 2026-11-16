@@ -19,12 +19,17 @@ const APPEARANCE: KeyAppearance = {
 	glyph: restartGlyph,
 	color: KeyPalette.active,
 };
+const UNAVAILABLE_APPEARANCE: KeyAppearance = {
+	glyph: restartGlyph,
+	color: KeyPalette.unavailable,
+};
 
 type RestartKey = WillAppearEvent<KeyLabelSettings>['action'];
 
 /**
  * Key that restarts the Elgato audio server: it kills the process and waits for it to start again by itself.
  * It shows the check mark once the server is back and the alert on a failure or a timeout.
+ * Where the system has no Elgato audio server it is drawn dark and a press only shows the alert.
  */
 export class RestartElgatoAudioKeyAction extends SingletonAction<KeyLabelSettings> {
 	override readonly manifestId = 'com.sonny93.audio.restart-elgato-audio';
@@ -51,6 +56,10 @@ export class RestartElgatoAudioKeyAction extends SingletonAction<KeyLabelSetting
 	}
 
 	override async onKeyDown(ev: KeyDownEvent<KeyLabelSettings>): Promise<void> {
+		if (!this.restarter.isSupported) {
+			await ev.action.showAlert();
+			return;
+		}
 		try {
 			const outcome = await this.restarter.restart();
 			if (outcome === 'ignored') {
@@ -71,6 +80,9 @@ export class RestartElgatoAudioKeyAction extends SingletonAction<KeyLabelSetting
 			return;
 		}
 		this.images.setLabel(key.id, readKeyLabel(rawSettings, DEFAULT_LABEL));
-		await this.images.draw(key, APPEARANCE);
+		await this.images.draw(
+			key,
+			this.restarter.isSupported ? APPEARANCE : UNAVAILABLE_APPEARANCE
+		);
 	}
 }

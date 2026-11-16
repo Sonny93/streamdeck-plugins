@@ -129,6 +129,8 @@ export default defineConfig(({ watch = false }) => {
 		minify: !isWatching,
 		sourcemap: isWatching,
 		outputOptions: {
+			// One file: hashed chunks would pile up in the bin folder, which is never cleaned, and ship in the package.
+			codeSplitting: false,
 			sourcemapPathTransform: (relativeSourcePath, sourcemapPath) =>
 				url.pathToFileURL(
 					path.resolve(path.dirname(sourcemapPath), relativeSourcePath)

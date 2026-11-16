@@ -10,12 +10,12 @@ describe('resolveBrightnessSource', () => {
 		);
 	});
 
-	it('falls back to Windows in auto mode for a monitor that ignores DDC/CI brightness', () => {
+	it('falls back to the system brightness in auto mode for a monitor that ignores DDC/CI brightness', () => {
 		const odyssey = buildMonitorSnapshotForTest({
 			ignoresMonitorBrightness: true,
 		});
 
-		expect(resolveBrightnessSource(odyssey, 'auto')).toBe('windows');
+		expect(resolveBrightnessSource(odyssey, 'auto')).toBe('system');
 		expect(resolveBrightnessSource(odyssey, 'monitor')).toBe('monitor');
 	});
 
@@ -25,6 +25,6 @@ describe('resolveBrightnessSource', () => {
 		});
 
 		expect(resolveBrightnessSource(withoutDdc, 'monitor')).toBeUndefined();
-		expect(resolveBrightnessSource(withoutDdc, 'auto')).toBe('windows');
+		expect(resolveBrightnessSource(withoutDdc, 'auto')).toBe('system');
 	});
 });

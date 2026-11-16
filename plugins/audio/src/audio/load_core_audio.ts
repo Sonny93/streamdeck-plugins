@@ -7,6 +7,7 @@ import { bindEndpointVolume } from './bind_endpoint_volume';
 import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';
 import { declareCoreAudioPrototypes } from './declare_core_audio_prototypes';
+import { makeAsyncCoreAudio } from './make_async_core_audio';
 
 /** Loads koffi lazily, joins COM and binds the needed Core Audio functions, once. */
 export const loadCoreAudio = onceAsync(async (): Promise<CoreAudio> => {
@@ -19,9 +20,9 @@ export const loadCoreAudio = onceAsync(async (): Promise<CoreAudio> => {
 			CoreAudioConstants.deviceEnumeratorInterfaceId
 		),
 	};
-	return {
+	return makeAsyncCoreAudio({
 		...bindDeviceListing(context),
 		...bindEndpointVolume(context),
 		...bindDefaultDeviceSwitch(context),
-	};
+	});
 });

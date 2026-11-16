@@ -19,7 +19,7 @@ function openHandle(
 ): FileHandle {
 	const handle = kernel32.createFile(path, access);
 	if (handle === undefined) {
-		throw new VoltOpenError(kernel32.getLastError());
+		throw new VoltOpenError(`Win32 error ${kernel32.getLastError()}`);
 	}
 	return handle;
 }

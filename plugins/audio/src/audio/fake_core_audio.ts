@@ -1,13 +1,15 @@
-import { ComError } from '../windows/com_error';
 import type { AudioDevice } from './audio_device';
+import { AudioDeviceNotFoundError } from './audio_device_not_found_error';
 import type { AudioFlow } from './audio_flow';
+import type { AudioSnapshot } from './audio_snapshot';
 import type { AudioVolume } from './audio_volume';
+import { clampAudioLevel } from './clamp_audio_level';
 import type { CoreAudio } from './core_audio';
+import { readAudioSnapshot } from './read_audio_snapshot';
 
-const NOT_FOUND_RESULT = -2_147_023_728;
 const UNMUTED_FULL_VOLUME: AudioVolume = { level: 1, isMuted: false };
 
-/** Test double of Windows Core Audio: devices live in memory, and an unknown device fails like the real API. */
+/** Test double of the system audio: devices live in memory, and an unknown device fails like the real API. */
 export class FakeCoreAudio implements CoreAudio {
 	readonly defaultDeviceIds: Record<AudioFlow, string | undefined> = {
 		output: undefined,
@@ -23,36 +25,64 @@ export class FakeCoreAudio implements CoreAudio {
 		this.defaultDeviceIds[device.flow] ??= device.id;
 	}
 
-	readonly listDevices = (flow: AudioFlow): AudioDevice[] =>
-		[...this.devices.values()].filter((device) => device.flow === flow);
+	readonly readSnapshot = (): Promise<AudioSnapshot> => readAudioSnapshot(this);
 
-	readonly readDefaultDeviceId = (flow: AudioFlow): string | undefined =>
-		this.defaultDeviceIds[flow];
+	readonly listDevices = (flow: AudioFlow): Promise<AudioDevice[]> =>
+		Promise.resolve(
+			[...this.devices.values()].filter((device) => device.flow === flow)
+		);
 
-	readonly readVolume = (deviceId: string): AudioVolume => {
+	readonly readDefaultDeviceId = (
+		flow: AudioFlow
+	): Promise<string | undefined> =>
+		Promise.resolve(this.defaultDeviceIds[flow]);
+
+	readonly readVolume = (deviceId: string): Promise<AudioVolume> => {
 		const volume = this.volumes.get(deviceId);
 		if (volume === undefined) {
-			throw new ComError({ call: 'GetDevice', result: NOT_FOUND_RESULT });
+			return Promise.reject(new AudioDeviceNotFoundError(deviceId));
 		}
-		return volume;
+		return Promise.resolve(volume);
 	};
 
-	readonly setVolume = (deviceId: string, level: number): void => {
-		this.volumes.set(deviceId, { ...this.readVolume(deviceId), level });
+	readonly setVolume = async (
+		deviceId: string,
+		level: number
+	): Promise<void> => {
+		this.volumes.set(deviceId, { ...(await this.readVolume(deviceId)), level });
 	};
 
-	readonly setMute = (deviceId: string, isMuted: boolean): void => {
-		this.volumes.set(deviceId, { ...this.readVolume(deviceId), isMuted });
+	readonly moveVolume = async (
+		deviceId: string,
+		delta: number
+	): Promise<void> => {
+		const volume = await this.readVolume(deviceId);
+		await this.setVolume(deviceId, clampAudioLevel(volume.level + delta));
+		if (volume.isMuted) {
+			await this.setMute(deviceId, false);
+		}
 	};
 
-	readonly setDefaultDevice = (deviceId: string): void => {
+	readonly setMute = async (
+		deviceId: string,
+		isMuted: boolean
+	): Promise<void> => {
+		this.volumes.set(deviceId, {
+			...(await this.readVolume(deviceId)),
+			isMuted,
+		});
+	};
+
+	readonly toggleMute = async (deviceId: string): Promise<void> => {
+		await this.setMute(deviceId, !(await this.readVolume(deviceId)).isMuted);
+	};
+
+	readonly setDefaultDevice = (deviceId: string): Promise<void> => {
 		const device = this.devices.get(deviceId);
 		if (device === undefined) {
-			throw new ComError({
-				call: 'SetDefaultEndpoint',
-				result: NOT_FOUND_RESULT,
-			});
+			return Promise.reject(new AudioDeviceNotFoundError(deviceId));
 		}
 		this.defaultDeviceIds[device.flow] = deviceId;
+		return Promise.resolve();
 	};
 }

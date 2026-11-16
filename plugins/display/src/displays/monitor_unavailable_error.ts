@@ -1,4 +1,4 @@
-/** Raised when an action works on a monitor Windows does not light anymore, or on a change the monitor cannot make. */
+/** Raised when an action works on a monitor the system does not light anymore, or on a change the monitor cannot make. */
 export class MonitorUnavailableError extends Error {
 	readonly code = 'E_MONITOR_UNAVAILABLE';
 	override readonly name = 'MonitorUnavailableError';

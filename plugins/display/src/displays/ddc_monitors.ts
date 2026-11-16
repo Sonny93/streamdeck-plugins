@@ -20,7 +20,7 @@ const NO_READING: DdcReading = {
 };
 
 type OpenMonitor = {
-	/** Where the monitor was when opened; a moved monitor is opened again, as Windows may give it another handle. */
+	/** Where the monitor was when opened; a moved monitor is opened again, as the system may give it another handle. */
 	placement: string;
 	monitor: DdcMonitor;
 	queue: SerialQueue;
@@ -32,7 +32,7 @@ type OpenMonitor = {
 
 function placementOf(display: DisplayInfo): string {
 	const { left, top, width, height } = display.bounds;
-	return `${display.gdiName}@${String(left)},${String(top)},${String(width)}x${String(height)}`;
+	return `${display.portName}@${String(left)},${String(top)},${String(width)}x${String(height)}`;
 }
 
 /**

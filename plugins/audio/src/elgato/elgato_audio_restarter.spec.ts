@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ElgatoAudioProcessError } from './elgato_audio_process_error';
 import { ElgatoAudioRestartTimeoutError } from './elgato_audio_restart_timeout_error';
 import { ElgatoAudioRestarter } from './elgato_audio_restarter';
+import { ElgatoAudioUnsupportedError } from './elgato_audio_unsupported_error';
+import { unsupportedElgatoAudioServerProcess } from './unsupported_elgato_audio_server_process';
 
 const POLL_INTERVAL_MILLISECONDS = 500;
 const RESTART_TIMEOUT_MILLISECONDS = 2000;
@@ -19,6 +21,7 @@ function createRestarter(runningStates: readonly boolean[]) {
 	const delays: number[] = [];
 	let pendingCallback: (() => void) | undefined;
 	const serverProcess = {
+		isSupported: true,
 		isRunning: vi.fn(() => {
 			calls.push('isRunning');
 			return Promise.resolve(remainingStates.shift() ?? false);
@@ -163,5 +166,19 @@ describe('ElgatoAudioRestarter', () => {
 		await elapse();
 
 		await expect(retry).resolves.toBe('restarted');
+	});
+
+	it('should refuse to restart on a system without the server, spawning nothing', async () => {
+		const restarter = new ElgatoAudioRestarter({
+			serverProcess: unsupportedElgatoAudioServerProcess,
+			schedule: () => () => undefined,
+			pollIntervalMilliseconds: POLL_INTERVAL_MILLISECONDS,
+			restartTimeoutMilliseconds: RESTART_TIMEOUT_MILLISECONDS,
+		});
+
+		expect(restarter.isSupported).toBe(false);
+		await expect(restarter.restart()).rejects.toBeInstanceOf(
+			ElgatoAudioUnsupportedError
+		);
 	});
 });

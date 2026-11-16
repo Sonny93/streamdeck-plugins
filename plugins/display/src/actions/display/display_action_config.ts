@@ -6,7 +6,8 @@ import type { MonitorTarget } from './monitor_target';
 export type DisplayActionConfig = Readonly<{
 	target: MonitorTarget;
 	brightnessControl: BrightnessControl;
-	offMode: ScreenOffMode;
+	/** The way saved in the settings, `undefined` when none: `resolveOffMode` then picks the one the system allows. */
+	offMode: ScreenOffMode | undefined;
 	/** What a "Brightness" key does: set the brightness to `value`, or move it up or down by `step`. */
 	brightnessKeyMode: 'set' | 'up' | 'down';
 	value: number;

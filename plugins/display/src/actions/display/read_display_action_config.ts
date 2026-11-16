@@ -37,7 +37,7 @@ export function readDisplayActionConfig(
 	return {
 		target: readTarget(settings.monitor, options.offersAll),
 		brightnessControl: settings.brightnessControl ?? 'auto',
-		offMode: settings.offMode ?? 'blackScreen',
+		offMode: settings.offMode,
 		brightnessKeyMode: settings.brightnessKeyMode ?? 'set',
 		value: settings.value ?? Defaults.value,
 		step:

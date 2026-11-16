@@ -88,7 +88,7 @@ describe('importProfile', () => {
 		const action = {
 			Plugin: { UUID: 'com.sonny93.audio' },
 			UUID: 'com.sonny93.audio.default-output',
-			Settings: { device: 'endpoint-guid', label: 'Speakers' },
+			Settings: { device: 'endpoint-guid', volume: 5 },
 		};
 		const archiveFile = await writeArchive(
 			buildProfileEntries({
@@ -110,7 +110,7 @@ describe('importProfile', () => {
 			Controllers: [
 				{
 					Type: 'Keypad',
-					Actions: { '0,0': { ...action, Settings: { label: 'Speakers' } } },
+					Actions: { '0,0': { ...action, Settings: { volume: 5 } } },
 				},
 			],
 		});

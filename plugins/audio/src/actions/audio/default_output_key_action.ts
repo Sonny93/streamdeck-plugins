@@ -11,7 +11,7 @@ import { AudioDeviceKeyAction } from './audio_device_key_action';
 import type { AudioDeviceSettings } from './audio_device_settings';
 import { resolveDefaultOutputKeyState } from './resolve_default_output_key_state';
 
-/** Key that makes its device the default output of Windows (every role), lit while it is; it has no default label. */
+/** Key that makes its device the default output of the system (every role on Windows), lit while it is; it has no default label. */
 export class DefaultOutputKeyAction extends AudioDeviceKeyAction {
 	override readonly manifestId = 'com.sonny93.audio.default-output';
 

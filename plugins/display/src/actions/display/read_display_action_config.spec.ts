@@ -7,7 +7,7 @@ describe('readDisplayActionConfig', () => {
 		expect(readDisplayActionConfig({}, { offersAll: true })).toEqual({
 			target: { kind: 'primary' },
 			brightnessControl: 'auto',
-			offMode: 'blackScreen',
+			offMode: undefined,
 			brightnessKeyMode: 'set',
 			value: 50,
 			step: 5,
@@ -47,7 +47,7 @@ describe('readDisplayActionConfig', () => {
 		expect([config.value, config.step, config.offMode]).toEqual([
 			50,
 			5,
-			'blackScreen',
+			undefined,
 		]);
 	});
 });

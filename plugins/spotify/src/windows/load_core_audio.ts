@@ -1,6 +1,6 @@
 import type koffiModule from 'koffi';
 
-import type { AudioSessionChange } from './audio_session_change';
+import type { AudioSessionChange } from '../audio/audio_session_change';
 import type { AudioSessionSnapshot } from './audio_session_snapshot';
 import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';

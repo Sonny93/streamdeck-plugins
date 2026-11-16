@@ -95,10 +95,7 @@
 						"Version": "0.1.0.0"
 					},
 					"Resources": null,
-					"Settings": {
-						"appImageName": "msedge.exe",
-						"target": "app"
-					},
+					"Settings": {},
 					"State": 0,
 					"States": [{}],
 					"UUID": "com.sonny93.spotify.volume"

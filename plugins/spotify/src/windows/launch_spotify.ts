@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
-import { SpotifyEndpoint } from './spotify_endpoint';
-import { SpotifyLaunchFailedError } from './spotify_launch_failed_error';
+import { SpotifyEndpoint } from '../spotify/spotify_endpoint';
+import { SpotifyLaunchFailedError } from '../spotify/spotify_launch_failed_error';
 
 function resolveSpotifyExecutable(): string {
 	const localAppData = process.env['LOCALAPPDATA'];

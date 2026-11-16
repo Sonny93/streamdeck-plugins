@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { buildLinuxVoltStateReport } from './build_linux_volt_state_report';
 import { buildVoltState } from './build_volt_state';
 import { buildVoltStateReport } from './build_volt_state_report';
 import { parseVoltStateReport } from './parse_volt_state_report';
@@ -17,6 +18,15 @@ describe('parseVoltStateReport', () => {
 		);
 		expect(parseVoltStateReport(buildVoltStateReport(0x09))).toEqual(
 			buildVoltState({ phantomPower: true })
+		);
+	});
+
+	it('reads the 14-byte report Linux delivers', () => {
+		const report = buildLinuxVoltStateReport(0x41);
+
+		expect(report).toHaveLength(14);
+		expect(parseVoltStateReport(report)).toEqual(
+			buildVoltState({ vintage: true })
 		);
 	});
 

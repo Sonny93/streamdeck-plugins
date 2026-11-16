@@ -2,13 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import { buildAudioDevice } from '../../audio/build_audio_device';
 import { FakeCoreAudio } from '../../audio/fake_core_audio';
-import { readAudioSnapshot } from '../../audio/read_audio_snapshot';
 import { buildVolumeDialFeedback } from './build_volume_dial_feedback';
 
 const DEFAULT_OUTPUT = { kind: 'default', flow: 'output' } as const;
 
 describe('buildVolumeDialFeedback', () => {
-	it('shows the device and its volume', () => {
+	it('shows the device and its volume', async () => {
 		const coreAudio = new FakeCoreAudio();
 		coreAudio.plug(buildAudioDevice('headphones'), {
 			level: 0.699_999_988,
@@ -16,7 +15,7 @@ describe('buildVolumeDialFeedback', () => {
 		});
 
 		expect(
-			buildVolumeDialFeedback(readAudioSnapshot(coreAudio), DEFAULT_OUTPUT)
+			buildVolumeDialFeedback(await coreAudio.readSnapshot(), DEFAULT_OUTPUT)
 		).toEqual({
 			title: 'Device headphones',
 			value: '70 %',
@@ -24,7 +23,7 @@ describe('buildVolumeDialFeedback', () => {
 		});
 	});
 
-	it('fades the bar of a muted device', () => {
+	it('fades the bar of a muted device', async () => {
 		const coreAudio = new FakeCoreAudio();
 		coreAudio.plug(buildAudioDevice('headphones'), {
 			level: 0.5,
@@ -32,7 +31,7 @@ describe('buildVolumeDialFeedback', () => {
 		});
 
 		const feedback = buildVolumeDialFeedback(
-			readAudioSnapshot(coreAudio),
+			await coreAudio.readSnapshot(),
 			DEFAULT_OUTPUT
 		);
 		expect(feedback.value).toBe('Muted');

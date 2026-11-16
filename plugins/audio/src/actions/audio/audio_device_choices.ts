@@ -4,6 +4,6 @@ import type { AudioFlow } from '../../audio/audio_flow';
 export type AudioDeviceChoices = Readonly<{
 	event: string;
 	flows: readonly AudioFlow[];
-	/** Whether "Default output" and "Default input" are offered, following Windows. */
+	/** Whether "Default output" and "Default input" are offered, following the system. */
 	offersDefaults: boolean;
 }>;

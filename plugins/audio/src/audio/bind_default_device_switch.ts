@@ -1,13 +1,13 @@
 import { checkHresult } from '../windows/check_hresult';
 import { useComObject } from '../windows/use_com_object';
-import type { CoreAudio } from './core_audio';
 import { CoreAudioConstants } from './core_audio_constants';
 import type { CoreAudioContext } from './core_audio_context';
+import type { SyncCoreAudio } from './sync_core_audio';
 
 /** Binds the change of the default device, through the undocumented `IPolicyConfig` the Windows sound settings use. */
 export function bindDefaultDeviceSwitch(
 	context: CoreAudioContext
-): Pick<CoreAudio, 'setDefaultDevice'> {
+): Pick<SyncCoreAudio, 'setDefaultDevice'> {
 	const { runtime, prototypes } = context;
 	return {
 		setDefaultDevice: (deviceId) => {

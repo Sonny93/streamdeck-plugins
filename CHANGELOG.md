@@ -4,6 +4,31 @@ All notable changes to streamdeck-plugins are written here for the people who us
 
 ## [Unreleased]
 
+### Added
+
+- Spotify Deck, Audio Deck and Display Deck run on Linux under [OpenDeck](https://github.com/nekename/OpenDeck), with the same keys and dials as on Windows, except where noted below. See [Install on Linux](docs/install.md#install-on-linux).
+- Linux: audio devices, default device, mute and volume go through `pactl` (PipeWire or PulseAudio), and the keys follow changes made outside the plugin. The Volt 1 buttons go through `/dev/hidraw` and need a udev rule.
+- Linux: brightness and HDR go through `kscreen-doctor` (KDE Plasma 6), and monitor standby through `ddcutil`. On monitors whose brightness KDE already drives over DDC/CI, the plugin goes through KDE instead of talking to the monitor itself.
+- Linux: raising the Spotify window and the "focused app" volume target use `kdotool` when it is installed.
+- Linux: the "App in the foreground" volume target matches the window and the sound by process, so it finds apps that rename their process or play sound from a child process (games, browsers, Electron apps).
+- Linux: the black screen of Screen Power is not available, because Wayland does not let a plugin draw over the desktop. A new Screen Power key uses the standby, and one set to black screen shows as unavailable.
+- Linux: Restart Elgato Audio shows as unavailable, since Elgato has no audio server there.
+- Linux: Spotify shows in the app list of the volume dial, and covers, backdrops and playlist thumbnails show on the touch strip. The plugin draws the strip frames as PNG with resvg compiled to WebAssembly, because OpenDeck drops pictures inside SVG frames; a frame that fails to draw is skipped instead of stopping the plugin.
+
+### Changed
+
+- The "Picked app" setting of the Spotify volume dial shows only when its target is "Picked app".
+- The Spotify "now playing" screen shows after 5 seconds without touching the dials, instead of 15.
+- The released profile no longer carries the author's app and device settings: the volume dial falls back to the Spotify target, and the default-output and play-on-device keys lose their "Casque", "Enceintes" and "PC" labels.
+- Audio changes run one at a time: quick turns of the volume dial add up instead of overwriting each other, and quick presses on Mute no longer cancel each other.
+- A volume app saved as `name.exe` also matches `name`, whatever the case, so a profile carries over between Windows and Linux.
+- The audio choice "Follow Windows" is now "Follow system", and the brightness control "Windows" is now "System". Saved settings keep working.
+
+### Fixed
+
+- On OpenDeck, the property inspector lists (outputs, inputs, monitors, apps, devices) fill in as soon as the inspector opens instead of staying on "Looking for ...".
+- Display Deck no longer piles up monitor reads when a monitor is slow to answer.
+
 ## [1.2.0] - 2026-11-08
 
 ### Added

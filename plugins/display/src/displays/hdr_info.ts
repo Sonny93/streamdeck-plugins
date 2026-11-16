@@ -1,2 +1,2 @@
-/** HDR of a monitor: whether it can show it and whether Windows has it on. */
+/** HDR of a monitor: whether it can show it and whether the system has it on. */
 export type HdrInfo = Readonly<{ isSupported: boolean; isEnabled: boolean }>;

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { DisplayHub } from './display_hub';
+import type { DisplayInfo } from './display_info';
 import { FakeDisplaySystem } from './fake_display_system';
 import { UserSetup } from './user_setup';
 
@@ -44,12 +45,49 @@ function createHub(system: FakeDisplaySystem) {
 	return { hub, onError };
 }
 
+/** A system whose listing waits until `release` is called, to hold a read in flight. */
+class GatedDisplaySystem extends FakeDisplaySystem {
+	listCalls = 0;
+	private release: () => void = () => undefined;
+	private gate = Promise.resolve();
+
+	hold(): void {
+		this.gate = new Promise((resolve) => {
+			this.release = resolve;
+		});
+	}
+
+	open(): void {
+		this.release();
+	}
+
+	override async listDisplays(): Promise<readonly DisplayInfo[]> {
+		this.listCalls += 1;
+		await this.gate;
+		return super.listDisplays();
+	}
+}
+
+function createScheduledHub(system: FakeDisplaySystem) {
+	const scheduled: Array<() => void> = [];
+	const hub = new DisplayHub({
+		loadDisplaySystem: () => Promise.resolve(system),
+		schedule: (callback) => {
+			scheduled.push(callback);
+			return () => undefined;
+		},
+		pollIntervalMilliseconds: 2000,
+		onError: vi.fn(),
+	});
+	return { hub, scheduled };
+}
+
 function monitorOf(hub: DisplayHub, monitorId: string) {
 	return hub.current?.monitors.find((monitor) => monitor.id === monitorId);
 }
 
 describe('DisplayHub', () => {
-	it('reads every monitor, the main one first, with its DDC/CI and Windows brightness', async () => {
+	it('reads every monitor, the main one first, with its DDC/CI and system brightness', async () => {
 		const { hub } = createHub(createSystem());
 
 		const snapshot = await hub.refresh();
@@ -61,7 +99,7 @@ describe('DisplayHub', () => {
 		]);
 		expect(monitorOf(hub, UserSetup.topIiyama.id)).toMatchObject({
 			monitorBrightness: 60,
-			windowsBrightness: 100,
+			systemBrightness: 100,
 			power: 'on',
 			canStandby: true,
 		});
@@ -96,13 +134,13 @@ describe('DisplayHub', () => {
 		expect(system.vcpWrites.map((write) => write.value)).toEqual([65, 75]);
 	});
 
-	it('stops the Windows brightness at the gamma floor in SDR', async () => {
+	it('stops the system brightness at the gamma floor in SDR', async () => {
 		const { hub } = createHub(createSystem());
 		await hub.refresh();
 
-		await hub.setBrightness(UserSetup.odyssey.id, 'windows', 30);
+		await hub.setBrightness(UserSetup.odyssey.id, 'system', 30);
 
-		expect(monitorOf(hub, UserSetup.odyssey.id)?.windowsBrightness).toBe(50);
+		expect(monitorOf(hub, UserSetup.odyssey.id)?.systemBrightness).toBe(50);
 	});
 
 	it('covers a monitor with a black screen, lowering its backlight until it wakes', async () => {
@@ -144,7 +182,7 @@ describe('DisplayHub', () => {
 		expect(system.vcpOf(UserSetup.odyssey.id, 0x10)).toBe(50);
 	});
 
-	it('wakes a monitor put in standby even once Windows stops listing it', async () => {
+	it('wakes a monitor put in standby even once the system stops listing it', async () => {
 		const system = createSystem();
 		const { hub } = createHub(system);
 		await hub.refresh();
@@ -189,5 +227,116 @@ describe('DisplayHub', () => {
 			isSupported: true,
 			isEnabled: true,
 		});
+	});
+
+	it('refuses a black screen when the system cannot draw one, and still turns the monitor on', async () => {
+		const system = new FakeDisplaySystem({ canBlackScreen: false });
+		system.plug(UserSetup.topIiyama, {
+			capabilities: IIYAMA_CAPABILITIES,
+			vcp: new Map([[0xd6, 1]]),
+		});
+		const { hub } = createHub(system);
+		await hub.refresh();
+
+		await expect(
+			hub.toggleScreens([UserSetup.topIiyama.id], 'blackScreen')
+		).rejects.toMatchObject({ code: 'E_MONITOR_UNAVAILABLE' });
+		await hub.toggleScreens([UserSetup.topIiyama.id], 'standby');
+		expect(monitorOf(hub, UserSetup.topIiyama.id)?.canBlackScreen).toBe(false);
+		expect(system.vcpOf(UserSetup.topIiyama.id, 0xd6)).toBe(5);
+	});
+});
+
+describe('DisplayHub refresh', () => {
+	it('should share one queued read between the refreshes asked while another read runs', async () => {
+		const system = new GatedDisplaySystem();
+		system.plug(UserSetup.topIiyama);
+		const { hub } = createHub(system);
+		system.hold();
+		const running = hub.refresh();
+		await vi.waitFor(() => {
+			expect(system.listCalls).toBe(1);
+		});
+
+		const first = hub.refresh();
+		const second = hub.refresh();
+		const third = hub.refresh();
+		system.open();
+		await Promise.all([running, first, second, third]);
+
+		expect(first).toBe(second);
+		expect(second).toBe(third);
+		expect(system.listCalls).toBe(2);
+	});
+
+	it('should read again for a refresh asked after the queued read started', async () => {
+		const system = new GatedDisplaySystem();
+		system.plug(UserSetup.topIiyama);
+		const { hub } = createHub(system);
+
+		await hub.refresh();
+		await hub.refresh();
+
+		expect(system.listCalls).toBe(2);
+	});
+});
+
+describe('DisplayHub polling', () => {
+	it('schedules the next poll only once the current read is done', async () => {
+		const system = new GatedDisplaySystem();
+		system.plug(UserSetup.topIiyama);
+		system.hold();
+		const { hub, scheduled } = createScheduledHub(system);
+
+		hub.subscribe(() => undefined);
+		await Promise.resolve();
+		expect(scheduled).toHaveLength(0);
+
+		system.open();
+		await vi.waitFor(() => {
+			expect(scheduled).toHaveLength(1);
+		});
+		expect(system.listCalls).toBe(1);
+	});
+
+	it('keeps a single read in flight however many polls come due', async () => {
+		const system = new GatedDisplaySystem();
+		system.plug(UserSetup.topIiyama);
+		const { hub, scheduled } = createScheduledHub(system);
+		hub.subscribe(() => undefined);
+		await vi.waitFor(() => {
+			expect(scheduled).toHaveLength(1);
+		});
+		system.hold();
+
+		scheduled[0]?.();
+		scheduled[0]?.();
+		await vi.waitFor(() => {
+			expect(system.listCalls).toBe(2);
+		});
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(system.listCalls).toBe(2);
+		system.open();
+		await vi.waitFor(() => {
+			expect(scheduled.length).toBeGreaterThan(1);
+		});
+	});
+
+	it('stops polling once the last listener leaves, even with a read in flight', async () => {
+		const system = new GatedDisplaySystem();
+		system.plug(UserSetup.topIiyama);
+		system.hold();
+		const { hub, scheduled } = createScheduledHub(system);
+		const unsubscribe = hub.subscribe(() => undefined);
+
+		unsubscribe();
+		system.open();
+		await vi.waitFor(() => {
+			expect(system.listCalls).toBe(1);
+		});
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(scheduled).toHaveLength(0);
 	});
 });

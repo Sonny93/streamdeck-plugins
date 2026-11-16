@@ -7,7 +7,7 @@
 		"watch": "tsdown --watch",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
-		"restart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/restart_plugin.ps1"
+		"restart": "node ../../packages/release-tools/src/restart_plugin.ts com.sonny93.audio"
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "^3.0.3",

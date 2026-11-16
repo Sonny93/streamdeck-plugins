@@ -7,7 +7,7 @@ const UNPLUGGED_LABEL = 'Monitor not lit';
 
 /**
  * Lists the monitors an action can be set to, as sdpi-components `datasource` items.
- * The monitor already picked stays listed while Windows does not light it, so the picker keeps showing it.
+ * The monitor already picked stays listed while the system does not light it, so the picker keeps showing it.
  */
 export function listMonitorChoices(
 	options: Readonly<{

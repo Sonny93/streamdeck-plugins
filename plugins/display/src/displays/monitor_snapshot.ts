@@ -11,10 +11,12 @@ export type MonitorSnapshot = Readonly<{
 	monitorBrightness: number | undefined;
 	/** Whether the monitor accepts a DDC/CI brightness yet keeps its picture as it was. */
 	ignoresMonitorBrightness: boolean;
-	/** Brightness Windows gives the picture, in percent: gamma ramp in SDR, "SDR content brightness" in HDR. */
-	windowsBrightness: number | undefined;
+	/** Brightness the system gives the picture, in percent, apart from the monitor; `undefined` when the system has none to give. */
+	systemBrightness: number | undefined;
 	power: ScreenPower;
 	/** Whether the monitor can be turned off over DDC/CI. */
 	canStandby: boolean;
+	/** Whether a black screen can cover the monitor. */
+	canBlackScreen: boolean;
 	hdr: HdrInfo;
 }>;

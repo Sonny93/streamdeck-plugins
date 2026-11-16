@@ -20,7 +20,7 @@ function brightnessOf(
 ): number | undefined {
 	return source === 'monitor'
 		? monitor.monitorBrightness
-		: monitor.windowsBrightness;
+		: monitor.systemBrightness;
 }
 
 /**
@@ -33,11 +33,13 @@ export class DisplayHub {
 	private readonly ddc = new DdcMonitors();
 	private readonly power = new ScreenPowerSwitch(this.ddc);
 	private readonly writers = new Map<string, LatestValueWriter>();
-	private readonly windowsBrightness = new Map<string, number | undefined>();
+	private readonly systemBrightness = new Map<string, number | undefined>();
 	private displays: readonly DisplayInfo[] = [];
 	private snapshot: DisplaySnapshot | undefined;
 	private refreshTail: Promise<unknown> = Promise.resolve();
+	private queuedRefresh: Promise<DisplaySnapshot | undefined> | undefined;
 	private cancelPoll: (() => void) | undefined;
+	private pollToken: symbol | undefined;
 
 	constructor(private readonly options: DisplayHubOptions) {}
 
@@ -50,21 +52,30 @@ export class DisplayHub {
 	subscribe(listener: DisplaySnapshotListener): () => void {
 		this.listeners.add(listener);
 		listener(this.snapshot);
-		if (this.cancelPoll === undefined) {
-			this.poll();
+		if (this.pollToken === undefined) {
+			this.startPolling();
 		}
 		return () => {
 			this.listeners.delete(listener);
 			if (this.listeners.size === 0) {
-				this.cancelPoll?.();
-				this.cancelPoll = undefined;
+				this.stopPolling();
 			}
 		};
 	}
 
-	/** Reads the monitors after the reads already asked for, and tells the listeners when something changed. */
+	/**
+	 * Reads the monitors after the reads already asked for, and tells the listeners when something changed.
+	 * A read asked while another one waits for its turn is that same read: it has not started, so it will see the change.
+	 */
 	refresh(): Promise<DisplaySnapshot | undefined> {
-		const next = this.refreshTail.then(() => this.read());
+		if (this.queuedRefresh !== undefined) {
+			return this.queuedRefresh;
+		}
+		const next = this.refreshTail.then(() => {
+			this.queuedRefresh = undefined;
+			return this.read();
+		});
+		this.queuedRefresh = next;
 		this.refreshTail = next;
 		return next;
 	}
@@ -114,8 +125,11 @@ export class DisplayHub {
 	async toggleHdr(monitorId: string): Promise<void> {
 		const display = this.requireDisplay(monitorId);
 		const system = await this.options.loadDisplaySystem();
-		system.writeHdr(display, !display.hdr.isEnabled);
-		await this.refresh();
+		try {
+			await system.writeHdr(display, !display.hdr.isEnabled);
+		} finally {
+			await this.refresh();
+		}
 	}
 
 	/** Turns the monitors off when any of them is on, otherwise turns them all on again. */
@@ -128,6 +142,12 @@ export class DisplayHub {
 			this.requireMonitor(monitorId)
 		);
 		const isAnyOn = monitors.some((monitor) => monitor.power === 'on');
+		if (isAnyOn && mode === 'blackScreen' && !system.canBlackScreen) {
+			throw new MonitorUnavailableError({
+				monitorId: monitorIds.join(', '),
+				reason: 'A black screen is not available on this system',
+			});
+		}
 		try {
 			for (const monitor of monitors) {
 				if (!isAnyOn) {
@@ -145,24 +165,21 @@ export class DisplayHub {
 	private async read(): Promise<DisplaySnapshot | undefined> {
 		try {
 			const system = await this.options.loadDisplaySystem();
-			const displays = system.listDisplays();
+			const displays = await system.listDisplays();
 			this.displays = displays;
 			system.syncBlackScreens(displays);
 			const sleepingIds = new Set(
 				this.power.sleepingDisplays.map((display) => display.id)
 			);
 			this.ddc.sync(system, displays, sleepingIds);
-			for (const display of displays) {
-				this.windowsBrightness.set(
-					display.id,
-					system.readWindowsBrightness(display)
-				);
-			}
-			await Promise.all(
-				[...displays.map((display) => display.id), ...sleepingIds].map(
+			await Promise.all([
+				...displays.map((display) =>
+					this.readSystemBrightness(system, display)
+				),
+				...[...displays.map((display) => display.id), ...sleepingIds].map(
 					(monitorId) => this.ddc.read(monitorId)
-				)
-			);
+				),
+			]);
 			this.publish(this.buildSnapshot(system));
 		} catch (error) {
 			this.options.onError(error);
@@ -186,12 +203,13 @@ export class DisplayHub {
 					display,
 					listedDisplays: this.displays,
 					reading: this.ddc.reading(display.id),
-					windowsBrightness: this.windowsBrightness.get(display.id),
+					systemBrightness: this.systemBrightness.get(display.id),
+					canBlackScreen: system.canBlackScreen,
 					hasBlackScreen: system.hasBlackScreen(display.id),
 					keptBacklight: this.power.keptBacklight(display.id),
 					pendingMonitorBrightness: this.writers.get(`${display.id}:monitor`)
 						?.pendingValue,
-					pendingWindowsBrightness: this.writers.get(`${display.id}:windows`)
+					pendingSystemBrightness: this.writers.get(`${display.id}:system`)
 						?.pendingValue,
 				})
 			);
@@ -213,13 +231,26 @@ export class DisplayHub {
 				return;
 			}
 			const system = await this.options.loadDisplaySystem();
-			this.windowsBrightness.set(
+			this.systemBrightness.set(
 				monitorId,
-				system.writeWindowsBrightness(this.requireDisplay(monitorId), percent)
+				await system.writeSystemBrightness(
+					this.requireDisplay(monitorId),
+					percent
+				)
 			);
 		});
 		this.writers.set(key, writer);
 		return writer;
+	}
+
+	private async readSystemBrightness(
+		system: DisplaySystem,
+		display: DisplayInfo
+	): Promise<void> {
+		this.systemBrightness.set(
+			display.id,
+			await system.readSystemBrightness(display)
+		);
 	}
 
 	private requireDisplay(monitorId: string): DisplayInfo {
@@ -231,7 +262,7 @@ export class DisplayHub {
 		if (display === undefined) {
 			throw new MonitorUnavailableError({
 				monitorId,
-				reason: 'Windows does not light the monitor',
+				reason: 'The system does not light the monitor',
 			});
 		}
 		return display;
@@ -244,7 +275,7 @@ export class DisplayHub {
 		if (monitor === undefined) {
 			throw new MonitorUnavailableError({
 				monitorId,
-				reason: 'Windows does not light the monitor',
+				reason: 'The system does not light the monitor',
 			});
 		}
 		return monitor;
@@ -256,10 +287,26 @@ export class DisplayHub {
 		});
 	}
 
-	private poll(): void {
-		void this.refresh();
+	private startPolling(): void {
+		const token = Symbol('poll');
+		this.pollToken = token;
+		void this.poll(token);
+	}
+
+	private stopPolling(): void {
+		this.pollToken = undefined;
+		this.cancelPoll?.();
+		this.cancelPoll = undefined;
+	}
+
+	/** Reads, then waits the interval before the next read, so a slow read never piles up with the next ones. */
+	private async poll(token: symbol): Promise<void> {
+		await this.refresh();
+		if (this.pollToken !== token) {
+			return;
+		}
 		this.cancelPoll = this.options.schedule(() => {
-			this.poll();
+			void this.poll(token);
 		}, this.options.pollIntervalMilliseconds);
 	}
 

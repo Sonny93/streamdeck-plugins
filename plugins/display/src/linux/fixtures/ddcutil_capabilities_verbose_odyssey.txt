@@ -1,0 +1,87 @@
+Feature definition file not found: SAM-Odyssey_G95SD-57436.mccs
+Unparsed capabilities string: (prot(monitor)type(lcd)model(FALCON)cmds(01 02 03 07 0C 4E F3 E3)vcp(02 04 05 06 08 0B 0C 0E 10 12 14(01 04 05 06 07 08 0A 0B) 16 18 1A 1E 20 30 3E 6C 6E 70 AC AE B6 C0 C6 C8 C9 CA CC(00 02 03 04 05 08 09 0A 0D) D6(01 04) DC(00 01 02 03 04) DF 60(01 03) 62 8D FF)mswhql(1)mccs_ver(2.0)asset_eep(32)mpu_ver(01))
+Model: FALCON
+MCCS version: 2.0
+Commands:
+   Op Code: 01 (VCP Request)
+   Op Code: 02 (VCP Response)
+   Op Code: 03 (VCP Set)
+   Op Code: 07 (Timing Request)
+   Op Code: 0C (Save Settings)
+   Op Code: 4E (Unrecognized operation code)
+   Op Code: F3 (Capabilities Request)
+   Op Code: E3 (Capabilities Reply)
+VCP Features:
+   Feature: 02 (New control value)
+   Feature: 04 (Restore factory defaults)
+   Feature: 05 (Restore factory brightness/contrast defaults)
+   Feature: 06 (Restore factory geometry defaults)
+   Feature: 08 (Restore color defaults)
+   Feature: 0B (Color temperature increment)
+   Feature: 0C (Color temperature request)
+   Feature: 0E (Clock)
+   Feature: 10 (Brightness)
+   Feature: 12 (Contrast)
+   Feature: 14 (Select color preset)
+      Values (unparsed): 01 04 05 06 07 08 0A 0B
+      Values (  parsed):
+         01: sRGB
+         04: 5000 K
+         05: 6500 K
+         06: 7500 K
+         07: 8200 K
+         08: 9300 K
+         0a: 11500 K
+         0b: User 1
+   Feature: 16 (Video gain: Red)
+   Feature: 18 (Video gain: Green)
+   Feature: 1A (Video gain: Blue)
+   Feature: 1E (Auto setup)
+   Feature: 20 (Horizontal Position (Phase))
+   Feature: 30 (Vertical Position (Phase))
+   Feature: 3E (Clock phase)
+   Feature: 6C (Video black level: Red)
+   Feature: 6E (Video black level: Green)
+   Feature: 70 (Video black level: Blue)
+   Feature: AC (Horizontal frequency)
+   Feature: AE (Vertical frequency)
+   Feature: B6 (Display technology type)
+   Feature: C0 (Display usage time)
+   Feature: C6 (Application enable key)
+   Feature: C8 (Display controller type)
+   Feature: C9 (Display firmware level)
+   Feature: CA (OSD)
+   Feature: CC (OSD Language)
+      Values (unparsed): 00 02 03 04 05 08 09 0A 0D
+      Values (  parsed):
+         00: Reserved value, must be ignored
+         02: English
+         03: French
+         04: German
+         05: Italian
+         08: Portuguese (Portugal)
+         09: Russian
+         0a: Spanish
+         0d: Chinese (simplified / Kantai)
+   Feature: D6 (Power mode)
+      Values (unparsed): 01 04
+      Values (  parsed):
+         01: DPM: On,  DPMS: Off
+         04: DPM: Off, DPMS: Off
+   Feature: DC (Display Mode)
+      Values (unparsed): 00 01 02 03 04
+      Values (  parsed):
+         00: Standard/Default mode
+         01: Productivity
+         02: Mixed
+         03: Movie
+         04: User defined
+   Feature: DF (VCP Version)
+   Feature: 60 (Input Source)
+      Values (unparsed): 01 03
+      Values (  parsed):
+         01: VGA-1
+         03: DVI-1
+   Feature: 62 (Audio speaker volume)
+   Feature: 8D (Audio Mute)
+   Feature: FF (Manufacturer specific feature)

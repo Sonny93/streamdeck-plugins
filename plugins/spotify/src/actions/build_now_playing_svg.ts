@@ -140,7 +140,17 @@ function buildClip(id: string, left: number, right: number): string {
 	return `<defs><clipPath id="${id}"><rect x="${left}" y="0" width="${right - left}" height="${NowPlayingMetrics.stripHeight}"/></clipPath></defs>`;
 }
 
-function buildTrackInfo(frame: NowPlayingFrame): string {
+function isSliceOverlapping(
+	sliceLeft: number,
+	area: Readonly<{ left: number; right: number }>
+): boolean {
+	return (
+		sliceLeft < area.right &&
+		sliceLeft + NowPlayingMetrics.segmentWidth > area.left
+	);
+}
+
+function buildTrackInfo(frame: NowPlayingFrame, sliceLeft: number): string {
 	const { title, artists, splitTitle, splitArtists, infoClipRight } =
 		NowPlayingMetrics;
 	const artistLine = frame.artistNames.join(artists.separator);
@@ -165,6 +175,9 @@ function buildTrackInfo(frame: NowPlayingFrame): string {
 	].join('');
 	if (!isSplit) {
 		return texts;
+	}
+	if (!isSliceOverlapping(sliceLeft, { left: 0, right: infoClipRight })) {
+		return '';
 	}
 	return `${buildClip(INFO_CLIP_ID, 0, infoClipRight)}<g clip-path="url(#${INFO_CLIP_ID})">${texts}</g>`;
 }
@@ -254,11 +267,14 @@ function buildLyricsContent(
 	].join('');
 }
 
-function buildLyrics(frame: NowPlayingFrame): string {
+function buildLyrics(frame: NowPlayingFrame, sliceLeft: number): string {
 	if (frame.lyrics === undefined) {
 		return '';
 	}
 	const { left, right } = NowPlayingMetrics.lyrics;
+	if (!isSliceOverlapping(sliceLeft, { left, right })) {
+		return '';
+	}
 	return `${buildClip(LYRICS_CLIP_ID, left, right)}<g clip-path="url(#${LYRICS_CLIP_ID})">${buildLyricsContent(frame.lyrics, frame.lyricsTransition)}</g>`;
 }
 
@@ -267,6 +283,7 @@ function buildLyrics(frame: NowPlayingFrame): string {
  * the cover, dimmed and stretched, as the backdrop, the cover itself (with a pause badge while paused), the title and artists (truncated),
  * the times and a progress bar. The cover is only embedded in the slices it overlaps; without cover, the backdrop stays black.
  * With lyrics, the title and artists keep to the left half and the right half shows the line being sung (on up to two rows) and the next one;
+ * a clipped group is only emitted in the slices it overlaps, since resvg aborts the process on a layer that lies entirely off the canvas;
  * during a change of line, the previous lines slide up and fade out while the new ones slide in from below.
  */
 export function buildNowPlayingSvg(
@@ -282,8 +299,8 @@ export function buildNowPlayingSvg(
 		buildBackdrop(frame.coverDataUrl),
 		showsCover ? buildCover(frame.coverDataUrl) : '',
 		showsCover && frame.isPaused ? buildPauseBadge() : '',
-		buildTrackInfo(frame),
-		buildLyrics(frame),
+		buildTrackInfo(frame, sliceLeft),
+		buildLyrics(frame, sliceLeft),
 		buildProgressBar(frame),
 		buildTimes(frame),
 		'</svg>',

@@ -1,13 +1,16 @@
 import { streamDeck } from '@elgato/streamdeck';
 import { SingletonAction } from '@elgato/streamdeck';
 import type {
+	Action,
 	DidReceiveSettingsEvent,
 	KeyAction,
 	KeyDownEvent,
+	PropertyInspectorDidAppearEvent,
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
 import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
+import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import { listSpotifyDevices } from '../spotify/list_spotify_devices';
 import { runSpotifyQuery } from '../spotify/run_spotify_query';
@@ -23,6 +26,9 @@ import { resolveDeviceKey } from './resolve_device_key';
 import { runSpotifyAction } from './run_spotify_action';
 import { SpotifyDevicesDataSource } from './spotify_devices_data_source';
 
+type PropertyInspectorPayload = Parameters<
+	typeof streamDeck.ui.sendToPropertyInspector
+>[0];
 type DeviceKey = KeyAction<PlayOnDeviceSettings>;
 type PlayOnDeviceSendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<PlayOnDeviceSettings>['onSendToPlugin']>
@@ -45,6 +51,12 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	private readonly lastImages = new Map<string, string>();
 	private knownDevices: readonly SpotifyDevice[] = [];
 	private unsubscribe: (() => void) | undefined;
+	private readonly replies =
+		new PropertyInspectorReplies<PropertyInspectorPayload>({
+			readCurrentActionId: () => streamDeck.ui.action?.id,
+			sendToCurrent: (payload) =>
+				streamDeck.ui.sendToPropertyInspector(payload),
+		});
 
 	constructor(private readonly playerStateHub: PlayerStateHub) {
 		super();
@@ -66,6 +78,7 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 	override onWillDisappear(ev: WillDisappearEvent<PlayOnDeviceSettings>): void {
 		this.settings.delete(ev.action.id);
 		this.lastImages.delete(ev.action.id);
+		this.replies.forget(ev.action.id);
 		if (this.settings.size > 0) {
 			return;
 		}
@@ -99,23 +112,41 @@ export class PlayOnDeviceAction extends SingletonAction<PlayOnDeviceSettings> {
 		if (request === undefined) {
 			return;
 		}
+		await this.answerDeviceList(ev.action, request.isRefresh);
+	}
+
+	override async onPropertyInspectorDidAppear(
+		ev: PropertyInspectorDidAppearEvent<PlayOnDeviceSettings>
+	): Promise<void> {
+		await this.replies.deliverPending(ev.action.id);
+		await this.answerDeviceList(ev.action, false);
+	}
+
+	private async answerDeviceList(
+		action: Action<PlayOnDeviceSettings>,
+		isRefresh: boolean
+	): Promise<void> {
 		let devices: readonly SpotifyDevice[] = [];
 		try {
 			devices = await runSpotifyQuery(
-				listSpotifyDevices({ shouldDiscover: request.isRefresh })
+				listSpotifyDevices({ shouldDiscover: isRefresh })
 			);
 			this.knownDevices = devices;
 		} catch (error) {
 			streamDeck.logger.warn('Cannot list the Spotify devices', error);
 		}
 		try {
-			const settings = readSettings(await ev.action.getSettings());
-			await streamDeck.ui.sendToPropertyInspector({
+			const settings = readSettings(await action.getSettings());
+			await this.replies.reply({
+				actionId: action.id,
 				event: SpotifyDevicesDataSource.event,
-				items: listDeviceChoices({ devices, settings }),
+				payload: {
+					event: SpotifyDevicesDataSource.event,
+					items: listDeviceChoices({ devices, settings }),
+				},
 			});
-			if (ev.action.isKey()) {
-				await this.keep(ev.action, settings);
+			if (action.isKey()) {
+				await this.keep(action, settings);
 			}
 		} catch (error) {
 			streamDeck.logger.error('Cannot send the Spotify devices', error);

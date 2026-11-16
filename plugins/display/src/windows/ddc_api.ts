@@ -1,6 +1,6 @@
 import type { NativePointer } from 'deck-kit/windows/native_pointer';
 
-import type { VcpReply } from './vcp_reply';
+import type { VcpReply } from '../displays/vcp_reply';
 
 /** The DDC/CI functions of dxva2, which talk to the monitor over its cable; every exchange runs on a koffi worker thread. */
 export type DdcApi = Readonly<{

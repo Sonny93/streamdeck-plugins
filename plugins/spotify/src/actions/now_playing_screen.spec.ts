@@ -1,4 +1,5 @@
 import type { Scheduler } from 'deck-kit/async/scheduler';
+import { toSvgDataUrl } from 'deck-kit/text/to_svg_data_url';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { SpotifyLyricsLine } from '../spotify/spotify_lyrics_line';
@@ -76,6 +77,7 @@ function buildScreen(
 		}
 	};
 	const screen = new NowPlayingScreen({
+		encodeFrame: (svg) => Promise.resolve(toSvgDataUrl(svg)),
 		inactivity: {
 			get isInactive() {
 				return inactive;
@@ -424,15 +426,16 @@ describe('NowPlayingScreen', () => {
 		});
 
 		it('should draw the line being sung and the next one', async () => {
-			const { screen, dial, setInactive, lastSvg, flush } = buildLyricsScreen();
-			screen.attach(dial);
+			const { screen, setInactive, flush } = buildLyricsScreen();
+			const lyricsDial = buildDial('dial-3', 3);
+			screen.attach(lyricsDial);
 			await flush();
 
 			setInactive(true);
 			await flush();
 
-			expect(lastSvg()).toContain('>Hola</text>');
-			expect(lastSvg()).toContain('>Adiós</text>');
+			expect(decodeLast(lyricsDial.setFeedback)).toContain('>Hola</text>');
+			expect(decodeLast(lyricsDial.setFeedback)).toContain('>Adiós</text>');
 		});
 
 		it('should redraw when the next line starts', async () => {

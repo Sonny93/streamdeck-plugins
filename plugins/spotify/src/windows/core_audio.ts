@@ -1,4 +1,4 @@
-import type { AudioSessionChange } from './audio_session_change';
+import type { AudioSessionChange } from '../audio/audio_session_change';
 import type { AudioSessionSnapshot } from './audio_session_snapshot';
 
 /** The subset of Windows Core Audio needed to list the audio sessions of every active output device and change their volume. */

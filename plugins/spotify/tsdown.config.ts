@@ -8,7 +8,12 @@ import type { Rolldown } from 'tsdown';
 const SD_PLUGIN_DIRECTORY = 'com.sonny93.spotify.sdPlugin';
 const BUNDLED_NODE_MODULES = `${SD_PLUGIN_DIRECTORY}/bin/node_modules`;
 const KOFFI_PACKAGE = 'koffi';
-const KOFFI_NATIVE_PACKAGE = '@koromix/koffi-win32-x64';
+const RESVG_WASM_PACKAGE = '@resvg/resvg-wasm';
+const RESVG_WASM_FILE = 'index_bg.wasm';
+const BUNDLED_RESVG_WASM = `${SD_PLUGIN_DIRECTORY}/bin/resvg.wasm`;
+const NATIVE_PACKAGES = [
+	{ name: KOFFI_PACKAGE, nativeName: '@koromix/koffi-win32-x64' },
+] as const;
 const KOFFI_SKIPPED_DIRECTORIES = new Set(['doc', 'vendor', 'lib']);
 const KOFFI_SKIPPED_EXTENSIONS = new Set([
 	'.cc',
@@ -22,10 +27,13 @@ const KOFFI_SKIPPED_EXTENSIONS = new Set([
 ]);
 
 /**
- * Tells whether a file of the koffi packages is needed at runtime.
+ * Tells whether a file of a native package is needed at runtime.
  * Documentation, vendored headers and C sources are left out.
  */
-function isKoffiRuntimeFile(packageDirectory: string, source: string): boolean {
+function isNativeRuntimeFile(
+	packageDirectory: string,
+	source: string
+): boolean {
 	const relativePath = path.relative(packageDirectory, source);
 	const [firstSegment = ''] = relativePath.split(path.sep);
 	if (KOFFI_SKIPPED_DIRECTORIES.has(firstSegment)) {
@@ -62,35 +70,55 @@ function copyPackageOnce(source: string, destination: string): void {
 	fs.cpSync(source, destination, {
 		recursive: true,
 		dereference: true,
-		filter: (entry) => isKoffiRuntimeFile(source, entry),
+		filter: (entry) => isNativeRuntimeFile(source, entry),
 	});
 }
 
 /**
- * koffi is a native addon, so it is kept external and shipped next to the bundle.
- * The loader of koffi expects its platform package at ../../../@koromix/koffi-<platform> from its own folder.
+ * The native addon koffi (Windows) is kept external and shipped next to the bundle:
+ * its loader expects the platform package next to it, at ../../../<scope>/<package> from its own folder.
  */
-function copyKoffiPlugin(): Rolldown.Plugin {
+function copyNativePackagesPlugin(): Rolldown.Plugin {
 	return {
-		name: 'copy-koffi',
+		name: 'copy-native-packages',
 		writeBundle() {
-			const koffiDirectory = fs.realpathSync(
-				path.join(import.meta.dirname, 'node_modules', KOFFI_PACKAGE)
-			);
-			const nativeDirectory = path.dirname(
-				fs.realpathSync(
-					createRequire(path.join(koffiDirectory, 'package.json')).resolve(
-						`${KOFFI_NATIVE_PACKAGE}/package.json`
+			for (const { name, nativeName } of NATIVE_PACKAGES) {
+				const packageDirectory = fs.realpathSync(
+					path.join(import.meta.dirname, 'node_modules', name)
+				);
+				const nativeDirectory = path.dirname(
+					fs.realpathSync(
+						createRequire(path.join(packageDirectory, 'package.json')).resolve(
+							`${nativeName}/package.json`
+						)
 					)
-				)
-			);
-			copyPackageOnce(
-				koffiDirectory,
-				path.join(BUNDLED_NODE_MODULES, KOFFI_PACKAGE)
-			);
-			copyPackageOnce(
-				nativeDirectory,
-				path.join(BUNDLED_NODE_MODULES, KOFFI_NATIVE_PACKAGE)
+				);
+				copyPackageOnce(
+					packageDirectory,
+					path.join(BUNDLED_NODE_MODULES, name)
+				);
+				copyPackageOnce(
+					nativeDirectory,
+					path.join(BUNDLED_NODE_MODULES, nativeName)
+				);
+			}
+		},
+	};
+}
+
+/** Ships the resvg WebAssembly file next to the bundle, where the Linux host reads it. */
+function copyResvgWasmPlugin(): Rolldown.Plugin {
+	return {
+		name: 'copy-resvg-wasm',
+		writeBundle() {
+			fs.copyFileSync(
+				path.join(
+					import.meta.dirname,
+					'node_modules',
+					RESVG_WASM_PACKAGE,
+					RESVG_WASM_FILE
+				),
+				BUNDLED_RESVG_WASM
 			);
 		},
 	};
@@ -123,12 +151,19 @@ export default defineConfig(({ watch = false }) => {
 		fixedExtension: false,
 		deps: {
 			neverBundle: [KOFFI_PACKAGE],
-			alwaysBundle: [/^@elgato\//u, /^deck-kit\//u, /^zod(?:\/|$)/u],
+			alwaysBundle: [
+				/^@elgato\//u,
+				/^@resvg\//u,
+				/^deck-kit\//u,
+				/^zod(?:\/|$)/u,
+			],
 			onlyBundle: false,
 		},
 		minify: !isWatching,
 		sourcemap: isWatching,
 		outputOptions: {
+			// One file: hashed chunks would pile up in the bin folder, which is never cleaned, and ship in the package.
+			codeSplitting: false,
 			sourcemapPathTransform: (relativeSourcePath, sourcemapPath) =>
 				url.pathToFileURL(
 					path.resolve(path.dirname(sourcemapPath), relativeSourcePath)
@@ -142,6 +177,10 @@ export default defineConfig(({ watch = false }) => {
 				]
 			: false,
 		onSuccess: isWatching ? 'pnpm run restart' : undefined,
-		plugins: [emitModulePackageFilePlugin(), copyKoffiPlugin()],
+		plugins: [
+			emitModulePackageFilePlugin(),
+			copyNativePackagesPlugin(),
+			copyResvgWasmPlugin(),
+		],
 	};
 });

@@ -1,9 +1,11 @@
 import { streamDeck, SingletonAction } from '@elgato/streamdeck';
 import type {
 	DidReceiveSettingsEvent,
+	PropertyInspectorDidAppearEvent,
 	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck';
+import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import type { DisplayHub } from '../../displays/display_hub';
 import type { MonitorSnapshot } from '../../displays/monitor_snapshot';
@@ -14,12 +16,20 @@ import { listMonitorChoices } from './list_monitor_choices';
 import { readDisplayActionConfig } from './read_display_action_config';
 import { resolveTargetMonitors } from './resolve_target_monitors';
 
+type PropertyInspectorPayload = Parameters<
+	typeof streamDeck.ui.sendToPropertyInspector
+>[0];
 type DisplayActionHandle = WillAppearEvent<DisplayActionSettings>['action'];
 type DisplaySendToPluginEvent = Parameters<
 	NonNullable<SingletonAction<DisplayActionSettings>['onSendToPlugin']>
 >[0];
 
 const MONITORS_DATA_SOURCE = 'listMonitors';
+
+type DisplaySettingsReader = Readonly<{
+	id: string;
+	getSettings: () => Promise<DisplayActionSettings>;
+}>;
 
 async function showAlert(action: DisplayActionHandle): Promise<void> {
 	if (action.isKey() || action.isDial()) {
@@ -37,6 +47,12 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 	protected abstract readonly offersAll: boolean;
 	private readonly configs = new Map<string, DisplayActionConfig>();
 	private unsubscribe: (() => void) | undefined;
+	private readonly replies =
+		new PropertyInspectorReplies<PropertyInspectorPayload>({
+			readCurrentActionId: () => streamDeck.ui.action?.id,
+			sendToCurrent: (payload) =>
+				streamDeck.ui.sendToPropertyInspector(payload),
+		});
 
 	constructor(protected readonly hub: DisplayHub) {
 		super();
@@ -56,6 +72,7 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 		ev: WillDisappearEvent<DisplayActionSettings>
 	): void {
 		this.configs.delete(ev.action.id);
+		this.replies.forget(ev.action.id);
 		if (this.configs.size > 0) {
 			return;
 		}
@@ -74,18 +91,35 @@ export abstract class DisplayAction extends SingletonAction<DisplayActionSetting
 		if (!isDataSourceRequest(ev.payload, MONITORS_DATA_SOURCE)) {
 			return;
 		}
+		await this.answerMonitorList(ev.action);
+	}
+
+	override async onPropertyInspectorDidAppear(
+		ev: PropertyInspectorDidAppearEvent<DisplayActionSettings>
+	): Promise<void> {
+		await this.replies.deliverPending(ev.action.id);
+		await this.answerMonitorList(ev.action);
+	}
+
+	private async answerMonitorList(
+		action: DisplaySettingsReader
+	): Promise<void> {
 		try {
-			const settings = await ev.action.getSettings();
+			const settings = await action.getSettings();
 			// The hub reads the monitors every few seconds while an action is visible: waiting for a fresh read
 			// would make the picker wait for every DDC/CI exchange.
 			const snapshot = this.hub.current ?? (await this.hub.refresh());
-			await streamDeck.ui.sendToPropertyInspector({
+			await this.replies.reply({
+				actionId: action.id,
 				event: MONITORS_DATA_SOURCE,
-				items: listMonitorChoices({
-					snapshot,
-					offersAll: this.offersAll,
-					pickedValue: settings.monitor,
-				}),
+				payload: {
+					event: MONITORS_DATA_SOURCE,
+					items: listMonitorChoices({
+						snapshot,
+						offersAll: this.offersAll,
+						pickedValue: settings.monitor,
+					}),
+				},
 			});
 		} catch (error) {
 			streamDeck.logger.error('Cannot list the monitors', error);

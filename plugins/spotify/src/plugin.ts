@@ -18,10 +18,14 @@ import { ToggleFullscreenAction } from './actions/toggle_fullscreen_action';
 import { ToggleLyricsAction } from './actions/toggle_lyrics_action';
 import { UiStateHub } from './actions/ui_state_hub';
 import { VolumeDialAction } from './actions/volume_dial_action';
-import { windowsAudioMixer } from './audio/windows_audio_mixer';
+import { CurrentSpotifyHost } from './platform/current_spotify_host';
+import { loadSpotifyHost } from './platform/load_spotify_host';
 import { fetchCoverDataUrl } from './spotify/fetch_cover_data_url';
 import { fetchTrackLyrics } from './spotify/fetch_track_lyrics';
 import { prepareSpotifyOnStartup } from './startup/prepare_spotify_on_startup';
+
+const spotifyHost = await loadSpotifyHost();
+CurrentSpotifyHost.provide(spotifyHost);
 
 const playerStateHub = new PlayerStateHub();
 const likeTargetStore = new LikeTargetStore();
@@ -33,7 +37,9 @@ const inactivity = new InactivityMonitor({
 const nowPlaying = new NowPlayingScreen({
 	inactivity,
 	playerStateHub,
-	fetchCover: fetchCoverDataUrl,
+	fetchCover: async (url) =>
+		spotifyHost.prepareCover(await fetchCoverDataUrl(url)),
+	encodeFrame: spotifyHost.encodeFrame,
 	fetchLyrics: fetchTrackLyrics,
 	schedule: scheduleTimeout,
 	now: Date.now,
@@ -50,10 +56,15 @@ streamDeck.actions.registerAction(new PlayOnDeviceAction(playerStateHub));
 streamDeck.actions.registerAction(new PreviousTrackAction());
 streamDeck.actions.registerAction(new NextTrackAction());
 streamDeck.actions.registerAction(
-	new PlaylistsDialAction(playerStateHub, likeTargetStore, nowPlaying)
+	new PlaylistsDialAction(
+		playerStateHub,
+		likeTargetStore,
+		nowPlaying,
+		spotifyHost
+	)
 );
 streamDeck.actions.registerAction(
-	new VolumeDialAction(windowsAudioMixer, nowPlaying)
+	new VolumeDialAction(spotifyHost, nowPlaying)
 );
 streamDeck.actions.registerAction(
 	new LikeAction(playerStateHub, likeTargetStore)
@@ -65,4 +76,4 @@ void likeTargetStore
 	.catch((error: unknown) =>
 		streamDeck.logger.error('Cannot load the like target', error)
 	);
-void prepareSpotifyOnStartup();
+void prepareSpotifyOnStartup(spotifyHost);

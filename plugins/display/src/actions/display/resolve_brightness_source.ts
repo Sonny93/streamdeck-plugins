@@ -8,16 +8,16 @@ export function resolveBrightnessSource(
 	control: BrightnessControl
 ): BrightnessSource | undefined {
 	const hasMonitorBrightness = monitor.monitorBrightness !== undefined;
-	const hasWindowsBrightness = monitor.windowsBrightness !== undefined;
+	const hasSystemBrightness = monitor.systemBrightness !== undefined;
 	switch (control) {
 		case 'monitor':
 			return hasMonitorBrightness ? 'monitor' : undefined;
 		case 'windows':
-			return hasWindowsBrightness ? 'windows' : undefined;
+			return hasSystemBrightness ? 'system' : undefined;
 		case 'auto':
 			if (hasMonitorBrightness && !monitor.ignoresMonitorBrightness) {
 				return 'monitor';
 			}
-			return hasWindowsBrightness ? 'windows' : undefined;
+			return hasSystemBrightness ? 'system' : undefined;
 	}
 }

@@ -6,7 +6,9 @@ Deduced by observation (no official documentation). The PowerShell scripts in `t
 
 - USB `VID_2B5A&PID_0020`, vendor HID collection on interface `MI_06` (usage page `0xFF01`).
 - Found through `CM_Get_Device_Interface_ListW` on `GUID_DEVINTERFACE_HID`, then opened with `CreateFileW`.
-- Input reports are 40 bytes, output reports 17 bytes, no feature reports.
+- Input reports are 40 bytes on Windows, output reports 17 bytes, no feature reports.
+- On Linux the vendor collection is the `/dev/hidrawN` node whose uevent has `HID_ID=0003:00002B5A:00000020` and whose report descriptor starts with `06 01 ff`. A read returns one report with its id first, and the state report (`0x02`) is only 14 bytes there, cut after the meter bits. Writes are the same 17 bytes, report id `0x10` first.
+- Linux opens one read-write handle on the node (no Windows-style handle per direction needed).
 - The plugin opens one read-only and one write-only handle: a synchronous `ReadFile` blocks its handle until the next report.
 
 ## State report (input `0x02`)

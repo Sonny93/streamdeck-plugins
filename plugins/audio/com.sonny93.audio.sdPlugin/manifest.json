@@ -46,7 +46,7 @@
 			"Name": "Default Output",
 			"UUID": "com.sonny93.audio.default-output",
 			"Icon": "imgs/actions/default-output/icon",
-			"Tooltip": "Makes the picked output the default one of Windows, for media and communications, and lights up while it is.",
+			"Tooltip": "Makes the picked output the default one of the system, for media and communications, and lights up while it is.",
 			"Controllers": ["Keypad"],
 			"PropertyInspectorPath": "ui/default_output_settings.html",
 			"DisableAutomaticStates": true,

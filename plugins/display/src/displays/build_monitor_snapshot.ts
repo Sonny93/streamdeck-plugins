@@ -19,20 +19,21 @@ function resolvePower(
 }
 
 /**
- * Builds the state of a monitor from what Windows and DDC/CI say, the brightness being written shown in place of the one read.
- * A monitor turned off by the plugin that Windows stopped listing is shown in standby.
+ * Builds the state of a monitor from what the system and DDC/CI say, the brightness being written shown in place of the one read.
+ * A monitor turned off by the plugin that the system stopped listing is shown in standby.
  */
 export function buildMonitorSnapshot(
 	options: Readonly<{
 		display: DisplayInfo;
 		listedDisplays: readonly DisplayInfo[];
 		reading: DdcReading;
-		windowsBrightness: number | undefined;
+		systemBrightness: number | undefined;
+		canBlackScreen: boolean;
 		hasBlackScreen: boolean;
 		/** Backlight a monitor under a black screen gets back when it wakes, shown as its brightness. */
 		keptBacklight: number | undefined;
 		pendingMonitorBrightness: number | undefined;
-		pendingWindowsBrightness: number | undefined;
+		pendingSystemBrightness: number | undefined;
 	}>
 ): MonitorSnapshot {
 	const { display, reading } = options;
@@ -50,14 +51,15 @@ export function buildMonitorSnapshot(
 			options.pendingMonitorBrightness ??
 			options.keptBacklight ??
 			reading.brightness,
-		ignoresMonitorBrightness: ignoresDdcBrightness(display.id),
-		windowsBrightness:
-			options.pendingWindowsBrightness ?? options.windowsBrightness,
+		ignoresMonitorBrightness: ignoresDdcBrightness(display),
+		systemBrightness:
+			options.pendingSystemBrightness ?? options.systemBrightness,
 		power: resolvePower(reading, {
 			hasBlackScreen: options.hasBlackScreen,
 			isListed,
 		}),
 		canStandby: reading.standbyMode !== undefined,
+		canBlackScreen: options.canBlackScreen,
 		hdr: display.hdr,
 	};
 }

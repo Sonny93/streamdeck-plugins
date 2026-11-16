@@ -122,21 +122,64 @@ describe('buildNowPlayingSvg', () => {
 		expect(svg).toContain('clip-path="url(#now-playing-lyrics)"');
 	});
 
-	it('should keep every clip path inside defs, since the Stream Deck draws a bare one as a black shape', () => {
-		const svg = build({ ...FRAME, lyrics: { current: 'Hola', next: 'Adiós' } });
+	it.each([0, 200, 400])(
+		'should keep every clip path inside defs in the slice at %i, since the Stream Deck draws a bare one as a black shape',
+		(sliceLeft) => {
+			const svg = build(
+				{ ...FRAME, lyrics: { current: 'Hola', next: 'Adiós' } },
+				sliceLeft
+			);
 
-		expect(svg.split('<clipPath').length - 1).toBe(3);
-		expect(svg.split('<defs><clipPath').length - 1).toBe(3);
+			expect(svg.split('<clipPath').length - 1).toBe(
+				svg.split('<defs><clipPath').length - 1
+			);
+		}
+	);
+
+	it.each([0, 200, 400, 600])(
+		'should only emit clip groups that overlap the slice at %i, since resvg aborts the process on a layer outside the canvas',
+		(sliceLeft) => {
+			const svg = build(
+				{ ...FRAME, lyrics: { current: 'Hola', next: 'Adiós' } },
+				sliceLeft
+			);
+			const overlapsLyrics = sliceLeft + 200 > 404 && sliceLeft < 796;
+			const overlapsInfo = sliceLeft < 396;
+
+			expect([
+				svg.includes('url(#now-playing-lyrics)'),
+				svg.includes('url(#now-playing-info)'),
+			]).toStrictEqual([overlapsLyrics, overlapsInfo]);
+		}
+	);
+
+	it('should draw no lyrics group in the first slice', () => {
+		const svg = build(
+			{
+				...FRAME,
+				lyrics: { current: 'Adiós', next: undefined },
+				lyricsTransition: {
+					progress: 0.5,
+					previous: { current: 'Hola', next: undefined },
+				},
+			},
+			0
+		);
+
+		expect(svg).not.toContain('opacity="0.5"');
 	});
 
 	it('should put a long line being sung on two rows', () => {
-		const svg = build({
-			...FRAME,
-			lyrics: {
-				current: 'Once de la noche en San Salvador, El Salvador',
-				next: undefined,
+		const svg = build(
+			{
+				...FRAME,
+				lyrics: {
+					current: 'Once de la noche en San Salvador, El Salvador',
+					next: undefined,
+				},
 			},
-		});
+			600
+		);
 
 		expect(svg).toContain('>Once de la noche en San Salvador, El</text>');
 		expect(svg).toContain('>Salvador</text>');

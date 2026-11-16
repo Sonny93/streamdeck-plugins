@@ -124,6 +124,15 @@ describe('buildCarouselFrameSvg', () => {
 		expect(build({ containsPlayingTrack: false })).not.toContain(HEART_COLOR);
 	});
 
+	it('should draw no badge when the nearest cover lies outside the strip, since resvg aborts the process on a layer outside the canvas', () => {
+		const svg = build({
+			slots: [{ offset: 50, coverDataUrl: COVER }],
+			containsPlayingTrack: true,
+		});
+
+		expect(svg).not.toContain('<circle');
+	});
+
 	it('should anchor the heart badge to the cover nearest to the center', () => {
 		const svg = build({
 			containsPlayingTrack: true,

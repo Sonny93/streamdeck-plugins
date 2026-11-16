@@ -9,7 +9,7 @@ import type { ScreenOffMode } from './screen_off_mode';
 /**
  * Turns monitors off and on again.
  * A black screen also lowers the backlight of a monitor that takes a DDC/CI brightness, and gives it back on waking;
- * a monitor put in standby is remembered, so it can be woken even if Windows stops listing it.
+ * a monitor put in standby is remembered, so it can be woken even if the system stops listing it.
  */
 export class ScreenPowerSwitch {
 	private readonly savedBacklights = new Map<string, number>();
@@ -32,7 +32,7 @@ export class ScreenPowerSwitch {
 		this.savedBacklights.set(monitorId, percent);
 	}
 
-	/** Monitors the plugin put in standby, as Windows last described them. */
+	/** Monitors the plugin put in standby, as the system last described them. */
 	get sleepingDisplays(): readonly DisplayInfo[] {
 		return [...this.sleeping.values()];
 	}

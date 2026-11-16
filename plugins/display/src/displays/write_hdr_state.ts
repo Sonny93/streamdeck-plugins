@@ -4,6 +4,7 @@ import { createDeviceInfoPacket } from './create_device_info_packet';
 import { DeviceInfoType } from './device_info_type';
 import type { DisplayInfo } from './display_info';
 import { DisplaySettingError } from './display_setting_error';
+import { requireWindowsDisplayData } from './require_windows_display_data';
 
 const VALUE_OFFSET = 20;
 
@@ -13,11 +14,12 @@ export function writeHdrState(
 	display: DisplayInfo,
 	isEnabled: boolean
 ): void {
+	const { hdrApiVersion, target } = requireWindowsDisplayData(display);
 	const kind =
-		display.hdrApiVersion === 2
+		hdrApiVersion === 2
 			? DeviceInfoType.setHdrState
 			: DeviceInfoType.setAdvancedColorState;
-	const packet = createDeviceInfoPacket(kind, display.target);
+	const packet = createDeviceInfoPacket(kind, target);
 	packet.writeUInt32LE(isEnabled ? 1 : 0, VALUE_OFFSET);
 	const result = api.setDeviceInfo(packet);
 	if (result !== Win32Constants.errorSuccess) {
