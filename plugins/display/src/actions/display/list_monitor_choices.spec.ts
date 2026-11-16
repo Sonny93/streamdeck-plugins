@@ -11,6 +11,7 @@ describe('listMonitorChoices', () => {
 	it('offers the main monitor, every monitor when the action can, then each lit one', () => {
 		expect(
 			listMonitorChoices({
+				language: 'en',
 				snapshot: SNAPSHOT,
 				offersAll: true,
 				pickedValue: 'top',
@@ -24,6 +25,7 @@ describe('listMonitorChoices', () => {
 
 	it('keeps showing a picked monitor that is not lit', () => {
 		const choices = listMonitorChoices({
+			language: 'en',
 			snapshot: SNAPSHOT,
 			offersAll: false,
 			pickedValue: 'gone',
@@ -33,6 +35,24 @@ describe('listMonitorChoices', () => {
 			'primary',
 			'top',
 			'gone',
+		]);
+	});
+});
+
+describe('listMonitorChoices in French', () => {
+	it('names the main monitor, all monitors and a monitor not lit in French', () => {
+		const choices = listMonitorChoices({
+			language: 'fr',
+			snapshot: SNAPSHOT,
+			offersAll: true,
+			pickedValue: 'gone',
+		});
+
+		expect(choices.map((choice) => choice.label)).toEqual([
+			'Écran principal',
+			'Tous les écrans',
+			'PL2530H (top)',
+			'Écran non allumé',
 		]);
 	});
 });

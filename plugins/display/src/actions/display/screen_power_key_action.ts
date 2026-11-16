@@ -1,7 +1,9 @@
 import type { KeyDownEvent } from '@elgato/streamdeck';
+import type { Language } from 'deck-kit/i18n/language';
 import type { KeyAppearance } from 'deck-kit/keys/key_appearance';
 
 import type { MonitorSnapshot } from '../../displays/monitor_snapshot';
+import { displayMessages } from '../../i18n/display_messages';
 import { KeyPalette } from '../keys/key_palette';
 import { KeyState } from '../keys/key_state';
 import type { KeyStateValue } from '../keys/key_state_value';
@@ -39,8 +41,11 @@ export class ScreenPowerKeyAction extends DisplayKeyAction {
 		);
 	}
 
-	protected override defaultLabel(): string {
-		return 'Screen';
+	protected override defaultLabel(
+		_config: DisplayActionConfig,
+		language: Language
+	): string {
+		return displayMessages.text('screenKeyLabel', language);
 	}
 
 	protected override resolveKeyState(

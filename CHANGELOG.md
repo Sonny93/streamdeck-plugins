@@ -17,6 +17,7 @@ All notable changes to streamdeck-plugins are written here for the people who us
 - Climate Deck, a new plugin for a Daikin air conditioner with the local HTTP API, on Windows and Linux: a dial for the target temperature (turn to choose, push to apply, hold to cancel), dials for the outdoor temperature, the consumption and the fan, keys for power, presets and the Powerful and Econo modes, and a dashboard across the touch strip while the dials are idle.
 - Icon pack: Climat and Modes folder icons for Climate Deck, a snowflake and a sun in mint, in the three label variants.
 - Climate Deck exists in English and French: it follows the system language, and a Language setting in its property inspectors forces one.
+- Display Deck exists in English and French, with the same Language setting. Its Brightness Dial draws its own strip on a background shared across the dials (monitor name, brightness, HDR badge, "Off"), and after 5 s without touching the dials they show one panel with a slot per monitor.
 
 ### Changed
 

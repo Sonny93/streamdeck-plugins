@@ -10,9 +10,19 @@
 	"Icon": "imgs/plugin/marketplace",
 	"CodePath": "bin/plugin.js",
 	"SDKVersion": 3,
-	"Software": { "MinimumVersion": "7.1" },
-	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
-	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
 	"Actions": [
 		{
 			"Name": "Screen Power",
@@ -23,9 +33,15 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/power/key-off" },
-				{ "Image": "imgs/actions/power/key" },
-				{ "Image": "imgs/actions/power/key-unavailable" }
+				{
+					"Image": "imgs/actions/power/key-off"
+				},
+				{
+					"Image": "imgs/actions/power/key"
+				},
+				{
+					"Image": "imgs/actions/power/key-unavailable"
+				}
 			]
 		},
 		{
@@ -37,9 +53,15 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/brightness/key-off" },
-				{ "Image": "imgs/actions/brightness/key" },
-				{ "Image": "imgs/actions/brightness/key-unavailable" }
+				{
+					"Image": "imgs/actions/brightness/key-off"
+				},
+				{
+					"Image": "imgs/actions/brightness/key"
+				},
+				{
+					"Image": "imgs/actions/brightness/key-unavailable"
+				}
 			]
 		},
 		{
@@ -50,7 +72,7 @@
 			"PropertyInspectorPath": "ui/brightness_dial_settings.html",
 			"Controllers": ["Encoder"],
 			"Encoder": {
-				"layout": "$B1",
+				"layout": "layouts/brightness.json",
 				"Icon": "imgs/actions/brightness/dial-icon",
 				"TriggerDescription": {
 					"Rotate": "Change the brightness",
@@ -58,7 +80,11 @@
 					"Touch": "Turn the screen off / on"
 				}
 			},
-			"States": [{ "Image": "imgs/actions/brightness/key" }]
+			"States": [
+				{
+					"Image": "imgs/actions/brightness/key"
+				}
+			]
 		},
 		{
 			"Name": "HDR",
@@ -69,9 +95,15 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/hdr/key-off" },
-				{ "Image": "imgs/actions/hdr/key" },
-				{ "Image": "imgs/actions/hdr/key-unavailable" }
+				{
+					"Image": "imgs/actions/hdr/key-off"
+				},
+				{
+					"Image": "imgs/actions/hdr/key"
+				},
+				{
+					"Image": "imgs/actions/hdr/key-unavailable"
+				}
 			]
 		}
 	]

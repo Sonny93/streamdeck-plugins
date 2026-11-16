@@ -1,5 +1,6 @@
 import { streamDeck } from '@elgato/streamdeck';
 import type { LanguageStore } from 'deck-kit/i18n/language_store';
+import { LanguagePanel } from 'deck-kit/inspector/language_panel';
 import { PropertyInspectorReplies } from 'deck-kit/ui/property_inspector_replies';
 
 import { climateMessages } from '../i18n/climate_messages';
@@ -12,7 +13,6 @@ type PropertyInspectorPayload = Parameters<
 >[0];
 
 const ADDRESS_EVENT = 'unitAddress';
-const LANGUAGE_EVENT = 'language';
 const SAVE_RESULT_EVENT = 'saveUnitAddressResult';
 
 export type InspectorPanelOptions = Readonly<{
@@ -35,30 +35,31 @@ export class InspectorPanel {
 				streamDeck.ui.sendToPropertyInspector(payload),
 		});
 
-	constructor(private readonly options: InspectorPanelOptions) {}
+	private readonly languagePanel: LanguagePanel;
+
+	constructor(private readonly options: InspectorPanelOptions) {
+		this.languagePanel = new LanguagePanel({
+			languageStore: options.languageStore,
+			reply: (actionId, event, payload) =>
+				this.replies.reply({ actionId, event, payload }),
+		});
+	}
 
 	/** Handles a message of an inspector; it never throws. */
 	async handleMessage(actionId: string, payload: unknown): Promise<void> {
-		const message = inspectorMessageSchema.safeParse(payload);
-		if (!message.success) {
-			return;
-		}
 		try {
-			switch (message.data.event) {
-				case 'getUnitAddress':
-					await this.announceAddress(actionId);
-					return;
-				case 'saveUnitAddress':
-					await this.saveAddress(actionId, message.data.address);
-					return;
-				case 'getLanguage':
-					await this.announceLanguage(actionId);
-					return;
-				case 'saveLanguage':
-					await this.options.languageStore.save(message.data.setting);
-					await this.announceLanguage(actionId);
-					return;
+			if (await this.languagePanel.handle(actionId, payload)) {
+				return;
 			}
+			const message = inspectorMessageSchema.safeParse(payload);
+			if (!message.success) {
+				return;
+			}
+			if (message.data.event === 'getUnitAddress') {
+				await this.announceAddress(actionId);
+				return;
+			}
+			await this.saveAddress(actionId, message.data.address);
 		} catch (error) {
 			streamDeck.logger.error('Cannot answer the shared settings', error);
 		}
@@ -67,7 +68,14 @@ export class InspectorPanel {
 	/** Sends the current address and language to the inspector of an action, to call when it appears. */
 	async announce(actionId: string): Promise<void> {
 		await this.announceAddress(actionId);
-		await this.announceLanguage(actionId);
+		try {
+			await this.languagePanel.announce(actionId);
+		} catch (error) {
+			streamDeck.logger.error(
+				'Cannot send the language to the inspector',
+				error
+			);
+		}
 	}
 
 	forget(actionId: string): void {
@@ -78,15 +86,6 @@ export class InspectorPanel {
 		await this.replySafely(actionId, ADDRESS_EVENT, {
 			event: ADDRESS_EVENT,
 			address: this.options.readHost() ?? '',
-		});
-	}
-
-	private async announceLanguage(actionId: string): Promise<void> {
-		const { setting, current } = this.options.languageStore;
-		await this.replySafely(actionId, LANGUAGE_EVENT, {
-			event: LANGUAGE_EVENT,
-			setting,
-			language: current,
 		});
 	}
 

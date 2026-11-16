@@ -1,27 +1,42 @@
 <!doctype html>
-<html>
-	<head lang="en">
+<html lang="en">
+	<head>
 		<meta charset="utf-8" />
 		<script src="https://sdpi-components.dev/releases/v4/sdpi-components.js"></script>
 	</head>
 	<body>
-		<sdpi-item label="Monitor">
+		<sdpi-item label="Monitor" data-fr-label="Écran">
 			<sdpi-select
 				setting="monitor"
 				datasource="listMonitors"
 				default="primary"
 				hot-reload
 				loading="Looking for monitors..."
+				data-fr-loading="Recherche des écrans..."
 			></sdpi-select>
 		</sdpi-item>
-		<sdpi-item label="Label">
-			<sdpi-textfield setting="label" placeholder="None"></sdpi-textfield>
+		<sdpi-item label="Label" data-fr-label="Libellé">
+			<sdpi-textfield
+				setting="label"
+				placeholder="None"
+				data-fr-placeholder="Aucun"
+			></sdpi-textfield>
 		</sdpi-item>
-		<sdpi-item label="Label position">
+		<sdpi-item label="Label position" data-fr-label="Position du libellé">
 			<sdpi-select setting="labelPosition" default="top">
-				<option value="top">Top</option>
-				<option value="bottom">Bottom</option>
+				<option value="top" data-fr="Haut">Top</option>
+				<option value="bottom" data-fr="Bas">Bottom</option>
 			</sdpi-select>
 		</sdpi-item>
+		<sdpi-item label="Language / Langue">
+			<sdpi-select id="language-select">
+				<option value="system" data-fr="Système (par défaut)">
+					System (default)
+				</option>
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+			</sdpi-select>
+		</sdpi-item>
+		<script src="../bin/language_inspector.js"></script>
 	</body>
 </html>
