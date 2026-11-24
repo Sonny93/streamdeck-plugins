@@ -5,6 +5,9 @@ export const ListenSettings = {
 	/** Number of reads to see a volume applied or a stream appear. */
 	readBackAttempts: 5,
 	readBackDelayMilliseconds: 60,
+	/** Reads to see a loopback just loaded linked to its source; PipeWire links it a moment after the load. */
+	verifyAttempts: 15,
+	verifyDelayMilliseconds: 100,
 	/** Margin over the requested level a channel may show, for the rounding of the percent. */
 	levelTolerance: 0.005,
 	/** Level of a stream above which a loopback is unloaded, 1 being 100 %. */

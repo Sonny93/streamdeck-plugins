@@ -9,6 +9,8 @@ export const FAKE_VOLT =
 export const FAKE_MIC_INDEX = 71;
 export const FAKE_VOLT_INDEX = 70;
 export const NEW_MODULE_INDEX = 536_870_999;
+export const INVALID_SOURCE_INDEX = 4_294_967_295;
+const READS_BEFORE_LINKED = 3;
 
 export const instantSchedule: Scheduler = (callback) => {
 	callback();
@@ -37,6 +39,8 @@ export type LoadBehavior =
 	| 'loud-playback'
 	| 'no-stream'
 	| 'tag-missing'
+	| 'linked-late'
+	| 'never-linked'
 	| 'fail-after-loading'
 	| 'fail-without-loading';
 
@@ -138,6 +142,21 @@ export function createFakeListenSystem(options: FakeSystemOptions = {}) {
 	const findSource = (name: string): FakeSource | undefined =>
 		sources.find((source) => source.name === name);
 
+	let isLoaded = false;
+	let readsAfterLoad = 0;
+
+	const linkLateStreams = (): void => {
+		if (!isLoaded || behavior !== 'linked-late') {
+			return;
+		}
+		readsAfterLoad += 1;
+		if (readsAfterLoad > READS_BEFORE_LINKED) {
+			for (const stream of captureStreams) {
+				stream.sourceIndex = FAKE_MIC_INDEX;
+			}
+		}
+	};
+
 	const loadModule = (args: readonly string[]): string => {
 		if (behavior === 'fail-without-loading') {
 			throw new Error('load-module failed');
@@ -150,8 +169,12 @@ export function createFakeListenSystem(options: FakeSystemOptions = {}) {
 				''
 			)
 		);
-		const linkedIndex =
-			behavior === 'linked-to-other-source'
+		const isUnlinked =
+			behavior === 'linked-late' || behavior === 'never-linked';
+		isLoaded = true;
+		const linkedIndex = isUnlinked
+			? INVALID_SOURCE_INDEX
+			: behavior === 'linked-to-other-source'
 				? FAKE_VOLT_INDEX
 				: (findSource(sourceName)?.index ?? 0);
 		if (behavior !== 'no-stream') {
@@ -203,6 +226,7 @@ export function createFakeListenSystem(options: FakeSystemOptions = {}) {
 			return JSON.stringify(sources.map(buildSourceJson));
 		}
 		if (verb === 'list' && target === 'source-outputs') {
+			linkLateStreams();
 			return JSON.stringify(captureStreams.map(buildStreamJson));
 		}
 		if (verb === 'list' && target === 'sink-inputs') {

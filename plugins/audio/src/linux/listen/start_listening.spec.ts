@@ -5,6 +5,7 @@ import {
 	FAKE_MIC,
 	FAKE_MIC_INDEX,
 	FAKE_VOLT,
+	INVALID_SOURCE_INDEX,
 	NEW_MODULE_INDEX,
 	buildFakeMic,
 	buildLoopbackRow,
@@ -184,6 +185,7 @@ describe('startListening', () => {
 		],
 		['no capture stream shows up', 'no-stream', 'stream-missing'],
 		['the module row lacks the tag', 'tag-missing', 'tag-missing'],
+		['the capture stream never gets linked', 'never-linked', 'stream-unlinked'],
 	])(
 		'should unload the new module when %s',
 		async (_label, loadBehavior, failure) => {
@@ -201,6 +203,49 @@ describe('startListening', () => {
 			]);
 		}
 	);
+
+	it('should keep the loopback when its capture stream is unlinked on the first reads and linked to the source later', async () => {
+		const { system, listening } = setUp({ loadBehavior: 'linked-late' });
+
+		const moduleIndex = await listening.startListening(FAKE_MIC, LEVEL);
+
+		expect(moduleIndex).toBe(NEW_MODULE_INDEX);
+		expect(system.writes().map((args) => args[0])).not.toContain(
+			'unload-module'
+		);
+	});
+
+	it('should fail at once with the linked source in the message when the stream is linked to another known source', async () => {
+		const { system, listening } = setUp({
+			loadBehavior: 'linked-to-other-source',
+		});
+
+		const error: unknown = await listening
+			.startListening(FAKE_MIC, LEVEL)
+			.catch((caught: unknown) => caught);
+
+		expect((error as LoopbackNotVerifiedError).message).toContain(
+			`linked to ${FAKE_VOLT}`
+		);
+		expect(
+			system.calls.filter((args) => args.includes('source-outputs'))
+		).toHaveLength(2);
+	});
+
+	it('should read the stream the whole budget and report the source index it showed when it never gets linked', async () => {
+		const { system, listening } = setUp({ loadBehavior: 'never-linked' });
+
+		const error: unknown = await listening
+			.startListening(FAKE_MIC, LEVEL)
+			.catch((caught: unknown) => caught);
+
+		expect((error as LoopbackNotVerifiedError).message).toContain(
+			`source index ${INVALID_SOURCE_INDEX}`
+		);
+		expect(
+			system.calls.filter((args) => args.includes('source-outputs'))
+		).toHaveLength(ListenSettings.verifyAttempts + 1);
+	});
 
 	it('should unload the loopback that loaded although load-module failed, and rethrow', async () => {
 		const { system, listening } = setUp({ loadBehavior: 'fail-after-loading' });

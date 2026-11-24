@@ -7,21 +7,61 @@ import {
 	type LoopbackFailure,
 } from './loopback_not_verified_error';
 import { parseLoopbackModules } from './parse_loopback_modules';
-import { parseModuleStreams } from './parse_module_streams';
+import { parseModuleStreams, type ModuleStream } from './parse_module_streams';
 import { parseSourceNamesByIndex } from './parse_source_names_by_index';
 import { pollUntil } from './poll_until';
 
-type Verdict = 'ok' | LoopbackFailure;
+type Finding = Readonly<{ failure: LoopbackFailure; observed?: string }>;
+type Inspection =
+	| Readonly<{ state: 'done'; failure: Finding | undefined }>
+	| Readonly<{ state: 'pending'; finding: Finding }>;
+
+const DONE_OK: Inspection = { state: 'done', failure: undefined };
+const NOT_SHOWN_FINDING: Finding = { failure: 'stream-missing' };
+const NOT_SHOWN_YET: Inspection = {
+	state: 'pending',
+	finding: NOT_SHOWN_FINDING,
+};
+
+function fail(failure: LoopbackFailure, observed?: string): Inspection {
+	return { state: 'done', failure: { failure, observed } };
+}
 
 function isAudibleSafely(level: number | undefined): boolean {
 	return level !== undefined && level <= ListenSettings.maxStreamLevel;
+}
+
+function inspectCapture(
+	capture: ModuleStream,
+	names: ReadonlyMap<number, string>,
+	sourceId: string
+): Inspection {
+	const linkedName =
+		capture.sourceIndex === undefined
+			? undefined
+			: names.get(capture.sourceIndex);
+	if (linkedName === undefined) {
+		return {
+			state: 'pending',
+			finding: {
+				failure: 'stream-unlinked',
+				observed: `source index ${capture.sourceIndex ?? 'none'}`,
+			},
+		};
+	}
+	if (linkedName !== sourceId) {
+		return fail('wrong-source', `linked to ${linkedName}`);
+	}
+	return isAudibleSafely(capture.loudestLevel)
+		? DONE_OK
+		: fail('capture-volume-too-high');
 }
 
 async function inspectLoopback(
 	context: ListenContext,
 	moduleIndex: number,
 	sourceId: string
-): Promise<Verdict | undefined> {
+): Promise<Inspection> {
 	const [sourcesJson, sourceOutputsJson, sinkInputsJson, modulesText] =
 		await Promise.all([
 			runPactlJson({ args: ['list', 'sources'], runCommand: context.run }),
@@ -36,52 +76,64 @@ async function inspectLoopback(
 		(candidate) => candidate.moduleIndex === moduleIndex
 	);
 	if (loopbackModule === undefined) {
-		return undefined;
+		return NOT_SHOWN_YET;
 	}
 	if (!loopbackModule.isPluginLoopback) {
-		return 'tag-missing';
+		return fail('tag-missing');
 	}
 	const capture = parseModuleStreams(sourceOutputsJson).find(
 		(stream) => stream.ownerModuleIndex === moduleIndex
 	);
 	if (capture === undefined) {
-		return undefined;
+		return NOT_SHOWN_YET;
 	}
-	const names = parseSourceNamesByIndex(sourcesJson);
-	const linkedName =
-		capture.sourceIndex === undefined
-			? undefined
-			: names.get(capture.sourceIndex);
-	if (linkedName !== sourceId) {
-		return 'wrong-source';
-	}
-	if (!isAudibleSafely(capture.loudestLevel)) {
-		return 'capture-volume-too-high';
+	const captureInspection = inspectCapture(
+		capture,
+		parseSourceNamesByIndex(sourcesJson),
+		sourceId
+	);
+	if (captureInspection !== DONE_OK) {
+		return captureInspection;
 	}
 	const playback = parseModuleStreams(sinkInputsJson).find(
 		(stream) => stream.ownerModuleIndex === moduleIndex
 	);
 	if (playback === undefined) {
-		return undefined;
+		return NOT_SHOWN_YET;
 	}
 	return isAudibleSafely(playback.loudestLevel)
-		? 'ok'
-		: 'playback-volume-too-high';
+		? DONE_OK
+		: fail('playback-volume-too-high');
 }
 
 /**
- * Checks that the loopback just loaded carries the tag of the plugin, captures the requested source and that none of its streams is above 100 %.
- * Throws `LoopbackNotVerifiedError` otherwise, also when its streams never show up; the caller unloads it.
+ * Checks that the loopback just loaded carries the tag of the plugin, that its capture stream is linked to the requested source
+ * and that none of its streams is above 100 %. A stream that is not there or not linked yet is waited for, since the linking takes a moment;
+ * a link to another known source fails at once. Throws `LoopbackNotVerifiedError` otherwise; the caller unloads the loopback.
  */
 export async function verifyLoopback(
 	context: ListenContext,
 	moduleIndex: number,
 	sourceId: string
 ): Promise<void> {
-	const verdict = await pollUntil(context, () =>
-		inspectLoopback(context, moduleIndex, sourceId)
+	let lastPending: Finding = NOT_SHOWN_FINDING;
+	const finished = await pollUntil(
+		context,
+		async () => {
+			const inspection = await inspectLoopback(context, moduleIndex, sourceId);
+			if (inspection.state === 'pending') {
+				lastPending = inspection.finding;
+				return undefined;
+			}
+			return inspection;
+		},
+		{
+			attempts: ListenSettings.verifyAttempts,
+			delayMilliseconds: ListenSettings.verifyDelayMilliseconds,
+		}
 	);
-	if (verdict !== 'ok') {
-		throw new LoopbackNotVerifiedError(verdict ?? 'stream-missing');
+	const finding = finished === undefined ? lastPending : finished.failure;
+	if (finding !== undefined) {
+		throw new LoopbackNotVerifiedError(finding.failure, finding.observed);
 	}
 }
