@@ -21,6 +21,21 @@ The Volt 1 has no public protocol. [`docs/volt1_hid_protocol.md`](docs/volt1_hid
 
 On Windows there is no public API to change the default device. Default Output uses the same undocumented interface as the Windows sound settings, so a Windows update could break it.
 
+## Listen
+
+On Linux, two actions play an input in the headphones, for example a PS5 plugged into the line or mic jack of the PC, by loading a PipeWire loopback (`module-loopback`) from the input to the default output. They need PipeWire with `pipewire-pulse` and are not available on Windows, where they stay dimmed.
+
+- **Listen** (dial): press the dial or tap the screen to start or stop listening, rotate to change the level. The strip shows the name of the input, its level, a bar of the level against the maximum level, and the state in words ("Listening" in amber, "Off" in grey).
+- **Listen toggle** (key): starts or stops listening at the level remembered for that input, never above its maximum level. The headphones are amber while listening and grey, struck through, while not.
+
+Both pick an input in their settings (hardware inputs only, none by default) and do nothing until one is picked.
+
+- **Maximum level (%)** is a setting of both actions, 20 % by default. Lowering it lowers the remembered level and the level being listened to at once, and raising it never raises them. The level never goes above it, because a loud loopback in the headphones can damage your hearing. The `pactl` percentages are cubic, so a small step is already a clear change in loudness: 20 % is far quieter than it looks.
+- **The level is preset while off.** Rotating the dial while off changes the level that listening will start at. The plugin sets the volume of the input first, checks it, and only then starts the loopback.
+- **Safety cut.** Listening stops, and the key or dial shows the alert, when the volume of the input rises above what the plugin set, or when its active port changes, for example when a jack is plugged in.
+- **The output follows the default output device** of the system.
+- **Latency.** The loopback asks for `latency_msec=1`, which forces a small audio quantum (32 samples) on the whole PipeWire graph. That costs CPU and can cause pops on other audio.
+
 ## Idle panel
 
 After 5 seconds without touching a dial, every Device Volume dial of the strip shows one panel across the whole touch strip: the default output in the first slot and the default input in the second (name, volume with a bar, and "Muted" with the slot dimmed), the Volt 1 in the third (the Monitor, Vintage and 48V buttons with the word On or Off, or "Not connected" or "No report yet"), and the plain background in the fourth. A column without a dial of the plugin is left as it is. If the devices cannot be read, the first two slots say "Unavailable" instead of showing an old value. The first touch on a dial only brings the dials back, and the gesture that woke them does nothing until the dials are left alone for a moment.

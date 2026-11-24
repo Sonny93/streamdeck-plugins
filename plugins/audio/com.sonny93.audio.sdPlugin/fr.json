@@ -31,5 +31,20 @@
 				"Touch": "Couper / rétablir le son"
 			}
 		}
+	},
+	"com.sonny93.audio.listen": {
+		"Name": "Écouter",
+		"Tooltip": "Joue une entrée, comme une console sur une prise ligne, dans la sortie par défaut, à un niveau plafonné par le réglage de niveau maximum. Linux uniquement.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Changer le niveau",
+				"Push": "Écouter / arrêter",
+				"Touch": "Écouter / arrêter"
+			}
+		}
+	},
+	"com.sonny93.audio.listen-toggle": {
+		"Name": "Écouter (touche)",
+		"Tooltip": "Lance ou arrête la lecture d'une entrée, comme une console sur une prise ligne, dans la sortie par défaut, et indique si elle est jouée. Linux uniquement."
 	}
 }

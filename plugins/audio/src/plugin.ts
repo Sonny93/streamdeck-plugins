@@ -10,6 +10,8 @@ import { DefaultOutputKeyAction } from './actions/audio/default_output_key_actio
 import { MuteKeyAction } from './actions/audio/mute_key_action';
 import { VolumeDialAction } from './actions/audio/volume_dial_action';
 import { RestartElgatoAudioKeyAction } from './actions/elgato/restart_elgato_audio_key_action';
+import { ListenDialAction } from './actions/listen/listen_dial_action';
+import { ListenKeyAction } from './actions/listen/listen_key_action';
 import { createAudioPanelFeed } from './actions/strip/create_audio_panel_feed';
 import { VoltMonitorKeyAction } from './actions/volt/volt_monitor_key_action';
 import { VoltVintageKeyAction } from './actions/volt/volt_vintage_key_action';
@@ -17,8 +19,10 @@ import { AudioHub } from './audio/audio_hub';
 import { AudioTiming } from './audio/audio_timing';
 import { ElgatoAudioRestarter } from './elgato/elgato_audio_restarter';
 import { ElgatoAudioTiming } from './elgato/elgato_audio_timing';
+import { ListenHub } from './listen/listen_hub';
 import { loadPlatformAdapters } from './platform/load_platform_adapters';
 import { streamDeckGlobalSettings } from './settings/stream_deck_global_settings';
+import { unloadLoopbacksOnExit } from './shutdown/unload_loopbacks_on_exit';
 import { VoltHub } from './volt/volt_hub';
 import { VoltTiming } from './volt/volt_timing';
 
@@ -67,6 +71,22 @@ const audioHub = new AudioHub({
 		streamDeck.logger.warn('Cannot read the audio devices', error),
 });
 
+const listenHub =
+	platform.listening === undefined
+		? undefined
+		: new ListenHub({
+				listening: platform.listening,
+				settings: streamDeckGlobalSettings,
+				schedule: scheduleTimeout,
+				onError: (error) =>
+					streamDeck.logger.warn('Cannot read the inputs to listen to', error),
+			});
+
+unloadLoopbacksOnExit({
+	listening: platform.listening,
+	readOwnedModuleIndexes: () => listenHub?.ownedModuleIndexes ?? [],
+});
+
 const idlePanel = new IdlePanel({
 	inactivity: new InactivityMonitor({
 		delayMilliseconds: IdleTiming.inactivityDelayMilliseconds,
@@ -87,6 +107,13 @@ streamDeck.actions.registerAction(
 );
 
 streamDeck.actions.registerAction(
+	new ListenDialAction(listenHub, languageStore, idlePanel)
+);
+streamDeck.actions.registerAction(
+	new ListenKeyAction(listenHub, languageStore)
+);
+
+streamDeck.actions.registerAction(
 	new RestartElgatoAudioKeyAction(
 		new ElgatoAudioRestarter({
 			serverProcess: platform.elgatoAudioServerProcess,
@@ -99,6 +126,11 @@ streamDeck.actions.registerAction(
 );
 
 voltHub.start();
+void listenHub
+	?.start()
+	.catch((error: unknown) =>
+		streamDeck.logger.warn('Cannot start listening', error)
+	);
 
 void streamDeck.connect();
 void languageStore

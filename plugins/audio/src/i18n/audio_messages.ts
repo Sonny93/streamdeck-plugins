@@ -24,4 +24,9 @@ export const audioMessages = new MessageCatalog({
 	outputsGroup: { en: 'Outputs', fr: 'Sorties' },
 	inputsGroup: { en: 'Inputs', fr: 'Entrées' },
 	unpluggedDevice: { en: 'Unplugged device', fr: 'Périphérique débranché' },
+	listenTitle: { en: 'Listen', fr: 'Écouter' },
+	listenKeyLabel: { en: 'Listen', fr: 'Écouter' },
+	listening: { en: 'Listening', fr: 'Écoute' },
+	listenOff: { en: 'Off', fr: 'Coupé' },
+	noInputPicked: { en: 'No input', fr: 'Aucune entrée' },
 });

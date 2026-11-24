@@ -10,9 +10,19 @@
 	"Icon": "imgs/plugin/marketplace",
 	"CodePath": "bin/plugin.js",
 	"SDKVersion": 3,
-	"Software": { "MinimumVersion": "7.1" },
-	"OS": [{ "Platform": "windows", "MinimumVersion": "10" }],
-	"Nodejs": { "Version": "24", "Debug": "enabled" },
+	"Software": {
+		"MinimumVersion": "7.1"
+	},
+	"OS": [
+		{
+			"Platform": "windows",
+			"MinimumVersion": "10"
+		}
+	],
+	"Nodejs": {
+		"Version": "24",
+		"Debug": "enabled"
+	},
 	"Actions": [
 		{
 			"Name": "Volt 1 Monitor",
@@ -23,9 +33,15 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/volt-monitor/key-off" },
-				{ "Image": "imgs/actions/volt-monitor/key" },
-				{ "Image": "imgs/actions/volt-monitor/key-unavailable" }
+				{
+					"Image": "imgs/actions/volt-monitor/key-off"
+				},
+				{
+					"Image": "imgs/actions/volt-monitor/key"
+				},
+				{
+					"Image": "imgs/actions/volt-monitor/key-unavailable"
+				}
 			]
 		},
 		{
@@ -37,9 +53,15 @@
 			"Controllers": ["Keypad"],
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/volt-vintage/key-off" },
-				{ "Image": "imgs/actions/volt-vintage/key" },
-				{ "Image": "imgs/actions/volt-vintage/key-unavailable" }
+				{
+					"Image": "imgs/actions/volt-vintage/key-off"
+				},
+				{
+					"Image": "imgs/actions/volt-vintage/key"
+				},
+				{
+					"Image": "imgs/actions/volt-vintage/key-unavailable"
+				}
 			]
 		},
 		{
@@ -51,9 +73,15 @@
 			"PropertyInspectorPath": "ui/default_output_settings.html",
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/default-output/key-off" },
-				{ "Image": "imgs/actions/default-output/key" },
-				{ "Image": "imgs/actions/default-output/key-unavailable" }
+				{
+					"Image": "imgs/actions/default-output/key-off"
+				},
+				{
+					"Image": "imgs/actions/default-output/key"
+				},
+				{
+					"Image": "imgs/actions/default-output/key-unavailable"
+				}
 			]
 		},
 		{
@@ -65,9 +93,15 @@
 			"PropertyInspectorPath": "ui/mute_settings.html",
 			"DisableAutomaticStates": true,
 			"States": [
-				{ "Image": "imgs/actions/mute/key-off" },
-				{ "Image": "imgs/actions/mute/key" },
-				{ "Image": "imgs/actions/mute/key-unavailable" }
+				{
+					"Image": "imgs/actions/mute/key-off"
+				},
+				{
+					"Image": "imgs/actions/mute/key"
+				},
+				{
+					"Image": "imgs/actions/mute/key-unavailable"
+				}
 			]
 		},
 		{
@@ -78,7 +112,11 @@
 			"Controllers": ["Keypad"],
 			"PropertyInspectorPath": "ui/restart_elgato_audio_settings.html",
 			"DisableAutomaticStates": true,
-			"States": [{ "Image": "imgs/actions/restart-elgato-audio/key" }]
+			"States": [
+				{
+					"Image": "imgs/actions/restart-elgato-audio/key"
+				}
+			]
 		},
 		{
 			"Name": "Device Volume",
@@ -96,7 +134,53 @@
 					"Touch": "Mute / unmute"
 				}
 			},
-			"States": [{ "Image": "imgs/actions/volume/key" }]
+			"States": [
+				{
+					"Image": "imgs/actions/volume/key"
+				}
+			]
+		},
+		{
+			"Name": "Listen",
+			"UUID": "com.sonny93.audio.listen",
+			"Icon": "imgs/actions/listen/icon",
+			"Tooltip": "Plays an input, such as a console on a line jack, in the default output, at a level capped by the maximum level setting. Linux only.",
+			"Controllers": ["Encoder"],
+			"PropertyInspectorPath": "ui/listen_settings.html",
+			"Encoder": {
+				"layout": "layouts/listen.json",
+				"Icon": "imgs/actions/listen/dial-icon",
+				"TriggerDescription": {
+					"Rotate": "Change the level",
+					"Push": "Listen / stop",
+					"Touch": "Listen / stop"
+				}
+			},
+			"States": [
+				{
+					"Image": "imgs/actions/listen/key"
+				}
+			]
+		},
+		{
+			"Name": "Listen toggle",
+			"UUID": "com.sonny93.audio.listen-toggle",
+			"Icon": "imgs/actions/listen-toggle/icon",
+			"Tooltip": "Starts or stops playing an input, such as a console on a line jack, in the default output, and shows whether it is playing. Linux only.",
+			"Controllers": ["Keypad"],
+			"PropertyInspectorPath": "ui/listen_toggle_settings.html",
+			"DisableAutomaticStates": true,
+			"States": [
+				{
+					"Image": "imgs/actions/listen-toggle/key-off"
+				},
+				{
+					"Image": "imgs/actions/listen-toggle/key"
+				},
+				{
+					"Image": "imgs/actions/listen-toggle/key-unavailable"
+				}
+			]
 		}
 	]
 }
