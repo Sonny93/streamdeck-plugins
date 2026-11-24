@@ -4,6 +4,7 @@ import { AudioTiming } from '../audio/audio_timing';
 import { unsupportedElgatoAudioServerProcess } from '../elgato/unsupported_elgato_audio_server_process';
 import { createLinuxCoreAudio } from '../linux/create_linux_core_audio';
 import { createPactlEventWatcher } from '../linux/create_pactl_event_watcher';
+import { createLinuxSourceListening } from '../linux/listen/create_linux_source_listening';
 import { openLinuxVoltConnection } from '../linux/open_linux_volt_connection';
 import { spawnPactlSubscribe } from '../linux/spawn_pactl_subscribe';
 import type { PlatformAdapters } from './platform_adapters';
@@ -24,4 +25,5 @@ export const linuxAdapters: PlatformAdapters = {
 	},
 	openVoltConnection: () => openLinuxVoltConnection(),
 	elgatoAudioServerProcess: unsupportedElgatoAudioServerProcess,
+	listening: createLinuxSourceListening(),
 };

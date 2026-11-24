@@ -3,39 +3,22 @@ import { z } from 'zod';
 import type { AudioFlow } from '../audio/audio_flow';
 import type { AudioVolume } from '../audio/audio_volume';
 import type { LinuxAudioEntry } from './linux_audio_entry';
+import { pactlChannelSchema } from './pactl_channel_schema';
 import { PactlListingError } from './pactl_listing_error';
+import { readChannelLevel } from './read_channel_level';
 
-/** PulseAudio volume of 100 %, the `value` of a channel at full scale. */
-const NORMAL_VOLUME_VALUE = 65_536;
-const PERCENT_PATTERN = /^\s*(\d+(?:\.\d+)?)\s*%/u;
 const MONITOR_DEVICE_CLASS = 'monitor';
-
-const channelSchema = z.object({
-	value: z.number().optional(),
-	value_percent: z.string().optional(),
-});
 
 const entrySchema = z.object({
 	name: z.string(),
 	description: z.string().optional(),
 	mute: z.boolean().optional(),
-	volume: z.record(z.string(), channelSchema).optional(),
+	volume: z.record(z.string(), pactlChannelSchema).optional(),
 	monitor_source: z.string().optional(),
 	properties: z.record(z.string(), z.unknown()).optional(),
 });
 
 type PactlEntry = z.infer<typeof entrySchema>;
-type PactlChannel = z.infer<typeof channelSchema>;
-
-function readChannelLevel(channel: PactlChannel): number | undefined {
-	const percent = PERCENT_PATTERN.exec(channel.value_percent ?? '')?.[1];
-	if (percent !== undefined) {
-		return Number(percent) / 100;
-	}
-	return channel.value === undefined
-		? undefined
-		: channel.value / NORMAL_VOLUME_VALUE;
-}
 
 function readLevel(entry: PactlEntry): number {
 	const levels = Object.values(entry.volume ?? {}).flatMap((channel) => {

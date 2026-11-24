@@ -60,6 +60,28 @@ describe('createPactlEventWatcher', () => {
 		expect(restarts[1]?.delay).toBe(2 * INITIAL_BACKOFF_MILLISECONDS);
 	});
 
+	it('reports the lines its own filter accepts instead of the device ones', () => {
+		const processes: SpawnPactlSubscribeOptions[] = [];
+		const watcher = createPactlEventWatcher({
+			spawnSubscribe: (spawnOptions) => {
+				processes.push(spawnOptions);
+				return vi.fn();
+			},
+			schedule: () => vi.fn(),
+			initialBackoffMilliseconds: INITIAL_BACKOFF_MILLISECONDS,
+			maxBackoffMilliseconds: MAX_BACKOFF_MILLISECONDS,
+			isRelevant: (line) => line.includes('module'),
+		});
+		const onChange = vi.fn();
+		watcher(onChange);
+
+		processes[0]?.onLine("Event 'change' on sink #66");
+		expect(onChange).not.toHaveBeenCalled();
+
+		processes[0]?.onLine("Event 'new' on module #7");
+		expect(onChange).toHaveBeenCalledOnce();
+	});
+
 	it('goes back to the first delay once the process printed something', () => {
 		const { watcher, processes, restarts } = createWatcher();
 		watcher(vi.fn());

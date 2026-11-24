@@ -1,0 +1,5 @@
+1	libpipewire-module-rt	{
+            nice.level    = -11
+            rt.prio       = 88
+        }	
+536870916	module-loopback	source=alsa_input.pci-0000_10_00.6.analog-stereo latency_msec=1	

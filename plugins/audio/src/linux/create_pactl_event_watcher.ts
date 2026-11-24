@@ -9,6 +9,8 @@ type PactlEventWatcherOptions = Readonly<{
 	schedule: Scheduler;
 	initialBackoffMilliseconds: number;
 	maxBackoffMilliseconds: number;
+	/** Tells which lines of `pactl subscribe` report a change; the device and default device events when left out. */
+	isRelevant?: (line: string) => boolean;
 }>;
 
 /**
@@ -19,6 +21,7 @@ export function createPactlEventWatcher(
 	options: PactlEventWatcherOptions
 ): AudioChangeWatcher {
 	return (onChange) => {
+		const isRelevant = options.isRelevant ?? isRelevantPactlEvent;
 		let isStopped = false;
 		let backoffMilliseconds = options.initialBackoffMilliseconds;
 		let stopProcess: (() => void) | undefined;
@@ -28,7 +31,7 @@ export function createPactlEventWatcher(
 			stopProcess = options.spawnSubscribe({
 				onLine: (line) => {
 					backoffMilliseconds = options.initialBackoffMilliseconds;
-					if (isRelevantPactlEvent(line)) {
+					if (isRelevant(line)) {
 						onChange();
 					}
 				},

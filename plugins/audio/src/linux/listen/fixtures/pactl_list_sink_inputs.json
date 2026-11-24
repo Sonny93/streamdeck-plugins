@@ -1,0 +1,25 @@
+[
+	{
+		"index": 4785,
+		"owner_module": "536870916",
+		"sink": 69,
+		"corked": false,
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"properties": {
+			"media.class": "Stream/Output/Audio",
+			"node.name": "output.loopback-1608-13"
+		}
+	}
+]

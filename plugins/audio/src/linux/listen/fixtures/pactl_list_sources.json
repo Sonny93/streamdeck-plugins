@@ -1,0 +1,80 @@
+[
+	{
+		"index": 69,
+		"name": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo.monitor",
+		"description": "Monitor of Volt 1 Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"active_port": "analog-output",
+		"monitor_source": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo",
+		"properties": {
+			"media.class": "Audio/Sink",
+			"device.api": "alsa",
+			"device.class": "monitor",
+			"node.name": "alsa_output.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo"
+		}
+	},
+	{
+		"index": 70,
+		"name": "alsa_input.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo",
+		"description": "Volt 1 Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			},
+			"front-right": {
+				"value": 65536,
+				"value_percent": "100%",
+				"db": "0.00 dB"
+			}
+		},
+		"active_port": "analog-input",
+		"monitor_source": "",
+		"properties": {
+			"media.class": "Audio/Source",
+			"device.api": "alsa",
+			"device.class": "sound",
+			"node.name": "alsa_input.usb-Universal_Audio_Volt_1_00000000000000-00.analog-stereo"
+		}
+	},
+	{
+		"index": 71,
+		"name": "alsa_input.pci-0000_10_00.6.analog-stereo",
+		"description": "Ryzen HD Audio Controller Stéréo analogique",
+		"mute": false,
+		"volume": {
+			"front-left": {
+				"value": 5242,
+				"value_percent": "8%",
+				"db": "-65.82 dB"
+			},
+			"front-right": {
+				"value": 5242,
+				"value_percent": "8%",
+				"db": "-65.82 dB"
+			}
+		},
+		"active_port": "analog-input-rear-mic",
+		"monitor_source": "",
+		"properties": {
+			"media.class": "Audio/Source",
+			"device.api": "alsa",
+			"device.class": "sound",
+			"node.name": "alsa_input.pci-0000_10_00.6.analog-stereo"
+		}
+	}
+]
